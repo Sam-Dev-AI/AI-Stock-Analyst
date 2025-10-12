@@ -4,7 +4,12 @@
 GENIE_API_KEY = "AIzaSyDMXVLvuQOBRCGv6M5qJYUyYPHv1Z8sIz4"
 
 # GNews.io API key
-NEWSAPI_API_KEY = "4fec09d5becd42efbd6f474f2c540e18"
+NEWSAPI_KEYS = [
+    "4fec09d5becd42efbd6f474f2c540e18",
+    "8554bc10e9c74502b31d866a3eb6bb4f",
+    "c7a70174aab44b729ba51c4677f808c3"
+]
+NEWS_API_MODE = 'sequential'
 
 # Stock universe: NIFTY 50 tickers
 NIFTY_50_TICKERS = [

@@ -6,16 +6,19 @@ import warnings
 import google.generativeai as genai
 import requests
 import config
+import random
 
 warnings.filterwarnings('ignore')
 
 # Import configuration
 genai.configure(api_key=config.GENIE_API_KEY)
-NEWSAPI_API_KEY = config.NEWSAPI_API_KEY
+NEWSAPI_KEYS = config.NEWSAPI_KEYS
 NIFTY_50_TICKERS = config.NIFTY_50_TICKERS
 LARGE_CAP_MIN_MARKET_CAP = config.LARGE_CAP_MIN_MARKET_CAP
 RSI_THRESHOLD = config.RSI_THRESHOLD
 EMA_PERIOD = config.EMA_PERIOD
+NEWS_API_MODE = config.NEWS_API_MODE
+current_api_index = 0
 
 
 def find_top_filtered_stocks():
@@ -53,25 +56,40 @@ def find_top_filtered_stocks():
 
 
 def get_recent_news(company_name):
-    """Fetches recent news from NewsAPI.org for a given company name."""
-    url = (
-        f"https://newsapi.org/v2/everything?"
-        f"q={company_name}&"
-        f"language=en&"
-        f"sortBy=publishedAt&"
-        f"apiKey={NEWSAPI_API_KEY}&"
-        f"pageSize=3"
-    )
-    try:
-        response = requests.get(url)
-        data = response.json()
-        if data.get('status') == 'ok' and data.get('totalResults', 0) > 0:
-            headlines = [article['title'] for article in data['articles']]
-            return {"news": headlines}
-        else:
-            return {"news": [f"No recent news found for {company_name}."]}
-    except Exception as e:
-        return {"news": [f"News fetch error: {str(e)}"]}
+    """Fetches recent news from NewsAPI.org using multiple API keys with rotation."""
+    global current_api_index
+    
+    # Choose API key based on mode
+    if NEWS_API_MODE == 'random':
+        api_keys_order = random.sample(NEWSAPI_KEYS, len(NEWSAPI_KEYS))
+    else:  # sequential rotation
+        api_keys_order = NEWSAPI_KEYS[current_api_index:] + NEWSAPI_KEYS[:current_api_index]
+        current_api_index = (current_api_index + 1) % len(NEWSAPI_KEYS)
+    
+    # Try each API key until one succeeds
+    for api_key in api_keys_order:
+        url = (
+            f"https://newsapi.org/v2/everything?"
+            f"q={company_name}&"
+            f"language=en&"
+            f"sortBy=publishedAt&"
+            f"apiKey={api_key}&"
+            f"pageSize=3"
+        )
+        try:
+            response = requests.get(url, timeout=5)
+            data = response.json()
+            
+            if data.get('status') == 'ok' and data.get('totalResults', 0) > 0:
+                headlines = [article['title'] for article in data['articles']]
+                return {"news": headlines}
+            elif data.get('status') == 'error':
+                # If rate limited or error, try next API key
+                continue
+        except Exception:
+            continue
+    
+    return {"news": [f"No recent news found for {company_name}."]}
 
 
 def get_financial_highlights(ticker):
