@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'models/user_model.dart';
 import 'screens/splash_screen.dart';
 import 'screens/create_account_screen.dart';
 import 'screens/login_screen.dart';
@@ -23,13 +24,24 @@ class AIAnalystApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       debugShowCheckedModeBanner: false,
-      // Define the routes for the app
       initialRoute: '/',
       routes: {
         '/': (context) => const SplashScreen(),
         '/create_account': (context) => const CreateAccountScreen(),
         '/login': (context) => const LoginScreen(),
-        '/home': (context) => const HomeScreen(),
+      },
+      // Special handling for routes that need arguments
+      onGenerateRoute: (settings) {
+        if (settings.name == '/home') {
+          final args = settings.arguments as User;
+          return MaterialPageRoute(
+            builder: (context) {
+              return HomeScreen(user: args);
+            },
+          );
+        }
+        // Handle other routes if needed
+        return null;
       },
     );
   }

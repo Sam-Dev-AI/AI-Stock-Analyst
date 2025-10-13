@@ -1,7 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class CreateAccountScreen extends StatelessWidget {
+class CreateAccountScreen extends StatefulWidget {
   const CreateAccountScreen({super.key});
+
+  @override
+  _CreateAccountScreenState createState() => _CreateAccountScreenState();
+}
+
+class _CreateAccountScreenState extends State<CreateAccountScreen> {
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _createAccount() async {
+    if (_nameController.text.isNotEmpty && _emailController.text.isNotEmpty && _passwordController.text.isNotEmpty) {
+      final prefs = await SharedPreferences.getInstance();
+      // Save account details (this is a simulation of a database)
+      await prefs.setString('userName', _nameController.text);
+      await prefs.setString('userEmail', _emailController.text);
+      await prefs.setString('userPassword', _passwordController.text); // Note: In a real app, hash the password!
+
+      if (!mounted) return;
+      // Navigate to login after creating an account
+      Navigator.of(context).pushReplacementNamed('/login');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +53,8 @@ class CreateAccountScreen extends StatelessWidget {
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
             ),
             const SizedBox(height: 40),
-             TextField(
+            TextField(
+              controller: _nameController,
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 labelText: 'Full Name',
@@ -33,6 +66,7 @@ class CreateAccountScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             TextField(
+              controller: _emailController,
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 labelText: 'Email',
@@ -44,6 +78,7 @@ class CreateAccountScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             TextField(
+              controller: _passwordController,
               obscureText: true,
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
@@ -56,10 +91,7 @@ class CreateAccountScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             ElevatedButton(
-              onPressed: () {
-                // In a real app, you would save account details here.
-                Navigator.of(context).pushReplacementNamed('/login');
-              },
+              onPressed: _createAccount,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
                 padding: const EdgeInsets.symmetric(vertical: 16),
