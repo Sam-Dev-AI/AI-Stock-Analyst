@@ -1,9 +1,8 @@
-
-pandas
-yfinance
-ta
 google-generativeai
+yfinance
+pandas
 requests
 Flask
+Flask-Cors
 gunicorn
-flask-cors
+nsepy
