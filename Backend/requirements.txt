@@ -2,7 +2,10 @@ google-generativeai
 yfinance
 pandas
 requests
+ta
 Flask
 Flask-Cors
 gunicorn
 nsepy
+firebase-admin
+ddgs
