@@ -1,13 +1,22 @@
-AI Stock Analyst Platform
+# AI Stock Analyst Platform
 
 <div align="center">
-[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-Visit_Platform-blue?https://your-app-name-xxxxxxxxxx.io/badge/Google_Cloud-Run-4285F4?style=for-the-badge&logo=google-cloud&logoColorg.shields.io/badge/Python-3.9+-3776AB?style=for-theps://img.shields.io/badge/Flask-2.3+-000000?style=for-thettps://img.shields.io/badge/Gemini-2.5_Flash-8E75B2?style=for-the-badge&logo=google& the Platform: https://stock-agent-774764824527.us-central1.run.app**
 
-AI-Powered Stock Analysis & Paper Trading for the Indian Stock Market (NSE)
+[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-Visit_Platform-blue?style=for-the-badge)](https://stock-agent-774764824527.us-central1.run.app)
+[![Cloud Run](https://img.shields.io/badge/Google_Cloud-Run-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white)](https://cloud.google.com/run)
+[![Python](https://img.shields.io/badge/Python-3.9+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Flask](https://img.shields.io/badge/Flask-2.3+-000000?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
+[![Gemini AI](https://img.shields.io/badge/Gemini-2.5_Flash-8E75B2?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)
 
-Features - Installation - Deployment - Documentation
+**🌐 Access the Platform: [https://stock-agent-774764824527.us-central1.run.app](https://stock-agent-774764824527.us-central1.run.app)**
+
+*AI-Powered Stock Analysis & Paper Trading for the Indian Stock Market (NSE)*
+
+[Features](#-key-features) • [Installation](#-installation--setup) • [Deployment](#️-google-cloud-run-deployment) • [Documentation](#-detailed-architecture--working)
 
 </div>
+
+---
 
 🚀 Project Summary
 A sophisticated AI-powered stock analysis and paper trading platform built for the Indian stock market (NSE). This full-stack application combines real-time market data, advanced technical analysis, AI-driven recommendations, and an interactive trading interface with Firebase-backed portfolio management.​
