@@ -37,7 +37,6 @@ The AI combines **conversational trading**, **multi-index stock screening**, and
 
 ---
 
----
 
 ## 🎯 Getting Started
 
