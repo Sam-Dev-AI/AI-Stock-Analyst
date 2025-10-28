@@ -23,6 +23,241 @@ A sophisticated AI-powered stock analysis and paper trading platform built for t
 
 The platform leverages Google's Gemini AI to provide intelligent stock analysis, screening, and conversational trading assistance through a modern web interface with authentication, multi-chat management, and a comprehensive portfolio dashboard.
 
+🎯 Getting Started - User Guide
+Step 1: Access the Platform
+Visit the live platform at: https://stock-agent-774764824527.us-central1.run.app
+
+Step 2: Create Your Account
+Click "Sign Up" on the welcome screen
+
+Enter your details:
+
+Email address
+
+Strong password (minimum 6 characters)
+
+Click "Sign Up" button
+
+You'll be automatically logged in and redirected to the main chat interface​
+
+Note: Your account comes with ₹10 lakh virtual cash for paper trading!
+
+Step 3: Explore the Chat Interface
+Once logged in, you'll see the main chat screen with:
+
+Chat sidebar (left): All your conversation threads
+
+Main chat area (center): Where you interact with the AI
+
+Portfolio button (top right): Access your holdings and watchlist​
+
+Step 4: Start Your First Conversation
+📊 Ask for Stock Analysis
+Try these example queries:
+
+text
+"What's the current price of Reliance?"
+"Show me fundamental data for TCS"
+"Analyze HDFC Bank for me"
+"What's the latest news on Infosys?"
+🔍 Screen Top Stocks
+text
+"Find top 3 stocks from Nifty 50"
+"Screen best stocks from Nifty Bank"
+"Recommend stocks from Nifty IT with good momentum"
+"Which pharma stocks look bullish?"
+💼 Execute Paper Trades
+text
+"Buy 10 shares of Reliance"
+"Invest in TCS"
+"Sell 5 shares of HDFC Bank"
+"Buy ₹50,000 worth of Infosys"
+📋 Get Recommendations
+text
+"What should I buy today?"
+"Which stocks are good for swing trading?"
+"Suggest some banking stocks"
+"Show my portfolio and recommend what to sell"
+Step 5: Manage Your Portfolio
+Open Portfolio Dashboard
+Click the "Portfolio" button (top right corner)​
+
+A floating window will appear showing:
+
+Total portfolio value
+
+Overall P&L (Profit/Loss)
+
+Day's P&L (today's performance)
+
+Available cash
+
+All your holdings with individual P&L​
+
+View Holdings
+Each holding shows:
+
+Stock ticker and company name
+
+Number of shares owned
+
+Current price
+
+Average purchase price
+
+Total P&L (₹ and %)
+
+Day's P&L​
+
+Execute Manual Trades
+From the portfolio window:
+
+Click "Manual Trade" tab
+
+Enter ticker (e.g., RELIANCE.NS)
+
+Enter quantity
+
+Select BUY or SELL
+
+Click "Execute Trade"​
+
+Step 6: Build Your Watchlist
+Add Stocks to Watchlist
+Ask the AI:
+
+text
+"Add Reliance and TCS to my watchlist"
+"Add HDFC Bank to watchlist"
+Or from portfolio window:
+
+Click "Watchlist" tab
+
+Enter ticker(s)
+
+Click "Add to Watchlist"​
+
+View Watchlist
+In the portfolio window, switch to "Watchlist" tab to see:
+
+All watched stocks
+
+Current prices
+
+Daily change (% and ₹)
+
+Quick remove button​
+
+Step 7: Manage Multiple Chats
+Create New Chat
+Click "+ New Chat" button (top of sidebar)​
+
+A fresh conversation starts
+
+All chats are saved automatically
+
+Switch Between Chats
+Click any chat in the sidebar to resume it
+
+Recent chats appear at the top​
+
+Rename a Chat
+Hover over a chat in the sidebar
+
+Click the "⋮" (three dots) menu
+
+Select "Rename"
+
+Enter new name and press Enter​
+
+Delete a Chat
+Click the "⋮" menu on any chat
+
+Select "Delete"
+
+Confirm deletion​
+
+Step 8: Advanced Features
+Check Trade History
+Ask the AI:
+
+text
+"Show my trade history"
+"What trades did I make today?"
+Portfolio Analysis
+text
+"Analyze my portfolio performance"
+"Show my holdings and suggest improvements"
+"What are my best performing stocks?"
+"Which stocks should I sell?"
+Market Overview
+text
+"What's the Nifty 50 level today?"
+"How is the market performing?"
+"Give me Nifty Bank overview"
+News & Sentiment
+text
+"Latest news on Reliance"
+"What's happening with IT sector?"
+"Any news affecting HDFC Bank?"
+Step 9: Understanding AI Responses
+The AI provides structured responses with:
+
+✅ Price Information
+
+Current price, day change, day range
+
+Previous close
+
+✅ Technical Analysis
+
+RSI (Relative Strength Index)
+
+EMA (Exponential Moving Average)
+
+Support & resistance levels
+
+✅ Recommendations
+
+Clear BUY/SELL/HOLD signals
+
+Target price and stop-loss
+
+Rationale with news sentiment
+
+✅ Trade Confirmations
+
+Executed price and quantity
+
+Total cost/credit
+
+Remaining cash balance
+
+P&L for sells
+
+Step 10: Best Practices
+💡 Tips for Better Results
+Use NSE tickers: Add .NS suffix (e.g., RELIANCE.NS)
+
+Be specific: "Buy 10 shares of TCS" works better than "Invest in TCS"
+
+Check portfolio regularly: Monitor your P&L daily
+
+Set stop-losses: Ask AI for recommended stop-loss levels
+
+Diversify: Don't put all capital in one stock
+
+⚠️ Important Notes
+This is paper trading - no real money involved
+
+Market data is real-time from NSE
+
+Trades execute at live market prices
+
+Portfolio resets Day P&L at midnight
+
+₹10 lakh starting capital for all new users​
+
 ✨ Key Features
 🤖 AI-Powered Analysis
 Conversational AI Agent powered by Gemini 2.5 Flash with specialized financial knowledge​
