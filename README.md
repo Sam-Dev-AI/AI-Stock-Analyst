@@ -272,12 +272,14 @@ Your portfolio, chat history, and watchlist are securely stored and will be rest
 
 ## ✨ Key Features
 
+## ✨ Key Features
+
 ### 🤖 AI-Powered Analysis
 
 | Feature | Description |
 |:---|:---|
 | **Conversational AI** | Gemini 2.5 Flash with specialized financial knowledge |
-| **Smart Ticker Recognition** | Fuzzy matching for company names & tickers |
+| **Autonomous Portfolio Management** | Agent automatically accesses your portfolio, executes trades on command, and provides personalized buy/sell suggestions based on real-time analysis and performance metrics |
 | **Natural Language Trading** | Execute trades through simple chat commands |
 | **News Sentiment Analysis** | Automated analysis via DuckDuckGo & NewsAPI |
 
@@ -289,7 +291,6 @@ Your portfolio, chat history, and watchlist are securely stored and will be rest
 | **Technical Indicators** | RSI, EMA, price momentum analysis |
 | **Custom Screening** | Configurable parameters for personalized results |
 | **Intelligent Fallback** | NSE API + DuckDuckGo for obscure indices |
-
 ### 💼 Portfolio Management
 
 | Feature | Description |
