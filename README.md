@@ -23,7 +23,19 @@
 
 A sophisticated **AI-powered stock analysis and paper trading platform** designed specifically for the **Indian Stock Market (NSE)**. This full-stack application seamlessly integrates real-time market data, advanced technical analysis, AI-driven recommendations, and an intuitive trading interface backed by Firebase cloud infrastructure.
 
-The platform harnesses the power of **Google's Gemini 2.5 Flash AI** to deliver intelligent stock screening, conversational trading assistance, and portfolio management through a modern, responsive web interface.
+### 🌟 **What Makes This Platform Unique**
+
+The platform features an **autonomous AI agent** powered by **Google's Gemini 2.5 Flash** that doesn't just provide information—it **actively manages your portfolio**:
+
+✅ **Autonomous Portfolio Access** - AI agent automatically reads and analyzes your current holdings in real-time  
+✅ **Automatic Trade Execution** - Execute trades instantly through simple conversational commands  
+✅ **Intelligent Buy/Sell Recommendations** - Get personalized suggestions based on your portfolio performance, technical indicators (RSI, EMA), and latest news sentiment  
+✅ **Proactive Portfolio Optimization** - AI identifies underperforming stocks, suggests rebalancing strategies, and recommends profit-taking opportunities  
+✅ **Risk Management Insights** - Receive alerts about concentration risk, sector exposure, and stop-loss recommendations  
+
+The AI combines **conversational trading**, **multi-index stock screening**, and **comprehensive portfolio analytics** through a modern, responsive web interface with multi-chat management and real-time updates.
+
+---
 
 ---
 
