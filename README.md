@@ -8,339 +8,362 @@
 [![Flask](https://img.shields.io/badge/Flask-2.3+-000000?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
 [![Gemini AI](https://img.shields.io/badge/Gemini-2.5_Flash-8E75B2?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)
 
-**🌐 Access the Platform: [https://stock-agent-774764824527.us-central1.run.app](https://stock-agent-774764824527.us-central1.run.app)**
+### 🌐 **Access the Live Platform**
+**[https://stock-agent-774764824527.us-central1.run.app](https://stock-agent-774764824527.us-central1.run.app)**
 
 *AI-Powered Stock Analysis & Paper Trading for the Indian Stock Market (NSE)*
 
-[Features](#-key-features) • [Installation](#-installation--setup) • [Deployment](#️-google-cloud-run-deployment) • [Documentation](#-detailed-architecture--working)
+[Features](#-key-features) • [Getting Started](#-getting-started) • [Installation](#-installation--setup) • [Deployment](#️-deployment) • [Documentation](#-documentation)
 
 </div>
 
 ---
 
-🚀 Project Summary
-A sophisticated AI-powered stock analysis and paper trading platform built for the Indian stock market (NSE). This full-stack application combines real-time market data, advanced technical analysis, AI-driven recommendations, and an interactive trading interface with Firebase-backed portfolio management.​
+## 🚀 Project Overview
 
-The platform leverages Google's Gemini AI to provide intelligent stock analysis, screening, and conversational trading assistance through a modern web interface with authentication, multi-chat management, and a comprehensive portfolio dashboard.
+A sophisticated **AI-powered stock analysis and paper trading platform** designed specifically for the **Indian Stock Market (NSE)**. This full-stack application seamlessly integrates real-time market data, advanced technical analysis, AI-driven recommendations, and an intuitive trading interface backed by Firebase cloud infrastructure.
 
-🎯 Getting Started - User Guide
-Step 1: Access the Platform
-Visit the live platform at: https://stock-agent-774764824527.us-central1.run.app
+The platform harnesses the power of **Google's Gemini 2.5 Flash AI** to deliver intelligent stock screening, conversational trading assistance, and portfolio management through a modern, responsive web interface.
 
-Step 2: Create Your Account
-Click "Sign Up" on the welcome screen
+---
 
-Enter your details:
+## 🎯 Getting Started
 
-Email address
+### Quick Start Guide
 
-Strong password (minimum 6 characters)
+| Step | Action | Details |
+|:---:|:---|:---|
+| **1** | **🌐 Visit Platform** | Navigate to [stock-agent-774764824527.us-central1.run.app](https://stock-agent-774764824527.us-central1.run.app) |
+| **2** | **📝 Create Account** | Sign up with email & password (min. 6 characters) |
+| **3** | **💰 Get Virtual Cash** | Receive ₹10 lakh paper trading capital automatically |
+| **4** | **🤖 Start Trading** | Chat with AI for analysis, screening & trade execution |
 
-Click "Sign Up" button
+---
 
-You'll be automatically logged in and redirected to the main chat interface​
+### 📋 Step-by-Step User Guide
 
-Note: Your account comes with ₹10 lakh virtual cash for paper trading!
+<details>
+<summary><b>▶️ Step 1: Access the Platform</b></summary>
 
-Step 3: Explore the Chat Interface
-Once logged in, you'll see the main chat screen with:
+<br>
 
-Chat sidebar (left): All your conversation threads
+Visit the live deployment at: **[https://stock-agent-774764824527.us-central1.run.app](https://stock-agent-774764824527.us-central1.run.app)**
 
-Main chat area (center): Where you interact with the AI
+The platform is optimized for:
+- 💻 Desktop browsers (Chrome, Firefox, Safari, Edge)
+- 📱 Mobile devices (iOS & Android)
+- 📱 Tablet devices
 
-Portfolio button (top right): Access your holdings and watchlist​
+</details>
 
-Step 4: Start Your First Conversation
-📊 Ask for Stock Analysis
-Try these example queries:
+<details>
+<summary><b>▶️ Step 2: Create Your Account</b></summary>
 
-text
+<br>
+
+**Registration Process:**
+
+1. Click **"Sign Up"** on the welcome screen
+2. Enter your credentials:
+   - ✉️ Valid email address
+   - 🔒 Strong password (minimum 6 characters)
+   - ✅ Confirm password
+3. Click **"Create Account"**
+4. Automatic login and redirect to main interface
+
+**What You Get:**
+- ✅ ₹10,00,000 virtual trading capital
+- ✅ Secure Firebase authentication
+- ✅ Personal portfolio dashboard
+- ✅ Multi-chat conversation history
+
+</details>
+
+<details>
+<summary><b>▶️ Step 3: Explore the Interface</b></summary>
+
+<br>
+
+**Main Components:**
+
+| Component | Location | Purpose |
+|:---|:---|:---|
+| **Chat Sidebar** | Left panel | View & manage conversation threads |
+| **AI Chat Area** | Center panel | Interact with trading assistant |
+| **Portfolio Button** | Top-right corner | Access holdings & watchlist |
+| **New Chat Button** | Top of sidebar | Start fresh conversation |
+
+</details>
+
+<details>
+<summary><b>▶️ Step 4: Interact with AI Assistant</b></summary>
+
+<br>
+
+**📊 Stock Analysis Queries**
+
 "What's the current price of Reliance?"
 "Show me fundamental data for TCS"
-"Analyze HDFC Bank for me"
-"What's the latest news on Infosys?"
-🔍 Screen Top Stocks
+"Analyze HDFC Bank for swing trading"
+"Latest news on Infosys?"
+
 text
+
+**🔍 Stock Screening Commands**
+
 "Find top 3 stocks from Nifty 50"
-"Screen best stocks from Nifty Bank"
-"Recommend stocks from Nifty IT with good momentum"
-"Which pharma stocks look bullish?"
-💼 Execute Paper Trades
+"Screen best banking stocks"
+"Recommend IT stocks with RSI between 50-65"
+"Which pharma stocks look bullish today?"
+
 text
+
+**💼 Paper Trading Execution**
+
 "Buy 10 shares of Reliance"
-"Invest in TCS"
+"Invest ₹50,000 in TCS"
 "Sell 5 shares of HDFC Bank"
-"Buy ₹50,000 worth of Infosys"
-📋 Get Recommendations
+"Execute BUY order for INFY"
+
 text
+
+**📋 Portfolio Recommendations**
+
 "What should I buy today?"
-"Which stocks are good for swing trading?"
-"Suggest some banking stocks"
-"Show my portfolio and recommend what to sell"
-Step 5: Manage Your Portfolio
-Open Portfolio Dashboard
-Click the "Portfolio" button (top right corner)​
-
-A floating window will appear showing:
-
-Total portfolio value
-
-Overall P&L (Profit/Loss)
-
-Day's P&L (today's performance)
-
-Available cash
-
-All your holdings with individual P&L​
-
-View Holdings
-Each holding shows:
-
-Stock ticker and company name
-
-Number of shares owned
-
-Current price
-
-Average purchase price
-
-Total P&L (₹ and %)
-
-Day's P&L​
-
-Execute Manual Trades
-From the portfolio window:
-
-Click "Manual Trade" tab
-
-Enter ticker (e.g., RELIANCE.NS)
-
-Enter quantity
-
-Select BUY or SELL
-
-Click "Execute Trade"​
-
-Step 6: Build Your Watchlist
-Add Stocks to Watchlist
-Ask the AI:
+"Show my portfolio and suggest improvements"
+"Which stocks should I sell?"
+"Analyze my holdings performance"
 
 text
+
+</details>
+
+<details>
+<summary><b>▶️ Step 5: Manage Your Portfolio</b></summary>
+
+<br>
+
+**Opening Portfolio Dashboard:**
+
+1. Click **"Portfolio"** button (top-right corner)
+2. Floating window displays:
+   - 💰 **Total Portfolio Value**
+   - 📈 **Overall P&L** (Profit/Loss with %)
+   - 📊 **Day's P&L** (Today's performance)
+   - 💵 **Available Cash**
+   - 📦 **All Holdings** with individual metrics
+
+**Portfolio Tabs:**
+
+| Tab | Function |
+|:---|:---|
+| **Holdings** | View all owned stocks with live P&L |
+| **Manual Trade** | Execute BUY/SELL without AI |
+| **Watchlist** | Monitor favorite stocks |
+| **Trade History** | Review past transactions |
+| **Adjust Cash** | Modify virtual capital (max ₹10L) |
+
+</details>
+
+<details>
+<summary><b>▶️ Step 6: Build Your Watchlist</b></summary>
+
+<br>
+
+**Adding Stocks to Watchlist:**
+
+**Method 1: Via AI Chat**
 "Add Reliance and TCS to my watchlist"
 "Add HDFC Bank to watchlist"
-Or from portfolio window:
-
-Click "Watchlist" tab
-
-Enter ticker(s)
-
-Click "Add to Watchlist"​
-
-View Watchlist
-In the portfolio window, switch to "Watchlist" tab to see:
-
-All watched stocks
-
-Current prices
-
-Daily change (% and ₹)
-
-Quick remove button​
-
-Step 7: Manage Multiple Chats
-Create New Chat
-Click "+ New Chat" button (top of sidebar)​
-
-A fresh conversation starts
-
-All chats are saved automatically
-
-Switch Between Chats
-Click any chat in the sidebar to resume it
-
-Recent chats appear at the top​
-
-Rename a Chat
-Hover over a chat in the sidebar
-
-Click the "⋮" (three dots) menu
-
-Select "Rename"
-
-Enter new name and press Enter​
-
-Delete a Chat
-Click the "⋮" menu on any chat
-
-Select "Delete"
-
-Confirm deletion​
-
-Step 8: Advanced Features
-Check Trade History
-Ask the AI:
 
 text
+
+**Method 2: Portfolio Window**
+1. Open Portfolio → Click **"Watchlist"** tab
+2. Enter ticker(s): `RELIANCE.NS, TCS.NS`
+3. Click **"Add to Watchlist"**
+
+**Watchlist Features:**
+- ✅ Live price updates
+- ✅ Daily change (% & ₹)
+- ✅ Quick remove buttons
+- ✅ Color-coded performance
+
+</details>
+
+<details>
+<summary><b>▶️ Step 7: Manage Multiple Chats</b></summary>
+
+<br>
+
+**Chat Management:**
+
+| Action | Steps |
+|:---|:---|
+| **Create New Chat** | Click **"+ New Chat"** → Fresh conversation starts |
+| **Switch Chats** | Click any chat in sidebar → Resume instantly |
+| **Rename Chat** | Hover over chat → Click **⋮** → Select "Rename" |
+| **Delete Chat** | Click **⋮** → Select "Delete" → Confirm |
+
+</details>
+
+<details>
+<summary><b>▶️ Step 8: Advanced Features</b></summary>
+
+<br>
+
+**Trade History Analysis**
 "Show my trade history"
-"What trades did I make today?"
-Portfolio Analysis
+"What trades did I execute today?"
+"Display my most profitable trades"
+
 text
+
+**Portfolio Analytics**
 "Analyze my portfolio performance"
-"Show my holdings and suggest improvements"
-"What are my best performing stocks?"
-"Which stocks should I sell?"
-Market Overview
+"Show holdings with negative P&L"
+"What's my best performing stock?"
+"Calculate my risk exposure"
+
 text
+
+**Market Intelligence**
 "What's the Nifty 50 level today?"
-"How is the market performing?"
-"Give me Nifty Bank overview"
-News & Sentiment
+"How is Bank Nifty performing?"
+"Latest IT sector news"
+"Top gainers in Nifty today"
+
 text
-"Latest news on Reliance"
-"What's happening with IT sector?"
-"Any news affecting HDFC Bank?"
-Step 9: Understanding AI Responses
-The AI provides structured responses with:
 
-✅ Price Information
+</details>
 
-Current price, day change, day range
+<details>
+<summary><b>▶️ Step 9: Understanding AI Responses</b></summary>
 
-Previous close
+<br>
 
-✅ Technical Analysis
+**Response Components:**
 
-RSI (Relative Strength Index)
+| Category | Information Provided |
+|:---|:---|
+| **📊 Price Data** | Current price, day change, range, previous close |
+| **📈 Technical Analysis** | RSI, EMA, support/resistance levels |
+| **💡 Recommendations** | BUY/SELL/HOLD with target price & stop-loss |
+| **✅ Trade Confirmations** | Execution details, costs, remaining balance |
+| **📰 News Sentiment** | Latest headlines with positive/negative analysis |
 
-EMA (Exponential Moving Average)
+</details>
 
-Support & resistance levels
+<details>
+<summary><b>▶️ Step 10: Sign Out</b></summary>
 
-✅ Recommendations
+<br>
 
-Clear BUY/SELL/HOLD signals
+**Logout Process:**
+1. Click **profile icon** (top-right corner)
+2. Select **"Sign Out"**
+3. All data saved automatically to Firebase
 
-Target price and stop-loss
+Your portfolio, chat history, and watchlist are securely stored and will be restored on next login.
 
-Rationale with news sentiment
+</details>
 
-✅ Trade Confirmations
+---
 
-Executed price and quantity
+## ✨ Key Features
 
-Total cost/credit
+### 🤖 AI-Powered Analysis
 
-Remaining cash balance
+| Feature | Description |
+|:---|:---|
+| **Conversational AI** | Gemini 2.5 Flash with specialized financial knowledge |
+| **Smart Ticker Recognition** | Fuzzy matching for company names & tickers |
+| **Natural Language Trading** | Execute trades through simple chat commands |
+| **News Sentiment Analysis** | Automated analysis via DuckDuckGo & NewsAPI |
 
-P&L for sells
+### 📊 Technical Analysis & Screening
 
-Step 10: Best Practices
-💡 Tips for Better Results
-Use NSE tickers: Add .NS suffix (e.g., RELIANCE.NS)
+| Feature | Description |
+|:---|:---|
+| **Multi-Index Screening** | Support for 15+ NSE indices (Nifty 50, Bank, IT, Auto, Pharma) |
+| **Technical Indicators** | RSI, EMA, price momentum analysis |
+| **Custom Screening** | Configurable parameters for personalized results |
+| **Intelligent Fallback** | NSE API + DuckDuckGo for obscure indices |
 
-Be specific: "Buy 10 shares of TCS" works better than "Invest in TCS"
+### 💼 Portfolio Management
 
-Check portfolio regularly: Monitor your P&L daily
+| Feature | Description |
+|:---|:---|
+| **Paper Trading** | ₹10 lakh virtual starting capital |
+| **Real-time Tracking** | Live P&L calculations with yfinance data |
+| **Day P&L System** | Automatic daily resets at market open |
+| **Trade History** | Detailed performance metrics |
+| **Watchlist** | Monitor favorite stocks with alerts |
 
-Set stop-losses: Ask AI for recommended stop-loss levels
+### 💻 Modern Web Interface
 
-Diversify: Don't put all capital in one stock
+| Feature | Description |
+|:---|:---|
+| **Responsive Design** | Mobile-first approach, works on all devices |
+| **Firebase Auth** | Secure email/password authentication |
+| **Multi-Chat System** | Rename, delete, switch between conversations |
+| **Floating Portfolio** | Minimize/maximize controls, always accessible |
+| **Real-time Streaming** | Live message updates with typing indicators |
+| **Dark Mode UI** | Professional gradients & smooth animations |
 
-⚠️ Important Notes
-This is paper trading - no real money involved
+---
 
-Market data is real-time from NSE
+## 🛠️ Technology Stack
 
-Trades execute at live market prices
+<table>
+<tr>
+<td width="50%" valign="top">
 
-Portfolio resets Day P&L at midnight
+### Backend
 
-₹10 lakh starting capital for all new users​
+| Technology | Purpose |
+|:---|:---|
+| **Flask** | Python web framework |
+| **Gemini AI** | 2.5 Flash model via API |
+| **yfinance** | NSE stock data & prices |
+| **Firestore** | NoSQL cloud database |
+| **TA-Lib** | RSI, EMA indicators |
+| **DuckDuckGo** | News search engine |
+| **pandas** | Time-series analysis |
 
-✨ Key Features
-🤖 AI-Powered Analysis
-Conversational AI Agent powered by Gemini 2.5 Flash with specialized financial knowledge​
+</td>
+<td width="50%" valign="top">
 
-Smart ticker normalization with fuzzy matching for company names and tickers​
+### Frontend
 
-Natural language trading - execute trades, screen stocks, and get recommendations via chat​
+| Technology | Purpose |
+|:---|:---|
+| **Alpine.js** | Reactive components |
+| **Tailwind CSS** | Utility-first styling |
+| **Firebase Auth** | User authentication |
+| **SVG Icons** | Inline vector graphics |
+| **Inter Font** | Google Fonts typography |
 
-Automated news sentiment analysis using DuckDuckGo and NewsAPI integration​
+</td>
+</tr>
+</table>
 
-📊 Technical Analysis & Screening
-Multi-index screening with support for 15+ NSE indices (Nifty 50, Bank Nifty, IT, Auto, Pharma, etc.)​
+### Infrastructure
 
-Technical indicators: RSI, EMA, price momentum analysis​
+| Component | Technology |
+|:---|:---|
+| **Deployment** | Google Cloud Run (serverless containers) |
+| **Containerization** | Docker with multi-stage builds |
+| **CORS Handling** | Flask-CORS middleware |
+| **Caching** | In-memory TTL cache (5-30 min) |
 
-Custom stock list screening with configurable parameters​
+---
 
-Intelligent fallback mechanisms for obscure index constituent fetching​
+## 📋 Requirements
 
-💼 Portfolio Management
-Paper trading system with ₹10 lakh starting capital​
+### Core Dependencies
 
-Real-time portfolio tracking with live P&L calculations​
-
-Day P&L tracking with automatic daily resets​
-
-Trade history with detailed performance metrics​
-
-Watchlist management for monitoring favorite stocks​
-
-💻 Modern Web Interface
-Responsive design with mobile-first approach​
-
-Firebase Authentication with email/password sign-in​
-
-Multi-chat management with rename and delete capabilities​
-
-Floating portfolio window with minimize/maximize controls​
-
-Real-time message streaming with typing indicators​
-
-Dark mode UI with gradient accents and smooth animations​
-
-🛠️ Technology Stack
-Backend
-Framework: Flask (Python web framework)​
-
-AI Model: Google Gemini 2.5 Flash via google-generativeai​
-
-Market Data: yfinance for NSE stock prices and fundamentals​
-
-Database: Firebase Firestore (NoSQL document database)​
-
-Technical Analysis: ta library (RSI, EMA indicators)​
-
-News Sources: DuckDuckGo Search (ddgs) + NewsAPI fallback​
-
-Data Processing: pandas for time-series analysis​
-
-Frontend
-Framework: Alpine.js for reactive components​
-
-Styling: Tailwind CSS with custom gradients​
-
-Authentication: Firebase Auth SDK (v10.7.1)​
-
-Icons: Inline SVG icons​
-
-Fonts: Google Fonts (Inter)​
-
-Infrastructure
-Deployment: Google Cloud Run (containerized deployment)​
-
-Containerization: Docker​
-
-CORS Handling: Flask-CORS​
-
-Caching: In-memory caching with TTL (5-30 min)​
-
-📋 Requirements
-Core Dependencies
-python
-# Backend
+Backend Requirements
 flask>=2.3.0
 flask-cors>=4.0.0
 google-generativeai>=0.3.0
@@ -350,514 +373,193 @@ pandas>=2.0.0
 ta>=0.11.0
 duckduckgo-search>=3.9.0
 requests>=2.31.0
-API Keys Required
-Google Gemini API Key - For AI analysis (configured in config.py)​
 
-NewsAPI Keys (3x) - For financial news fallback​
+text
 
-Firebase Project Credentials - For authentication and database​
+### API Keys Required
 
-System Requirements
-Python: 3.9+
+| Service | Purpose | How to Obtain |
+|:---|:---|:---|
+| **Google Gemini** | AI model access | [Get API Key](https://ai.google.dev/) |
+| **NewsAPI** | Financial news (3 keys) | [Sign Up](https://newsapi.org/) |
+| **Firebase** | Auth & database | [Console](https://console.firebase.google.com/) |
 
-Node.js: Not required (frontend uses CDN resources)​
+### System Requirements
 
-Memory: 2GB+ RAM recommended for concurrent analysis
+| Component | Requirement |
+|:---|:---|
+| **Python** | 3.9 or higher |
+| **Memory** | 2GB+ RAM (recommended) |
+| **Storage** | 500MB for dependencies |
+| **Browser** | Chrome, Firefox, Safari, Edge |
 
-Storage: 500MB for dependencies
+---
 
-🚀 Installation & Setup
-1. Clone Repository
-bash
-git clone <your-repo-url>
-cd ai-stock-analyst
-2. Install Python Dependencies
-bash
+## 🚀 Installation & Setup
+
+### 1️⃣ Clone Repository
+
+git clone https://github.com/Sam-Dev-AI/AI-Stock-Analyst.git
+cd AI-Stock-Analyst
+
+text
+
+### 2️⃣ Install Dependencies
+
 pip install -r requirements.txt
-3. Configure Environment Variables
-Create a config.py file with your API keys (or set environment variables):
 
-python
-# API Keys
+text
+
+### 3️⃣ Configure Environment
+
+Create `config.py`:
+
+API Keys
 GENIE_API_KEY = "your-gemini-api-key"
 NEWSAPI_KEYS = [
-    "your-newsapi-key-1",
-    "your-newsapi-key-2",
-    "your-newsapi-key-3"
+"your-newsapi-key-1",
+"your-newsapi-key-2",
+"your-newsapi-key-3"
 ]
 
-# Firebase (or use GOOGLE_APPLICATION_CREDENTIALS env var)
-# Set environment variable:
-# export GOOGLE_APPLICATION_CREDENTIALS="path/to/serviceAccountKey.json"
-4. Firebase Setup
-Create a Firebase project at Firebase Console
+text
 
-Enable Authentication (Email/Password provider)
+Set Firebase credentials:
 
-Create a Firestore Database in production mode
+export GOOGLE_APPLICATION_CREDENTIALS="/path/to/serviceAccountKey.json"
 
-Download service account key from Project Settings → Service Accounts
+text
 
-Set the path as environment variable:
+### 4️⃣ Firebase Setup
 
-bash
-export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your-firebase-key.json"
-5. Update Frontend Configuration
-In index.html, update the Firebase config (lines from your paste-2.txt):
+| Step | Action |
+|:---|:---|
+| **1** | Create project at [Firebase Console](https://console.firebase.google.com/) |
+| **2** | Enable **Authentication** (Email/Password) |
+| **3** | Create **Firestore Database** (production mode) |
+| **4** | Download service account key |
+| **5** | Configure frontend `firebaseConfig` in `index.html` |
 
-javascript
-const firebaseConfig = {
-    apiKey: "your-firebase-api-key",
-    authDomain: "your-project.firebaseapp.com",
-    projectId: "your-project-id",
-    // ... other config
-};
-6. Run Locally
-bash
+### 5️⃣ Run Locally
+
 python app.py
-The application will start on http://127.0.0.1:8080 (or port specified in your app.py).
 
-🐳 Docker Deployment
-Build Docker Image
-bash
+text
+
+Access at: `http://127.0.0.1:8080`
+
+---
+
+## ☁️ Deployment
+
+### 🐳 Docker Deployment
+
+Build image
 docker build -t ai-stock-analyst .
-Run Container
-bash
-docker run -p 8080:8080 \
-  -e GOOGLE_APPLICATION_CREDENTIALS=/app/credentials.json \
-  -v /path/to/local/credentials.json:/app/credentials.json \
-  ai-stock-analyst
-☁️ Google Cloud Run Deployment
-Prerequisites
-Google Cloud SDK installed (gcloud CLI)
 
-Google Cloud project with billing enabled
+Run container
+docker run -p 8080:8080
+-e GOOGLE_APPLICATION_CREDENTIALS=/app/credentials.json
+-v /path/to/credentials.json:/app/credentials.json
+ai-stock-analyst
 
-Cloud Run API enabled
+text
 
-Deploy to Cloud Run
-bash
-# Authenticate
+### ☁️ Google Cloud Run
+
+Authenticate
 gcloud auth login
 
-# Set project
+Set project
 gcloud config set project YOUR_PROJECT_ID
 
-# Deploy (automatic Docker build)
-gcloud run deploy ai-stock-analyst \
-  --source . \
-  --platform managed \
-  --region asia-south1 \
-  --allow-unauthenticated \
-  --set-env-vars GENIE_API_KEY=your-key \
-  --set-env-vars GOOGLE_APPLICATION_CREDENTIALS=/app/credentials.json \
-  --memory 2Gi \
-  --timeout 300
-Important: Store Firebase credentials as a secret in Google Secret Manager and mount it to the container for production deployments.
-
-🔧 Detailed Architecture & Working
-System Architecture
-text
-┌─────────────────┐
-│   User Browser  │ (Alpine.js + Tailwind CSS)
-└────────┬────────┘
-         │ HTTPS
-         ▼
-┌─────────────────┐
-│  Firebase Auth  │ (Authentication Layer)
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────────────────────────────┐
-│         Flask Backend (app.py)          │
-│  ┌───────────────────────────────────┐  │
-│  │  REST API Endpoints               │  │
-│  │  - /health, /api/chat             │  │
-│  │  - /api/portfolio, /api/watchlist │  │
-│  │  - /api/chats, /api/trade         │  │
-│  └───────────────┬───────────────────┘  │
-│                  │                       │
-│  ┌───────────────▼───────────────────┐  │
-│  │  AI Agent (Gemini 2.5 Flash)     │  │
-│  │  - Tool calling & function exec   │  │
-│  │  - Context-aware responses        │  │
-│  └───────────────┬───────────────────┘  │
-│                  │                       │
-│  ┌───────────────▼───────────────────┐  │
-│  │  Tool Functions                   │  │
-│  │  - get_current_price()            │  │
-│  │  - screen_static_index()          │  │
-│  │  - execute_trade()                │  │
-│  │  - internet_search_news()         │  │
-│  │  - get_portfolio()                │  │
-│  └───────────────┬───────────────────┘  │
-└──────────────────┼───────────────────────┘
-                   │
-      ┌────────────┼────────────┐
-      │            │            │
-      ▼            ▼            ▼
-┌──────────┐ ┌──────────┐ ┌──────────┐
-│ yfinance │ │ Firestore│ │   DDGS   │
-│   NSE    │ │Portfolio │ │  Search  │
-└──────────┘ └──────────┘ └──────────┘
-Core Workflow
-1. User Authentication​
-User signs up/logs in via Firebase Auth
-
-Auth state persists in browser local storage
-
-currentUser.uid becomes the user identifier for all backend operations
-
-2. Chat Message Flow​
-text
-User Input → Frontend validates → POST /api/chat
-                                     │
-                                     ▼
-                    Flask extracts user_id from token
-                                     │
-                                     ▼
-                    Creates AI agent with function tools
-                                     │
-                                     ▼
-                    Gemini processes with tool calling
-                                     │
-                    ┌───────────────┴───────────────┐
-                    ▼                               ▼
-            Tool calls executed          Response generated
-            (price fetch, trade,                  │
-             news search, etc.)                   │
-                    │                              │
-                    └───────────────┬──────────────┘
-                                    ▼
-                    Response saved to Firestore
-                                    │
-                                    ▼
-                    JSON response to frontend
-                                    │
-                                    ▼
-                    Message rendered in chat UI
-3. Stock Screening Logic​
-When user asks "recommend stocks from Nifty 50":
-
-Primary Path: screen_static_index("NIFTY 50")
-
-Checks static list in indices.py​
-
-Downloads historical data via yfinance
-
-Calculates RSI & EMA indicators
-
-Filters stocks meeting criteria (RSI 50-65, Price > EMA)
-
-Returns top N stocks sorted by RSI
-
-Fallback Path (for obscure indices):
-
-get_index_constituents() → NSE API attempt
-
-If NSE fails → DuckDuckGo search for constituents
-
-AI extraction of tickers from search results
-
-screen_custom_stock_list() with extracted tickers
-
-News Enrichment:
-
-For each screened stock → internet_search_news()
-
-Sentiment analysis of headlines
-
-Combined with technical reasoning in final recommendation
-
-4. Portfolio Management​
-Data Model: Firestore collections
+Deploy
+gcloud run deploy ai-stock-analyst
+--source .
+--platform managed
+--region asia-south1
+--allow-unauthenticated
+--memory 2Gi
+--timeout 300
 
 text
-users/{userId}/
-  ├─ portfolio/{ticker} (holdings)
-  ├─ watchlist/{ticker}
-  ├─ chats/{chatId}/
-  │   └─ messages/{messageId}
-  └─ trade_history/{tradeId}
-Day P&L Calculation:
 
-python
-day_start_portfolio_value = cash + holdings_value (at market open)
-current_portfolio_value = cash + holdings_value (live)
-day_pnl = current_portfolio_value - (day_start + net_cash_flow_today)
-Trade Execution:
+---
 
-Validate ticker (must be .NS)
+## 📚 Documentation
 
-Get live price via yfinance
+### 📁 Project Structure
 
-Check sufficient funds/shares
-
-Update Firestore holdings & cash atomically
-
-Record in trade history
-
-5. Caching Strategy​
-Price data: 5 min TTL (reduce yfinance API hits)
-
-News results: 30 min TTL (DDGS + NewsAPI)
-
-Index constituents: 1 hour TTL
-
-In-memory dictionary cache with timestamp expiry
-
-📁 Project Structure
-text
 ai-stock-analyst/
-├── app.py                 # Main Flask application
-├── config.py              # Configuration & API keys
-├── indices.py             # Static index constituent lists
-├── requirements.txt       # Python dependencies
-├── Dockerfile             # Container configuration
-├── .gcloudignore          # Cloud deployment ignore rules
+├── app.py # Main Flask application
+├── config.py # Configuration & API keys
+├── indices.py # NSE index constituent lists
+├── requirements.txt # Python dependencies
+├── Dockerfile # Container configuration
 ├── templates/
-│   └── index.html         # Main web interface (Alpine.js app)
-├── static/                # (Optional) Static assets
+│ └── index.html # Web interface (Alpine.js)
 └── credentials/
-    └── serviceAccountKey.json  # Firebase credentials (gitignored)
-🔑 Key Functions Explained
-Ticker Normalization​
-python
+└── serviceAccountKey.json
+
+text
+
+### 🔑 Key Functions
+
+<details>
+<summary><b>View Core Function Explanations</b></summary>
+
+**Ticker Normalization**
 def normalize_ticker(ticker_input: str) -> Optional[str]:
-    """
-    Converts user input like "Reliance", "RELIANCE", "reliance.ns"
-    to standardized "RELIANCE.NS" format
-    
-    Handles:
-    - Exact matches in NIFTY_50
-    - Company name lookups
-    - Fuzzy partial matching
-    - .NS suffix addition
-    """
-Stock Screening​
-python
-def screen_static_index(index_name="NIFTY 50", num_stocks=3, 
-                       duration_days=30, prefer_buy=False):
-    """
-    Multi-step screening:
-    1. Load pre-defined ticker list from indices.py
-    2. Download historical price data (yfinance bulk download)
-    3. Calculate RSI (14-period) and EMA (duration_days window)
-    4. Filter: RSI in range & Price > EMA & market_cap > 100B
-    5. Sort by RSI descending, return top N
-    """
-AI Agent Setup​
-python
-# Inside /api/chat endpoint
+"""Converts 'Reliance', 'RELIANCE', 'reliance.ns' → 'RELIANCE.NS'"""
+
+text
+
+**Stock Screening**
+def screen_static_index(index_name="NIFTY 50", num_stocks=3):
+"""Screens stocks using RSI & EMA, returns top N sorted by RSI"""
+
+text
+
+**AI Agent Setup**
 model = genai.GenerativeModel(
-    model_name='gemini-2.5-flash',
-    tools=[
-        get_current_price_for_agent,
-        execute_trade_for_agent,
-        get_portfolio_for_agent,
-        screen_static_index_for_agent,
-        internet_search_news_for_agent,
-        # ... 10+ more tool functions
-    ],
-    system_instruction=SYSTEM_INSTRUCTION  # 500+ line prompt
+model_name='gemini-2.5-flash',
+tools=[...10+ trading tools...]
 )
 
-chat = model.start_chat(history=chat_history_from_firestore)
-response = chat.send_message(user_message)
-Portfolio P&L Tracking​
-python
-def get_portfolio(user_id):
-    """
-    Calculates:
-    - Total invested value (sum of avg_price * quantity)
-    - Current holdings value (live_price * quantity)
-    - Total P&L (current - invested)
-    - Day P&L (current_value - day_start_value - net_cash_flows)
-    
-    Uses bulk price fetching for efficiency
-    """
-🎯 Usage Examples
-1. Get Stock Price
-User: "What's the current price of Reliance?"
-
-AI Response:
-
 text
-Reliance Industries (RELIANCE.NS)
-- Price: ₹2,456.30
-- Change Today: ₹+12.50 (+0.51%)
-- Day Range: ₹2,440.00 - ₹2,465.80
-- Previous Close: ₹2,443.80
-- Note: This is an NSE listed stock.
-2. Screen Top Stocks
-User: "Find top 3 stocks from Nifty Bank"
 
-AI Response:
+</details>
 
-text
-Top Stocks Screened: NIFTY BANK
-- Criteria: RSI 50-65, Price > 30-day EMA, Stocks Requested: 3
+---
 
-1. HDFC Bank (HDFCBANK.NS)
- - Price: ₹1,650.25
- - Technicals: RSI 62.3 | Price > EMA (₹1,630.50)
- - News: HDFC Bank announces strong Q4 results with 18% YoY growth.
- - Reasoning: Meets criteria with strong technicals (RSI 62.3) and Positive recent news.
+## 🚧 Future Enhancements
 
-2. ICICI Bank (ICICIBANK.NS)
- - Price: ₹1,125.80
- - Technicals: RSI 58.7 | Price > EMA (₹1,110.00)
- - News: ICICI Bank expands digital lending portfolio.
- - Reasoning: Meets criteria with good technicals (RSI 58.7), recent news appears Positive.
+- [ ] Real-time WebSocket price streaming
+- [ ] Options & derivatives analysis
+- [ ] TradingView chart integration
+- [ ] Strategy backtesting engine
+- [ ] Multi-language support (Hindi, regional)
+- [ ] Mobile app (React Native/Flutter)
+- [ ] Social trading & copy trading
+- [ ] Real broker API integration (Zerodha, Upstox)
 
-...
-3. Execute Trade
-User: "Buy 10 shares of TCS"
+---
 
-AI Response:
+## 👨‍💻 Author
 
-text
-Trade Confirmed: BUY
-- Ticker: TCS.NS
-- Quantity: 10
-- Price: ₹3,842.50
-- Total Cost: ₹38,425.00
-- Remaining Cash: ₹961,575.00
-4. Portfolio Analysis
-User: "Show my portfolio and suggest what to sell"
+**Samir**  
+- 🌐 Website: [stock-agent-774764824527.us-central1.run.app](https://stock-agent-774764824527.us-central1.run.app)
+- 💻 GitHub: [@Sam-Dev-AI](https://github.com/Sam-Dev-AI)
+- 📧 Email: ladesamir10@gmail.com
 
-AI Response (combines tools):
+---
 
-text
-Portfolio Summary
-- Total Value: ₹1,045,320.00
-- Total Invested: ₹1,012,500.00
-- Overall P&L: ₹32,820.00 (+3.24%)
-- Day's P&L: ₹5,240.00 (+0.50%)
-- Available Cash: ₹450,000.00
+<div align="center">
 
-Holdings (3):
-- TCS.NS: 10 shares @ ₹3,850.00 (Total P&L: ₹+75.00)
-- RELIANCE.NS: 5 shares @ ₹2,460.00 (Total P&L: ₹+20.00)
-- INFY.NS: 20 shares @ ₹1,520.00 (Total P&L: ₹-100.00)
+### ⭐ Star this repository if it helped you!
 
---- Analysis ---
+**Made with ❤️ for Indian Stock Market Traders**
 
-Analysis: Infosys (INFY.NS)
-- Current Price: ₹1,515.00
-- Recommendation: Consider Selling
-- Rationale: Stock showing weakness with negative P&L. Recent news indicates margin pressure...
-- News Summary: Infosys faces client ramp-down concerns...
+[Back to Top](#ai-stock-analyst-platform)
 
-(Analysis continues for each holding)
-⚙️ Configuration Options
-In config.py​
-python
-# Portfolio Settings
-DEFAULT_STARTING_CASH = 1000000.0  # ₹10 lakh starting capital
-MAX_ADJUST_CASH = 1000000.0        # Max cash adjustment allowed
-
-# Cache Settings
-CACHE_TTL_SECONDS = 300            # 5 min default cache
-CACHE_PRICE_DATA_SECONDS = 300     # Price data cache
-CACHE_NEWS_DATA_SECONDS = 1800     # 30 min news cache
-
-# AI Model
-GEMINI_MODEL_NAME = 'gemini-2.5-flash'  # Can switch to gemini-pro
-MAX_CHAT_HISTORY = 20                    # Messages sent to AI as context
-
-# Technical Analysis
-RSI_BUY_MIN = 50.0                 # Minimum RSI for buy recommendation
-RSI_BUY_MAX = 65.0                 # Maximum RSI (avoid overbought)
-LARGE_CAP_MIN_MARKET_CAP = 100_000_000_000  # ₹100B minimum
-🐛 Troubleshooting
-Common Issues
-"Firestore not available" Error
-
-Ensure GOOGLE_APPLICATION_CREDENTIALS environment variable is set
-
-Verify service account key has Firestore permissions
-
-"yfinance download empty" Warning
-
-NSE market might be closed (use fallback to info pricing)
-
-Check ticker format (must end in .NS)
-
-"NewsAPI rate limited"
-
-Configured to auto-rotate between 3 API keys
-
-Falls back to DuckDuckGo search if all keys exhausted
-
-"Index not in static list" Error
-
-System attempts NSE API + DDGS fallback automatically
-
-Add custom indices to indices.py for faster screening
-
-Chat history not loading
-
-Check Firestore security rules allow authenticated reads
-
-Verify user is properly authenticated (check browser console)
-
-📊 Performance Optimization
-Bulk Price Fetching: Uses yfinance.download() with multiple tickers to reduce API calls​
-
-Strategic Caching: Different TTLs for volatile (price) vs static (news) data​
-
-Lazy Loading: Portfolio data fetched only when window opened​
-
-Debounced Auto-resize: Textarea resizing optimized to prevent layout thrashing​
-
-Index Proxies: Large indices (Nifty 500) use top 50 subset for faster screening​
-
-🔒 Security Considerations
-API Keys: Should be environment variables, never committed to git
-
-Firebase Rules: Configure Firestore security rules:
-
-javascript
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /users/{userId}/{document=**} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-    }
-  }
-}
-CORS: Currently allows all origins (configure for production)​
-
-Input Validation: Ticker normalization prevents injection​
-
-Token Verification: Backend should verify Firebase ID tokens (add middleware)
-
-🚧 Future Enhancements
- Real-time WebSocket price streaming
-
- Options & derivatives analysis
-
- Advanced charting with TradingView integration
-
- Backtesting engine for strategies
-
- Multi-language support (Hindi, regional languages)
-
- Mobile app (React Native/Flutter)
-
- Social trading features (copy trading)
-
- Integration with real broker APIs (Zerodha, Upstox)
-
-📄 License
-[Specify your license - e.g., MIT, Apache 2.0]
-
-👨‍💻 Author
-Your Name
-
-GitHub: @yourusername
-
-LinkedIn: Your Profile
-
-Email: your.email@example.com
+</div>
