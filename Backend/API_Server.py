@@ -1,5 +1,6 @@
 import os
 import config
+import re
 import time
 from datetime import date, timedelta, datetime # Ensure timedelta and datetime are imported
 import google.generativeai as genai
@@ -330,10 +331,12 @@ def get_index_constituents(index_name: str) -> dict:
     Finds index constituents. Tries NSE API (with common symbol variations) first,
     falls back to DDGS search + AI extraction.
     """
-    print(f"   → get_index_constituents for: '{index_name}'")
-    cache_key = f"constituents_{index_name.replace(' ', '_').lower()}" # Combined cache key
+    print(f"    → get_index_constituents for: '{index_name}'")
+    # Use a consistent cache key format
+    cache_key = f"constituents_{index_name.strip().upper().replace(' ', '_')}"
     cached_result = get_cache(cache_key)
     if cached_result:
+        print(f"      CACHE HIT for {cache_key}")
         return cached_result
 
     nse_error = None # Initialize nse_error
@@ -341,6 +344,7 @@ def get_index_constituents(index_name: str) -> dict:
     # --- Known variations/official symbols for tricky indices ---
     index_symbol_map = {
         "NIFTY 200 MOMENTUM 30": "NIFTY200 MOMENTUM 30",
+        # Add more mappings here if needed (e.g., from indices.py if applicable)
     }
 
     names_to_try = []
@@ -349,10 +353,10 @@ def get_index_constituents(index_name: str) -> dict:
         names_to_try.append(index_symbol_map[normalized_input])
     names_to_try.append(index_name) # Try original input
     if index_name != normalized_input and normalized_input not in names_to_try:
-         names_to_try.append(normalized_input) # Try uppercase input
+        names_to_try.append(normalized_input) # Try uppercase input
 
     # --- Stage 1: Try NSE API with variations ---
-    print(f"     Attempting NSE API with potential names: {names_to_try}")
+    print(f"      Attempting NSE API with potential names: {names_to_try}")
     base_url = "https://www.nseindia.com/api/equity-stockIndices"
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
@@ -362,63 +366,74 @@ def get_index_constituents(index_name: str) -> dict:
 
     for name_attempt in names_to_try:
         try:
+            # URL encode the index name properly
             encoded_index_name = quote_plus(name_attempt)
             url = f"{base_url}?index={encoded_index_name}"
-            print(f"     Querying NSE API with name: '{name_attempt}' ({url})")
+            print(f"      Querying NSE API with name: '{name_attempt}' ({url})")
             response = requests.get(url, headers=headers, timeout=10)
-            response.raise_for_status()
+            response.raise_for_status() # Raises HTTPError for bad responses (4xx or 5xx)
             data = response.json()
             constituents = data.get("data", [])
 
             if constituents:
+                # Extract symbols and append .NS
                 ticker_list = [item.get("symbol") + ".NS" for item in constituents if item.get("symbol")]
+                # Filter out any potential None values if symbol was missing
                 valid_tickers = [ticker for ticker in ticker_list if ticker is not None]
                 if valid_tickers:
-                    print(f"     ✅ Successfully fetched {len(valid_tickers)} tickers from NSE API using name '{name_attempt}'.")
+                    print(f"      ✅ Successfully fetched {len(valid_tickers)} tickers from NSE API using name '{name_attempt}'.")
                     result = {"index_name": index_name, "tickers": valid_tickers, "source": f"NSE API ('{name_attempt}')"}
-                    set_cache(cache_key, result, ttl_seconds=3600)
+                    set_cache(cache_key, result, ttl_seconds=3600) # Cache successful NSE API result longer (1 hour)
                     return result
 
-            print(f"     ⚠️ NSE API returned no data for name '{name_attempt}'.")
+            # If constituents list is empty or API returned no data field
+            print(f"      ⚠️ NSE API returned no data/constituents for name '{name_attempt}'.")
             if nse_error is None: nse_error = f"NSE API returned empty data for '{name_attempt}'."
 
         except requests.exceptions.HTTPError as http_err:
             nse_error = f"NSE API HTTP Error for '{name_attempt}': {http_err}"
-            print(f"     ❌ {nse_error}")
-            if http_err.response.status_code == 404: continue
-            else: break
+            print(f"      ❌ {nse_error}")
+            # Continue trying other names if it's a 404, otherwise stop
+            if http_err.response is not None and http_err.response.status_code == 404:
+                continue
+            else:
+                break # Break on other HTTP errors (like 401, 500)
         except requests.exceptions.RequestException as req_err:
             nse_error = f"NSE API Network Error for '{name_attempt}': {req_err}"
-            print(f"     ❌ {nse_error}"); break
+            print(f"      ❌ {nse_error}"); break # Stop on network errors
         except json.JSONDecodeError as json_err:
-            nse_error = f"NSE API JSON Parse Error for '{name_attempt}': {json_err}"
-            print(f"     ❌ {nse_error}"); break
+            nse_error = f"NSE API JSON Parse Error for '{name_attempt}': {json_err}. Response: {response.text[:200]}" # Log part of response
+            print(f"      ❌ {nse_error}"); break # Stop on JSON errors
         except Exception as e:
             nse_error = f"Unexpected NSE API Error for '{name_attempt}': {e}"
-            print(f"     ❌ {nse_error}"); break
+            print(f"      ❌ {nse_error}\n{traceback.format_exc()}"); break # Stop on unexpected errors
 
     # --- Stage 2: Fallback to DDGS + AI Extraction ---
-    print(f"     ⚠️ NSE API failed for all attempts ({nse_error or 'Unknown reason'}). Falling back to DDGS + AI extraction...")
+    print(f"      ⚠️ NSE API failed for all attempts ({nse_error or 'No constituents found'}). Falling back to DDGS + AI extraction...")
     try:
         query = f"{index_name} constituents tickers list NSE"
-        print(f"     Searching DDGS for: '{query}'")
+        print(f"      Searching DDGS for: '{query}'")
         search_snippets = []
         with DDGS() as ddgs:
-            results = ddgs.text(query, region='in-en', max_results=5)
-            if results: search_snippets = [r.get('body', '') for r in results]
+            # Increase results slightly for better context for AI
+            results = ddgs.text(query, region='in-en', max_results=7)
+            # Ensure snippets are strings and not empty
+            if results: search_snippets = [str(r.get('body', '')) for r in results if r.get('body')]
 
         if not search_snippets:
-            print("     ❌ DDGS fallback found no results.")
+            print("      ❌ DDGS fallback found no results.")
             final_error = f"NSE API failed and DDGS search found no results for '{index_name}'."
-            set_cache(cache_key, {"error": final_error}, ttl_seconds=600)
+            set_cache(cache_key, {"error": final_error}, ttl_seconds=600) # Cache failure shorter
             return {"error": final_error}
 
-        print(f"     Found {len(search_snippets)} snippets via DDGS. Asking AI to extract tickers...")
+        print(f"      Found {len(search_snippets)} snippets via DDGS. Asking AI to extract tickers...")
+        # Refined prompt for clarity
         extraction_prompt = f"""
-        Extract all NSE stock tickers (ending in .NS) from the provided text snippets.
-        Output ONLY a Python list of strings. Example: ['TICKER1.NS', 'TICKER2.NS']
-        If none found, output: [].
-        DO NOT include any explanation, code, or formatting other than the list itself.
+        Extract all valid NSE stock tickers (ending in .NS, typically uppercase letters, numbers, hyphens, ampersands before .NS) found within the following text snippets related to the '{index_name}' index.
+        Output ONLY a Python-style list of these ticker strings.
+        Example output for Nifty Bank: ['HDFCBANK.NS', 'ICICIBANK.NS', 'SBIN.NS']
+        If no valid .NS tickers are found in the snippets, output an empty list: [].
+        Do NOT include explanations, comments, code formatting (like ```python), or any text besides the list itself.
 
         Snippets:
         ---
@@ -428,47 +443,103 @@ def get_index_constituents(index_name: str) -> dict:
         Output:
         """
         extraction_model = genai.GenerativeModel(model_name=config.GEMINI_MODEL_NAME)
-        safety_settings=[{"category": c, "threshold": "BLOCK_ONLY_HIGH"} for c in ["HARM_CATEGORY_HARASSMENT", "HARM_CATEGORY_HATE_SPEECH", "HARM_CATEGORY_SEXUALLY_EXPLICIT", "HARM_CATEGORY_DANGEROUS_CONTENT"]]
-        response = extraction_model.generate_content(extraction_prompt, safety_settings=safety_settings)
-        extracted_text = response.text.strip()
-        print(f"     AI extraction response: {extracted_text}")
+        # Stricter safety settings might block valid responses sometimes, consider adjusting if issues persist
+        safety_settings=[{"category": c, "threshold": "BLOCK_MEDIUM_AND_ABOVE"} for c in ["HARM_CATEGORY_HARASSMENT", "HARM_CATEGORY_HATE_SPEECH", "HARM_CATEGORY_SEXUALLY_EXPLICIT", "HARM_CATEGORY_DANGEROUS_CONTENT"]]
 
+        # Add basic retry logic for the API call
+        max_retries = 2
+        for attempt in range(max_retries):
+            try:
+                response = extraction_model.generate_content(extraction_prompt, safety_settings=safety_settings)
+                # Check for blocked content immediately
+                if not response.candidates:
+                    finish_reason = getattr(response, 'prompt_feedback', 'Unknown')
+                    raise Exception(f"AI response blocked or empty. Reason: {finish_reason}")
+                extracted_text = response.text.strip()
+                break # Success, exit retry loop
+            except Exception as ai_err:
+                print(f"      ⚠️ AI generation attempt {attempt + 1} failed: {ai_err}")
+                if attempt == max_retries - 1:
+                    raise # Re-raise the exception if all retries fail
+                time.sleep(1) # Wait a second before retrying
+
+        print(f"      AI extraction raw response: {extracted_text}")
+
+        # Clean potential markdown code blocks
         if extracted_text.startswith("```python"): extracted_text = extracted_text[len("```python"):].strip()
         if extracted_text.startswith("```"): extracted_text = extracted_text[len("```"):].strip()
         if extracted_text.endswith("```"): extracted_text = extracted_text[:-len("```")].strip()
 
-        if not extracted_text.startswith('[') or not extracted_text.endswith(']'):
-            final_error = "AI failed to extract tickers in list format from DDGS results."
-            print(f"     ❌ {final_error}")
-            set_cache(cache_key, {"error": final_error}, ttl_seconds=600)
-            return {"error": final_error}
+       
+        looks_like_list = extracted_text.startswith('[') and extracted_text.endswith(']')
+
+        valid_tickers = []
+        parsing_error = None
 
         try:
-            cleaned_text = extracted_text.replace("'", '"')
-            ticker_list = json.loads(cleaned_text)
-            if not isinstance(ticker_list, list): raise ValueError("AI did not return a list.")
-            valid_tickers = [t for t in ticker_list if isinstance(t, str) and t.endswith('.NS')]
+           
+            try:
+                cleaned_text = extracted_text.replace("'", '"') if extracted_text else "[]"
+                # Add extra check for non-list JSON like {} or just ""
+                if not cleaned_text.strip(): cleaned_text = "[]"
+                parsed_json = json.loads(cleaned_text)
 
+                if isinstance(parsed_json, list):
+                    valid_tickers = [t for t in parsed_json if isinstance(t, str) and t.endswith('.NS')]
+                    if valid_tickers:
+                        print(f"  Successfully extracted {len(valid_tickers)} tickers via DDGS + AI (JSON parse).")
+                    else:
+                        print(f" AI response parsed as JSON list, but contained no valid .NS tickers. Will try regex.")
+                        
+                else: 
+                    print(f" AI response parsed as JSON, but was not a list ({type(parsed_json)}). Will try regex.")
+                    
+
+            except (json.JSONDecodeError, ValueError) as json_e:
+                print(f" AI response wasn't valid JSON list ({json_e}). Trying regex extraction...")
+               
+                pass 
+           
             if not valid_tickers:
-                final_error = f"Could not extract valid .NS tickers for '{index_name}' from DDGS search results."
-                print(f"     ❌ {final_error}")
-                set_cache(cache_key, {"error": final_error}, ttl_seconds=600)
-                return {"error": final_error}
+                print(f"      Attempting regex extraction on AI response.")
+               
+                potential_tickers = re.findall(r"['\"]?([A-Z0-9\-&]+?\.NS)['\"]?", extracted_text, re.IGNORECASE)
+                # Filter again for sanity and deduplicate
+                current_valid_regex = sorted(list(set(
+                    t.upper() for t in potential_tickers if isinstance(t, str) and t.upper().endswith('.NS')
+                )))
 
-            print(f"     ✅ Successfully extracted {len(valid_tickers)} tickers via DDGS + AI.")
-            result = {"index_name": index_name, "tickers": valid_tickers, "source": "DDGS+AI"}
+                if current_valid_regex:
+                   valid_tickers = current_valid_regex # Assign if valid
+                   print(f"      ✅ Successfully extracted {len(valid_tickers)} tickers via DDGS + AI (Regex parse).")
+                else:
+                   # Both JSON and Regex failed to find anything usable
+                   print(f"      ⚠️ Regex could not find valid .NS tickers in AI response.")
+                   # If it didn't even look like a list originally, consider parsing failed
+                   if not looks_like_list:
+                       parsing_error = ValueError("Could not meaningfully parse AI response using JSON or Regex.")
+
+            if parsing_error:
+                raise parsing_error # Raise the caught parsing error
+            source_msg = "DDGS+AI"
+            if not valid_tickers:
+                source_msg = "DDGS+AI (No tickers found in snippets)"
+                print(f"      ✅ AI processed snippets for '{index_name}' but found no valid .NS tickers. Returning empty list.")
+
+            result = {"index_name": index_name, "tickers": valid_tickers, "source": source_msg}
             set_cache(cache_key, result, ttl_seconds=1800) # Cache fallback result (30 mins)
             return result
 
         except Exception as e:
-            final_error = f"Error parsing AI response from DDGS fallback: {e}"
-            print(f"     ❌ {final_error}")
+            # This catches ONLY true parsing errors or unexpected issues during the fallback
+            final_error = f"Error processing AI response/DDGS fallback for '{index_name}': {e}"
+            print(f"      ❌ {final_error}\n{traceback.format_exc()}")
             set_cache(cache_key, {"error": final_error}, ttl_seconds=600)
             return {"error": final_error}
 
     except Exception as e:
-        final_error = f"Unexpected Error during DDGS fallback: {e}"
-        print(f"     ❌ Unexpected Error in DDGS fallback: {traceback.format_exc()}")
+        final_error = f"Unexpected Error during DDGS search or AI call setup for '{index_name}': {e}"
+        print(f"      ❌ Unexpected Error in DDGS/AI setup: {traceback.format_exc()}")
         set_cache(cache_key, {"error": final_error}, ttl_seconds=600)
         return {"error": final_error}
 
@@ -563,10 +634,19 @@ def get_portfolio(user_id: str) -> dict:
                 price_info = get_ticker_info(t)
                 prev_close = price_info.get('previousClose', cp) if price_info else cp
                 approx_day_pnl = (cp - prev_close) * q
+                prev_day_value = prev_close * q
+                approx_day_pnl_pct = (approx_day_pnl / prev_day_value * 100) if prev_day_value and prev_day_value != 0 else 0
                 holdings.append({"ticker": t, "quantity": q, "avg_price": round(avg_p, config.PRICE_DECIMAL_PLACES),
-                                 "current_price": round(cp, config.PRICE_DECIMAL_PLACES), "invested_value": round(inv_v, config.PNL_DECIMAL_PLACES),
-                                 "current_value": round(curr_v, config.PNL_DECIMAL_PLACES), "pnl": round(pnl, config.PNL_DECIMAL_PLACES),
-                                 "pnl_percent": round(pnl_pct, 2), "approx_day_pnl": round(approx_day_pnl, config.PNL_DECIMAL_PLACES)})
+                                 "current_price": round(cp, config.PRICE_DECIMAL_PLACES), 
+                                 "invested_value": round(inv_v, config.PNL_DECIMAL_PLACES),
+                                 "current_value": round(curr_v, config.PNL_DECIMAL_PLACES),
+                                 "pnl": round(pnl, config.PNL_DECIMAL_PLACES),
+                                 "pnl_percent": round(pnl_pct, 2), 
+                                 "approx_day_pnl": round(approx_day_pnl, config.PNL_DECIMAL_PLACES),
+                                
+                                 "approx_day_pnl_pct": round(approx_day_pnl_pct, 2)
+                                
+                                 })
         curr_port_val = cash + total_curr_h_val
         day_base = day_start + net_flow; day_pnl = curr_port_val - day_base; day_pnl_pct = (day_pnl / day_base * 100) if day_base else 0
         summary = {"portfolio_value": round(curr_port_val, config.PNL_DECIMAL_PLACES), "total_invested": round(total_inv, config.PNL_DECIMAL_PLACES),
@@ -964,7 +1044,7 @@ def chat_handler():
             model = genai.GenerativeModel(
                 model_name=config.GEMINI_MODEL_NAME,
                 tools=[ screen_static_index, screen_custom_stock_list, get_index_constituents_for_agent, get_current_price, execute_trade_for_agent, get_portfolio_for_agent, get_fundamental_data, add_to_watchlist_for_agent, remove_from_watchlist_for_agent, internet_search_news_for_agent, get_stock_news_for_agent, internet_search_for_agent ],
-                system_instruction=config.SYSTEM_INSTRUCTION + "\n\n" + config.FORMATTING_INSTRUCTION)
+                system_instruction=config.SYSTEM_INSTRUCTION)
             chat_session = model.start_chat(history=chat_history, enable_automatic_function_calling=True)
 
             print(f"     Sending message to {config.GEMINI_MODEL_NAME}...")
@@ -1030,5 +1110,5 @@ if __name__ == "__main__":
     print(f"     ✅ Static Indices Loaded: {len(indices.STATIC_INDICES.keys())} mappings (e.g., NIFTY BANK, NIFTY IT)")
     print("="*60 + "\n")
     port = int(os.environ.get('PORT', 8080))
-    print(f"🌍 Server starting on http://0.0.0.0:{port}")
-    app.run(debug=False, host='0.0.0.0', port=port)
+    print(f"🌍 Server starting on http://0.0.0.0:{port}")   
+    app.run(debug=False, host='0.0.0.0', port=port) 

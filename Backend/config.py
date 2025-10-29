@@ -5,7 +5,7 @@ import os # Needed for environment variables
 # ============================================
 
 # --- Gemini API Key ---
-GENIE_API_KEY = "your_gamini_key" # This is your hardcoded key
+GENIE_API_KEY = "AIzaSyDMXVLvuQOBRCGv6M5qJYUyYPHv1Z8sIz4" # This is your hardcoded key
 
 # --- NewsAPI Keys ---
 # Get a free key from https://newsapi.org/
