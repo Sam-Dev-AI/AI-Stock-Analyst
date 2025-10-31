@@ -1,16 +1,8 @@
-"""
-This file stores static constituent lists for common NSE indices.
-These are used by the 'screen_static_index' tool in app.py for reliable screening.
-The keys in STATIC_INDICES are normalized (uppercase) for easy matching.
-
-Note: These lists represent the constituents at a specific point in time
-and might require periodic updates based on official index rebalancing.
-Lists are often less than 50 stocks for sectoral indices.
-For large indices (Nifty 100/200/500), proxy lists are used for performance.
-"""
+import config
 
 # Nifty 50 (Top 50 Large Cap)
 # Note: This is also defined in config.py, ensure consistency if changed.
+NIFTY_50 = config.NIFTY_50_TICKERS
 NIFTY_50 = [
     'RELIANCE.NS', 'TCS.NS', 'HDFCBANK.NS', 'ICICIBANK.NS', 'INFY.NS', 'HINDUNILVR.NS',
     'BHARTIARTL.NS', 'ITC.NS', 'SBIN.NS', 'LICI.NS', 'HCLTECH.NS', 'KOTAKBANK.NS',
@@ -21,7 +13,7 @@ NIFTY_50 = [
     'TECHM.NS', 'GRASIM.NS', 'ADANIPORTS.NS', 'BRITANNIA.NS', 'CIPLA.NS',
     'EICHERMOT.NS', 'DRREDDY.NS', 'NESTLEIND.NS', 'HEROMOTOCO.NS', 'BAJAJ-AUTO.NS',
     'BPCL.NS', 'SHREECEM.NS', 'TATACONSUM.NS', 'UPL.NS', 'APOLLOHOSP.NS', 'DIVISLAB.NS',
-    'M&M.NS', 'LTIM.NS' # LTIMindtree inclusion
+    'M&M.NS', 'LTIM.NS' 
 ]
 
 # Nifty Bank (Currently 12 stocks)

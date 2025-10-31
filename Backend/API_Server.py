@@ -2,7 +2,7 @@ import os
 import config
 import re
 import time
-from datetime import date, timedelta, datetime # Ensure timedelta and datetime are imported
+from datetime import date, timedelta, datetime
 import google.generativeai as genai
 import yfinance as yf
 import warnings
@@ -68,7 +68,7 @@ def get_cache(key):
     if key in _cache:
         value, expiry_time = _cache[key]
         if time.time() < expiry_time:
-            print(f"     CACHE HIT for {key}")
+            print(f"      CACHE HIT for {key}")
             return value
         else:
             del _cache[key]
@@ -85,27 +85,27 @@ def normalize_ticker(ticker_input: str) -> Optional[str]:
     for ticker, name in config.COMPANY_NAMES.items():
         if ticker_upper == name.upper(): return ticker
     possible_matches = [ticker for ticker, name in config.COMPANY_NAMES.items() if ticker_upper in name.upper()]
-    if len(possible_matches) == 1: print(f"     Normalized '{ticker_input}' to '{possible_matches[0]}' via N50 name."); return possible_matches[0]
-    elif len(possible_matches) > 1: print(f"     WARNING: Ambiguous N50 input '{ticker_input}'. Matches: {possible_matches}"); return None
+    if len(possible_matches) == 1: print(f"      Normalized '{ticker_input}' to '{possible_matches[0]}' via N50 name."); return possible_matches[0]
+    elif len(possible_matches) > 1: print(f"      WARNING: Ambiguous N50 input '{ticker_input}'. Matches: {possible_matches}"); return None
     if ticker_upper in [t.replace('.NS', '') for t in config.NIFTY_50_TICKERS]: return f"{ticker_upper}.NS"
     if '.' in ticker_upper and len(ticker_upper) > 3:
-         print(f"     Warning: Allowing potentially non-standard ticker '{ticker_upper}'")
+         print(f"      Warning: Allowing potentially non-standard ticker '{ticker_upper}'")
          return ticker_upper
-    print(f"     Could not normalize '{ticker_input}' confidently.")
+    print(f"      Could not normalize '{ticker_input}' confidently.")
     return None
 
 
 def get_ticker_info(ticker_str: str):
     """Fetches stock info using yfinance, with caching."""
-    if not isinstance(ticker_str, str): print(f"     Invalid ticker type: {ticker_str}"); return None
+    if not isinstance(ticker_str, str): print(f"      Invalid ticker type: {ticker_str}"); return None
     cache_key = f"info_{ticker_str}"
     cached_info = get_cache(cache_key)
     if cached_info: return cached_info
     try:
         stock = yf.Ticker(ticker_str); info = stock.info
-        if not info or not info.get('symbol'): print(f"     No valid info for {ticker_str}"); return None
+        if not info or not info.get('symbol'): print(f"      No valid info for {ticker_str}"); return None
         set_cache(cache_key, info, ttl_seconds=config.CACHE_PRICE_DATA_SECONDS); return info
-    except Exception as e: print(f"     ❌ yfinance info exception for {ticker_str}: {e}"); return None
+    except Exception as e: print(f"      ❌ yfinance info exception for {ticker_str}: {e}"); return None
 
 def get_current_price(ticker: str):
     """Gets a detailed price snapshot. Normalizes ticker automatically."""
@@ -122,14 +122,14 @@ def get_current_price(ticker: str):
         if hist.empty or 'Close' not in hist.columns or hist['Close'].iloc[-1] is None or pd.isna(hist['Close'].iloc[-1]):
              current_price = info.get('currentPrice') or info.get('regularMarketPrice')
              if current_price is None: return {"error": f"Could not fetch price/history for {normalized_ticker}."}
-             print(f"     ⚠️ History fetch failed/empty/NaN for {normalized_ticker}, using info price.")
+             print(f"      ⚠️ History fetch failed/empty/NaN for {normalized_ticker}, using info price.")
         else: current_price = float(hist['Close'].iloc[-1])
 
         previous_close = info.get('previousClose')
         if previous_close is None and len(hist) > 1 and 'Close' in hist.columns:
              non_nan_closes = hist['Close'].dropna()
              if len(non_nan_closes) > 1:
-                  previous_close = float(non_nan_closes.iloc[-2])
+                 previous_close = float(non_nan_closes.iloc[-2])
 
         if previous_close is None: previous_close = current_price # Ultimate fallback
 
@@ -145,25 +145,114 @@ def get_current_price(ticker: str):
             "previous_close": round(previous_close, config.PRICE_DECIMAL_PLACES), "is_nse": is_nse
         }
         return result
-    except Exception as e: print(f"   ❌ Exception in get_current_price for {normalized_ticker}: {traceback.format_exc()}"); return {"error": f"Error fetching price details: {str(e)}"}
+    except Exception as e: print(f"    ❌ Exception in get_current_price for {normalized_ticker}: {traceback.format_exc()}"); return {"error": f"Error fetching price details: {str(e)}"}
 
+def get_index_data(index_name: str) -> dict:
+    """
+    Fetches current data for Indian market indices (Nifty, Sensex, etc.)
+    Supports: NIFTY 50, SENSEX, BANK NIFTY, NIFTY IT, NIFTY PHARMA, etc.
+    """
+    print(f"[get_index_data] Fetching data for: {index_name}")
+    
+    # Map common names to Yahoo Finance ticker symbols
+    index_map = {
+        'NIFTY': '^NSEI',
+        'NIFTY 50': '^NSEI',
+        'NIFTY50': '^NSEI',
+        'SENSEX': '^BSESN',
+        'BSE SENSEX': '^BSESN',
+        'BANK NIFTY': '^NSEBANK',
+        'BANKNIFTY': '^NSEBANK',
+        'NIFTY BANK': '^NSEBANK',
+        'NIFTY IT': '^CNXIT',
+        'NIFTY PHARMA': '^CNXPHARMA',
+        'NIFTY FMCG': '^CNXFMCG',
+        'NIFTY AUTO': '^CNXAUTO',
+        'NIFTY METAL': '^CNXMETAL',
+        'NIFTY REALTY': '^CNXREALTY',
+        'NIFTY ENERGY': '^CNXENERGY',
+        'NIFTY INFRA': '^CNXINFRA',
+        'NIFTY MIDCAP': '^NSEMDCP50',
+        'NIFTY SMALLCAP': '^CNXSC'
+    }
+    
+    # Normalize input
+    normalized = index_name.strip().upper()
+    ticker = index_map.get(normalized)
+    
+    if not ticker:
+        # Try partial match
+        for key, val in index_map.items():
+            if normalized in key or key in normalized:
+                ticker = val
+                break
+    
+    if not ticker:
+        return {"error": f"Index '{index_name}' not recognized. Supported: NIFTY, SENSEX, BANK NIFTY, NIFTY IT, etc."}
+    
+    try:
+        # Fetch index data from yfinance
+        index = yf.Ticker(ticker)
+        hist = index.history(period="5d", interval="1d")
+        
+        if hist.empty or 'Close' not in hist.columns:
+            return {"error": f"Could not fetch data for {index_name} (ticker: {ticker})"}
+        
+        current_level = float(hist['Close'].iloc[-1])
+        previous_close = float(hist['Close'].iloc[-2]) if len(hist) > 1 else current_level
+        
+        change_value = current_level - previous_close
+        change_percent = (change_value / previous_close * 100) if previous_close else 0
+        
+        day_high = float(hist['High'].iloc[-1]) if 'High' in hist.columns else current_level
+        day_low = float(hist['Low'].iloc[-1]) if 'Low' in hist.columns else current_level
+        
+        return {
+            "index_name": index_name,
+            "ticker": ticker,
+            "current_level": round(current_level, 2),
+            "previous_close": round(previous_close, 2),
+            "change_value": round(change_value, 2),
+            "change_percent": round(change_percent, 2),
+            "day_high": round(day_high, 2),
+            "day_low": round(day_low, 2)
+        }
+        
+    except Exception as e:
+        print(f"[get_index_data] Error for {index_name}: {e}")
+        return {"error": f"Failed to fetch index data: {str(e)}"}
+
+
+def get_index_data_for_agent(index_name: str) -> dict:
+    """Agent-facing wrapper for get_index_data"""
+    print(f"[Agent] calls get_index_data: {index_name}")
+    try:
+        return get_index_data(index_name)
+    except Exception as e:
+        print(f"[Error] in get_index_data_for_agent: {traceback.format_exc()}")
+        return {"error": str(e)}
 
 def screen_static_index(index_name: str = "NIFTY 50", num_stocks: int = 3, duration_days: int = 30, prefer_buy: bool = False):
     """Finds top stocks from a PRE-DEFINED, STATIC index list."""
-    print(f"   → screen_static_index (Index={index_name}, N={num_stocks}, Duration={duration_days}, Buy={prefer_buy})")
-    ticker_list = None
+    print(f"    → screen_static_index (Index={index_name}, N={num_stocks}, Duration={duration_days}, Buy={prefer_buy})")
+
     norm_name = index_name.strip().upper()
-    if norm_name == "NIFTY 50": ticker_list = config.NIFTY_50_TICKERS
-    else: ticker_list = indices.STATIC_INDICES.get(norm_name)
+    
+    # Get the ticker list directly from the imported dictionary
+    ticker_list = indices.STATIC_INDICES.get(norm_name) 
+
     if ticker_list is None:
-        valid_indices = ["NIFTY 50"] + list(indices.STATIC_INDICES.keys())
-        print(f"     ❌ Error: Index '{index_name}' not in static list.")
+        # If not found, report the error using the keys from the dictionary
+        valid_indices = list(indices.STATIC_INDICES.keys())
+        print(f"      ❌ Error: Index '{index_name}' (Normalized: '{norm_name}') not in static list.")
+        # Show the user real examples from the list
         return {"error": f"Index '{index_name}' not in pre-defined list. Try one of: {', '.join(valid_indices[:6])}..."}
+
     return screen_custom_stock_list(tickers=ticker_list, num_stocks=num_stocks, duration_days=duration_days, prefer_buy=prefer_buy, index_name_for_log=index_name)
 
 def screen_custom_stock_list(tickers: List[str], num_stocks: int = 3, duration_days: int = 30, prefer_buy: bool = False, index_name_for_log: str = "Custom List"):
     """Screens a CUSTOM list of tickers using technical indicators."""
-    print(f"   → screen_custom_stock_list (Index={index_name_for_log}, N={num_stocks}, Tickers={len(tickers)}, Duration={duration_days}, Buy={prefer_buy})")
+    print(f"    → screen_custom_stock_list (Index={index_name_for_log}, N={num_stocks}, Tickers={len(tickers)}, Duration={duration_days}, Buy={prefer_buy})")
     if not tickers or not isinstance(tickers, list): return {"error": "No valid ticker list provided."}
     try:
         num_stocks = int(num_stocks)
@@ -178,7 +267,7 @@ def screen_custom_stock_list(tickers: List[str], num_stocks: int = 3, duration_d
         valid_tickers = sorted(list(set([t for t in tickers if isinstance(t, str) and t.endswith('.NS')])))
         if not valid_tickers: return {"error": "The provided list contains no valid .NS tickers for screening."}
 
-        print(f"     Downloading history for {len(valid_tickers)} tickers ({start_date} to {end_date})...")
+        print(f"      Downloading history for {len(valid_tickers)} tickers ({start_date} to {end_date})...")
         hist_data = yf.download(valid_tickers, start=start_date, end=end_date, progress=False, auto_adjust=True)
         if hist_data.empty or 'Close' not in hist_data.columns: raise ValueError("yfinance download empty.")
 
@@ -206,12 +295,12 @@ def screen_custom_stock_list(tickers: List[str], num_stocks: int = 3, duration_d
         if not filtered: result = {"message": f"No stocks from the '{index_name_for_log}' list meet criteria (RSI & Price > EMA)."}
         else:
             filtered.sort(key=lambda x: x['RSI'], reverse=True);
-            print(f"     ✅ Found {len(filtered)} stocks meeting criteria. Returning top {num_stocks}.")
+            print(f"      ✅ Found {len(filtered)} stocks meeting criteria. Returning top {num_stocks}.")
             result = {"top_filtered_stocks": filtered[:num_stocks]}
         set_cache(cache_key, result, ttl_seconds=config.CACHE_NEWS_DATA_SECONDS);
         return result
     except Exception as e:
-        print(f"     ❌ Exception in screen_custom_stock_list: {traceback.format_exc()}");
+        print(f"      ❌ Exception in screen_custom_stock_list: {traceback.format_exc()}");
         return {"message": f"Screening error: {str(e)}"}
 
 
@@ -223,10 +312,10 @@ def get_live_price(ticker: str) -> float:
         hist = yf.Ticker(norm_t).history(period='2d', interval='1d', auto_adjust=True)
         if hist.empty or 'Close' not in hist.columns or hist['Close'].isnull().all():
             info = get_ticker_info(norm_t); price = info.get('currentPrice') or info.get('regularMarketPrice')
-            if price is not None: print(f"     ⚠️ Live price hist fail {norm_t}, using info."); return float(price)
+            if price is not None: print(f"      ⚠️ Live price hist fail {norm_t}, using info."); return float(price)
             else: raise ValueError(f"No price data for {norm_t}.")
         lp = float(hist['Close'].dropna().iloc[-1]); return lp
-    except Exception as e: print(f"     ❌ Live price fetch fail {norm_t}: {e}"); raise ValueError(f"Could not get live price for {norm_t}") from e
+    except Exception as e: print(f"      ❌ Live price fetch fail {norm_t}: {e}"); raise ValueError(f"Could not get live price for {norm_t}") from e
 
 def get_fundamental_data(ticker: str) -> dict:
     """Retrieves key fundamental data points."""
@@ -251,12 +340,171 @@ def get_fundamental_data(ticker: str) -> dict:
             "beta": round(info['beta'], 2) if info.get('beta') else "N/A", "is_nse": is_nse
         }
         return funda
-    except Exception as e: print(f"     ❌ Exception in get_fundamental_data {norm_t}: {e}"); return {"error": f"Error retrieving fundamentals: {str(e)}"}
+    except Exception as e: print(f"      ❌ Exception in get_fundamental_data {norm_t}: {e}"); return {"error": f"Error retrieving fundamentals: {str(e)}"}
+
+# ============================================
+# [NEW TOOL] Find Intraday Trade Setups
+# ============================================
+def find_intraday_trade_setups(tickers: Optional[List[str]] = None, num_setups: int = 3) -> dict:
+    """
+    Finds potential intraday trade setups (1:2 Risk/Reward) with higher probability
+    by adding Trend (20-EMA) and Volume (50-Avg-Vol) confluence.
+    """
+    print(f"    → find_intraday_trade_setups (N={num_setups}, Tickers={'Scan All' if not tickers else len(tickers)})")
+    
+    if not tickers:
+        tickers_to_scan = config.NIFTY_50_TICKERS
+        scan_source = "NIFTY 50"
+    else:
+        tickers_to_scan = [normalize_ticker(t) for t in tickers if normalize_ticker(t)]
+        if not tickers_to_scan:
+            return {"error": "No valid .NS tickers were provided or normalized from the input list."}
+        scan_source = "User-Provided List"
+
+    setups = []
+    
+    # We need enough data for 50-day Avg Volume + 20-day EMA + 14-day RSI.
+    # Increase history needed to be safe.
+    history_days_needed = 70  # <<< CHANGED FROM 30
+    end_date = date.today()
+    start_date = end_date - timedelta(days=history_days_needed)
+
+    print(f"    Downloading history for {len(tickers_to_scan)} tickers ({start_date} to {end_date})...")
+    
+    # Use yf.download for efficiency
+    try:
+        hist_data = yf.download(tickers_to_scan, start=start_date, end=end_date, progress=False, auto_adjust=True)
+        if hist_data.empty or 'Close' not in hist_data.columns:
+            raise ValueError("yfinance download returned empty data.")
+    except Exception as e:
+        print(f"    ❌ Exception in yf.download for setups: {e}")
+        return {"error": f"Failed to download historical data for screening: {str(e)}"}
+        
+    is_multi_ticker = len(tickers_to_scan) > 1
+
+    for ticker in tickers_to_scan:
+        try:
+            stock_hist_data = None
+            if is_multi_ticker:
+                if ticker not in hist_data['Close'].columns or hist_data['Close'][ticker].isnull().all():
+                    continue
+                # Select data for this ticker
+                stock_hist_data = hist_data.loc[:, (slice(None), ticker)]
+                stock_hist_data.columns = stock_hist_data.columns.droplevel(1)
+            else:
+                if hist_data.empty or 'Close' not in hist_data.columns:
+                    continue
+                stock_hist_data = hist_data
+            
+            # Need enough data for 50-day volume avg
+            if stock_hist_data.empty or len(stock_hist_data['Close'].dropna()) < 55: 
+                continue
+
+            close_prices = stock_hist_data['Close'].dropna()
+            volumes = stock_hist_data['Volume'].dropna() # <<< NEW: Get Volume
+            
+            if len(close_prices) < 55 or len(volumes) < 55: continue 
+            
+            # --- Calculate all indicators ---
+            rsi_val = RSIIndicator(close_prices, window=14).rsi().iloc[-1]
+            ema_20 = EMAIndicator(close_prices, window=20).ema_indicator().iloc[-1] # <<< NEW: 20-day EMA for trend
+            
+            # Calculate 50-day avg volume *before* the last day
+            avg_volume_50 = volumes.iloc[-51:-1].mean() # <<< NEW: 50-day Avg Volume
+            last_volume = volumes.iloc[-1]             # <<< NEW: Last day's volume
+            
+            if pd.isna(rsi_val) or pd.isna(ema_20) or pd.isna(avg_volume_50) or avg_volume_50 == 0:
+                continue
+
+            entry = close_prices.iloc[-1]
+            prev_low = stock_hist_data['Low'].iloc[-2]
+            prev_high = stock_hist_data['High'].iloc[-2]
+            
+            info = get_ticker_info(ticker)
+            company_name = info.get('shortName', ticker) if info else ticker
+
+            # --- Strategy 1: Look for BUY setup (Long) ---
+            # Criteria: RSI (50-70), price above prev_low, risk 0.5%-3%
+            if 50 < rsi_val < 70:
+                sl_price_buy = prev_low
+                risk_amount_buy = entry - sl_price_buy
+                
+                if risk_amount_buy > 0: # Entry must be above stop-loss
+                    risk_percent_buy = risk_amount_buy / entry
+                    
+                    # --- NEW CONFLUENCE CHECKS ---
+                    is_uptrend = entry > ema_20
+                    is_volume_confirmed = last_volume > avg_volume_50
+                    
+                    # Check for risk, trend, AND volume
+                    if 0.005 < risk_percent_buy < 0.03 and is_uptrend and is_volume_confirmed:
+                        tp_price_buy = entry + 2 * risk_amount_buy
+                        
+                        # <<< NEW: Updated Rationale ---
+                        rationale = f"RSI {rsi_val:.1f} (bullish), in short-term uptrend (Price > 20-EMA), and on above-average volume."
+                        
+                        setups.append({
+                            "ticker": ticker,
+                            "name": company_name,
+                            "trade_type": "Long (Buy)",
+                            "entry_price": float(round(entry, config.PRICE_DECIMAL_PLACES)),
+                            "sl_price": float(round(sl_price_buy, config.PRICE_DECIMAL_PLACES)),
+                            "tp_price": float(round(tp_price_buy, config.PRICE_DECIMAL_PLACES)),
+                            "risk_amount": float(round(risk_amount_buy, config.PRICE_DECIMAL_PLACES)),
+                            "risk_percent": float(round(risk_percent_buy * 100, 2)),
+                            "rationale": rationale # <<< SAVED NEW RATIONALE
+                        })
+
+            # --- Strategy 2: Look for SELL setup (Short) ---
+            # Criteria: RSI (30-50), price below prev_high, risk 0.5%-3%
+            if 30 < rsi_val < 50:
+                sl_price_sell = prev_high
+                risk_amount_sell = sl_price_sell - entry
+
+                if risk_amount_sell > 0: # Entry must be below stop-loss
+                    risk_percent_sell = risk_amount_sell / entry
+                    
+                    # --- NEW CONFLUENCE CHECKS ---
+                    is_downtrend = entry < ema_20
+                    is_volume_confirmed = last_volume > avg_volume_50
+                    
+                    # Check for risk, trend, AND volume
+                    if 0.005 < risk_percent_sell < 0.03 and is_downtrend and is_volume_confirmed:
+                        tp_price_sell = entry - 2 * risk_amount_sell
+                        
+                        # <<< NEW: Updated Rationale ---
+                        rationale = f"RSI {rsi_val:.1f} (bearish), in short-term downtrend (Price < 20-EMA), and on above-average volume."
+
+                        setups.append({
+                            "ticker": ticker,
+                            "name": company_name,
+                            "trade_type": "Short (Sell)",
+                            "entry_price": float(round(entry, config.PRICE_DECIMAL_PLACES)),
+                            "sl_price": float(round(sl_price_sell, config.PRICE_DECIMAL_PLACES)),
+                            "tp_price": float(round(tp_price_sell, config.PRICE_DECIMAL_PLACES)),
+                            "risk_amount": float(round(risk_amount_sell, config.PRICE_DECIMAL_PLACES)),
+                            "risk_percent": float(round(risk_percent_sell * 100, 2)),
+                            "rationale": rationale # <<< SAVED NEW RATIONALE
+                        })
+
+        except Exception as e:
+            print(f"    ⚠️ Error processing setup for {ticker}: {e}")
+            # traceback.print_exc() # Uncomment for deep debugging
+            continue # Skip this ticker
+    
+    if not setups:
+        return {"message": f"No stocks from the '{scan_source}' list currently meet the high-probability intraday trade setup criteria (RSI + Trend + Volume)."}
+
+    # Sort by lowest risk percent
+    setups.sort(key=lambda x: x['risk_percent'])
+    
+    print(f"    ✅ Found {len(setups)} total high-probability setups. Returning top {num_setups}.")
+    return {"setups": setups[:num_setups]}
 
 # --- News Tools ---
 def get_stock_news(query: str, company_name: Optional[str] = None) -> dict:
     """(FALLBACK TOOL) Fetches recent news articles from NewsAPI."""
-    print(f"   → get_stock_news (NewsAPI Fallback) for: '{query}' (Company: {company_name})")
+    print(f"    → get_stock_news (NewsAPI Fallback) for: '{query}' (Company: {company_name})")
     search_term = company_name if company_name else query
     if not search_term: return {"error": "No query/company name."}
     cache_key = f"newsapi_{search_term.replace(' ', '_').lower()}"
@@ -272,28 +520,28 @@ def get_stock_news(query: str, company_name: Optional[str] = None) -> dict:
             response.raise_for_status()
             data = response.json()
             if data.get('status') == 'error':
-                if data.get('code') == 'rateLimited': print(f"     ⚠️ NewsAPI Key {api_key[:8]}... rate limited."); continue
-                else: print(f"     ❌ NewsAPI Error ({data.get('code')}): {data.get('message')}"); return {"error": f"NewsAPI Error: {data.get('message')}"}
+                if data.get('code') == 'rateLimited': print(f"      ⚠️ NewsAPI Key {api_key[:8]}... rate limited."); continue
+                else: print(f"      ❌ NewsAPI Error ({data.get('code')}): {data.get('message')}"); return {"error": f"NewsAPI Error: {data.get('message')}"}
             if data.get('status') == 'ok':
                 articles = data.get('articles', [])
                 if not articles: result = {"message": f"No NewsAPI news for '{search_term}'."}
                 else:
                     fmt_news = [{"title": a.get('title'), "source": a.get('source', {}).get('name'), "description": a.get('description'), "url": a.get('url'), "publishedAt": a.get('publishedAt')} for a in articles]
-                    print(f"     ✅ Found {len(fmt_news)} NewsAPI articles for '{search_term}'.")
+                    print(f"      ✅ Found {len(fmt_news)} NewsAPI articles for '{search_term}'.")
                     result = {"articles": fmt_news}
                 set_cache(cache_key, result, ttl_seconds=config.CACHE_NEWS_DATA_SECONDS); return result
         except requests.exceptions.HTTPError as http_err:
             response_obj = getattr(http_err, 'response', None)
             if response_obj is not None:
-                 if response_obj.status_code == 400: print(f"     ❌ NewsAPI Bad Request (400) key {api_key[:8]}... URL: {response_obj.url}\nBody: {response_obj.text}"); return {"error": "NewsAPI Bad Request (400). Details logged."}
-                 elif response_obj.status_code == 429: print(f"     ⚠️ NewsAPI Key {api_key[:8]} rate limited (429)."); continue
-            print(f"     ❌ HTTP Error NewsAPI: {http_err}"); return {"error": f"NewsAPI HTTP Error: {http_err}"}
-        except requests.exceptions.RequestException as req_err: print(f"     ❌ Request Ex NewsAPI: {req_err}"); return {"error": f"NewsAPI Connection Error: {req_err}"}
+                 if response_obj.status_code == 400: print(f"      ❌ NewsAPI Bad Request (400) key {api_key[:8]}... URL: {response_obj.url}\nBody: {response_obj.text}"); return {"error": "NewsAPI Bad Request (400). Details logged."}
+                 elif response_obj.status_code == 429: print(f"      ⚠️ NewsAPI Key {api_key[:8]} rate limited (429)."); continue
+            print(f"      ❌ HTTP Error NewsAPI: {http_err}"); return {"error": f"NewsAPI HTTP Error: {http_err}"}
+        except requests.exceptions.RequestException as req_err: print(f"      ❌ Request Ex NewsAPI: {req_err}"); return {"error": f"NewsAPI Connection Error: {req_err}"}
     result = {"error": "NewsAPI keys rate-limited or invalid."}; set_cache(cache_key, result, ttl_seconds=60); return result
 
 def internet_search_news(query: str) -> dict:
     """(PREFERRED TOOL) Performs a news search using DuckDuckGo."""
-    print(f"   → internet_search_news (DDGS) for: '{query}'")
+    print(f"    → internet_search_news (DDGS) for: '{query}'")
     cache_key = f"ddgs_news_{query.replace(' ', '_').lower()}"
     cached_result = get_cache(cache_key)
     if cached_result: return cached_result
@@ -302,14 +550,14 @@ def internet_search_news(query: str) -> dict:
         if not results: result = {"message": f"No DDGS news found for '{query}'."}
         else:
             fmt_res = [{"title": i.get('title'), "source": i.get('source'), "description": i.get('body'), "url": i.get('url'), "publishedAt": i.get('date')} for i in results]
-            print(f"     ✅ Found {len(fmt_res)} DDGS news results.")
+            print(f"      ✅ Found {len(fmt_res)} DDGS news results.")
             result = {"articles": fmt_res}
         set_cache(cache_key, result, ttl_seconds=config.CACHE_NEWS_DATA_SECONDS); return result
-    except Exception as e: print(f"     ❌ DDGS News Search Error: {traceback.format_exc()}"); return {"error": f"DDGS news search error: {str(e)}"}
+    except Exception as e: print(f"      ❌ DDGS News Search Error: {traceback.format_exc()}"); return {"error": f"DDGS news search error: {str(e)}"}
 
 def internet_search(query: str) -> dict:
     """Performs a general web search using DuckDuckGo."""
-    print(f"   → internet_search (DDGS) for: '{query}'")
+    print(f"    → internet_search (DDGS) for: '{query}'")
     cache_key = f"ddgs_search_{query.replace(' ', '_').lower()}"
     cached_result = get_cache(cache_key)
     if cached_result: return cached_result
@@ -318,10 +566,10 @@ def internet_search(query: str) -> dict:
         if not results: result = {"message": f"No DDGS search results for '{query}'."}
         else:
             fmt_res = [{"title": i.get('title'), "snippet": i.get('body'), "url": i.get('href')} for i in results]
-            print(f"     ✅ Found {len(fmt_res)} DDGS search results.")
+            print(f"      ✅ Found {len(fmt_res)} DDGS search results.")
             result = {"results": fmt_res}
         set_cache(cache_key, result, ttl_seconds=config.CACHE_NEWS_DATA_SECONDS); return result
-    except Exception as e: print(f"     ❌ DDGS Search Error: {traceback.format_exc()}"); return {"error": f"DDGS search error: {str(e)}"}
+    except Exception as e: print(f"      ❌ DDGS Search Error: {traceback.format_exc()}"); return {"error": f"DDGS search error: {str(e)}"}
 
 # ============================================
 # [UPDATED TOOL w/ FALLBACK] Get Index Constituents
@@ -336,7 +584,7 @@ def get_index_constituents(index_name: str) -> dict:
     cache_key = f"constituents_{index_name.strip().upper().replace(' ', '_')}"
     cached_result = get_cache(cache_key)
     if cached_result:
-        print(f"      CACHE HIT for {cache_key}")
+        print(f"       CACHE HIT for {cache_key}")
         return cached_result
 
     nse_error = None # Initialize nse_error
@@ -356,7 +604,7 @@ def get_index_constituents(index_name: str) -> dict:
         names_to_try.append(normalized_input) # Try uppercase input
 
     # --- Stage 1: Try NSE API with variations ---
-    print(f"      Attempting NSE API with potential names: {names_to_try}")
+    print(f"       Attempting NSE API with potential names: {names_to_try}")
     base_url = "https://www.nseindia.com/api/equity-stockIndices"
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
@@ -369,7 +617,7 @@ def get_index_constituents(index_name: str) -> dict:
             # URL encode the index name properly
             encoded_index_name = quote_plus(name_attempt)
             url = f"{base_url}?index={encoded_index_name}"
-            print(f"      Querying NSE API with name: '{name_attempt}' ({url})")
+            print(f"       Querying NSE API with name: '{name_attempt}' ({url})")
             response = requests.get(url, headers=headers, timeout=10)
             response.raise_for_status() # Raises HTTPError for bad responses (4xx or 5xx)
             data = response.json()
@@ -381,18 +629,18 @@ def get_index_constituents(index_name: str) -> dict:
                 # Filter out any potential None values if symbol was missing
                 valid_tickers = [ticker for ticker in ticker_list if ticker is not None]
                 if valid_tickers:
-                    print(f"      ✅ Successfully fetched {len(valid_tickers)} tickers from NSE API using name '{name_attempt}'.")
+                    print(f"       ✅ Successfully fetched {len(valid_tickers)} tickers from NSE API using name '{name_attempt}'.")
                     result = {"index_name": index_name, "tickers": valid_tickers, "source": f"NSE API ('{name_attempt}')"}
                     set_cache(cache_key, result, ttl_seconds=3600) # Cache successful NSE API result longer (1 hour)
                     return result
 
             # If constituents list is empty or API returned no data field
-            print(f"      ⚠️ NSE API returned no data/constituents for name '{name_attempt}'.")
+            print(f"       ⚠️ NSE API returned no data/constituents for name '{name_attempt}'.")
             if nse_error is None: nse_error = f"NSE API returned empty data for '{name_attempt}'."
 
         except requests.exceptions.HTTPError as http_err:
             nse_error = f"NSE API HTTP Error for '{name_attempt}': {http_err}"
-            print(f"      ❌ {nse_error}")
+            print(f"       ❌ {nse_error}")
             # Continue trying other names if it's a 404, otherwise stop
             if http_err.response is not None and http_err.response.status_code == 404:
                 continue
@@ -400,19 +648,19 @@ def get_index_constituents(index_name: str) -> dict:
                 break # Break on other HTTP errors (like 401, 500)
         except requests.exceptions.RequestException as req_err:
             nse_error = f"NSE API Network Error for '{name_attempt}': {req_err}"
-            print(f"      ❌ {nse_error}"); break # Stop on network errors
+            print(f"       ❌ {nse_error}"); break # Stop on network errors
         except json.JSONDecodeError as json_err:
             nse_error = f"NSE API JSON Parse Error for '{name_attempt}': {json_err}. Response: {response.text[:200]}" # Log part of response
-            print(f"      ❌ {nse_error}"); break # Stop on JSON errors
+            print(f"       ❌ {nse_error}"); break # Stop on JSON errors
         except Exception as e:
             nse_error = f"Unexpected NSE API Error for '{name_attempt}': {e}"
-            print(f"      ❌ {nse_error}\n{traceback.format_exc()}"); break # Stop on unexpected errors
+            print(f"       ❌ {nse_error}\n{traceback.format_exc()}"); break # Stop on unexpected errors
 
     # --- Stage 2: Fallback to DDGS + AI Extraction ---
-    print(f"      ⚠️ NSE API failed for all attempts ({nse_error or 'No constituents found'}). Falling back to DDGS + AI extraction...")
+    print(f"       ⚠️ NSE API failed for all attempts ({nse_error or 'No constituents found'}). Falling back to DDGS + AI extraction...")
     try:
         query = f"{index_name} constituents tickers list NSE"
-        print(f"      Searching DDGS for: '{query}'")
+        print(f"       Searching DDGS for: '{query}'")
         search_snippets = []
         with DDGS() as ddgs:
             # Increase results slightly for better context for AI
@@ -421,12 +669,12 @@ def get_index_constituents(index_name: str) -> dict:
             if results: search_snippets = [str(r.get('body', '')) for r in results if r.get('body')]
 
         if not search_snippets:
-            print("      ❌ DDGS fallback found no results.")
+            print("       ❌ DDGS fallback found no results.")
             final_error = f"NSE API failed and DDGS search found no results for '{index_name}'."
             set_cache(cache_key, {"error": final_error}, ttl_seconds=600) # Cache failure shorter
             return {"error": final_error}
 
-        print(f"      Found {len(search_snippets)} snippets via DDGS. Asking AI to extract tickers...")
+        print(f"       Found {len(search_snippets)} snippets via DDGS. Asking AI to extract tickers...")
         # Refined prompt for clarity
         extraction_prompt = f"""
         Extract all valid NSE stock tickers (ending in .NS, typically uppercase letters, numbers, hyphens, ampersands before .NS) found within the following text snippets related to the '{index_name}' index.
@@ -458,26 +706,26 @@ def get_index_constituents(index_name: str) -> dict:
                 extracted_text = response.text.strip()
                 break # Success, exit retry loop
             except Exception as ai_err:
-                print(f"      ⚠️ AI generation attempt {attempt + 1} failed: {ai_err}")
+                print(f"       ⚠️ AI generation attempt {attempt + 1} failed: {ai_err}")
                 if attempt == max_retries - 1:
                     raise # Re-raise the exception if all retries fail
                 time.sleep(1) # Wait a second before retrying
 
-        print(f"      AI extraction raw response: {extracted_text}")
+        print(f"       AI extraction raw response: {extracted_text}")
 
         # Clean potential markdown code blocks
         if extracted_text.startswith("```python"): extracted_text = extracted_text[len("```python"):].strip()
         if extracted_text.startswith("```"): extracted_text = extracted_text[len("```"):].strip()
         if extracted_text.endswith("```"): extracted_text = extracted_text[:-len("```")].strip()
 
-       
+        
         looks_like_list = extracted_text.startswith('[') and extracted_text.endswith(']')
 
         valid_tickers = []
         parsing_error = None
 
         try:
-           
+            
             try:
                 cleaned_text = extracted_text.replace("'", '"') if extracted_text else "[]"
                 # Add extra check for non-list JSON like {} or just ""
@@ -497,12 +745,12 @@ def get_index_constituents(index_name: str) -> dict:
 
             except (json.JSONDecodeError, ValueError) as json_e:
                 print(f" AI response wasn't valid JSON list ({json_e}). Trying regex extraction...")
-               
+                
                 pass 
-           
+            
             if not valid_tickers:
-                print(f"      Attempting regex extraction on AI response.")
-               
+                print(f"       Attempting regex extraction on AI response.")
+                
                 potential_tickers = re.findall(r"['\"]?([A-Z0-9\-&]+?\.NS)['\"]?", extracted_text, re.IGNORECASE)
                 # Filter again for sanity and deduplicate
                 current_valid_regex = sorted(list(set(
@@ -511,10 +759,10 @@ def get_index_constituents(index_name: str) -> dict:
 
                 if current_valid_regex:
                    valid_tickers = current_valid_regex # Assign if valid
-                   print(f"      ✅ Successfully extracted {len(valid_tickers)} tickers via DDGS + AI (Regex parse).")
+                   print(f"       ✅ Successfully extracted {len(valid_tickers)} tickers via DDGS + AI (Regex parse).")
                 else:
                    # Both JSON and Regex failed to find anything usable
-                   print(f"      ⚠️ Regex could not find valid .NS tickers in AI response.")
+                   print(f"       ⚠️ Regex could not find valid .NS tickers in AI response.")
                    # If it didn't even look like a list originally, consider parsing failed
                    if not looks_like_list:
                        parsing_error = ValueError("Could not meaningfully parse AI response using JSON or Regex.")
@@ -524,7 +772,7 @@ def get_index_constituents(index_name: str) -> dict:
             source_msg = "DDGS+AI"
             if not valid_tickers:
                 source_msg = "DDGS+AI (No tickers found in snippets)"
-                print(f"      ✅ AI processed snippets for '{index_name}' but found no valid .NS tickers. Returning empty list.")
+                print(f"       ✅ AI processed snippets for '{index_name}' but found no valid .NS tickers. Returning empty list.")
 
             result = {"index_name": index_name, "tickers": valid_tickers, "source": source_msg}
             set_cache(cache_key, result, ttl_seconds=1800) # Cache fallback result (30 mins)
@@ -533,13 +781,13 @@ def get_index_constituents(index_name: str) -> dict:
         except Exception as e:
             # This catches ONLY true parsing errors or unexpected issues during the fallback
             final_error = f"Error processing AI response/DDGS fallback for '{index_name}': {e}"
-            print(f"      ❌ {final_error}\n{traceback.format_exc()}")
+            print(f"       ❌ {final_error}\n{traceback.format_exc()}")
             set_cache(cache_key, {"error": final_error}, ttl_seconds=600)
             return {"error": final_error}
 
     except Exception as e:
         final_error = f"Unexpected Error during DDGS search or AI call setup for '{index_name}': {e}"
-        print(f"      ❌ Unexpected Error in DDGS/AI setup: {traceback.format_exc()}")
+        print(f"       ❌ Unexpected Error in DDGS/AI setup: {traceback.format_exc()}")
         set_cache(cache_key, {"error": final_error}, ttl_seconds=600)
         return {"error": final_error}
 
@@ -548,10 +796,10 @@ def get_bulk_live_prices(tickers: list) -> dict:
     """Efficiently gets prices for multiple stocks."""
     if not tickers: return {}
     valid_tickers = [t for t in tickers if isinstance(t, str) and t.endswith('.NS')]
-    if not valid_tickers: print("     No valid tickers for bulk fetch."); return {}
+    if not valid_tickers: print("      No valid tickers for bulk fetch."); return {}
     try:
         data = yf.download(valid_tickers, period='2d', progress=False, auto_adjust=True, ignore_tz=True)
-        if data.empty or 'Close' not in data.columns: print("     ⚠️ Bulk download empty/invalid."); raise ValueError("Empty bulk download")
+        if data.empty or 'Close' not in data.columns: print("      ⚠️ Bulk download empty/invalid."); raise ValueError("Empty bulk download")
         prices = {}
         close_data = data['Close'] if len(valid_tickers) > 1 else data[['Close']]
         last_valid_index = close_data.last_valid_index()
@@ -561,17 +809,17 @@ def get_bulk_live_prices(tickers: list) -> dict:
             if ticker in last_prices.index and pd.notna(last_prices[ticker]): prices[ticker] = float(round(last_prices[ticker], config.PRICE_DECIMAL_PLACES))
             elif ticker in close_data.columns and pd.notna(close_data[ticker].loc[last_valid_index]): prices[ticker] = float(round(close_data[ticker].loc[last_valid_index], config.PRICE_DECIMAL_PLACES))
             else:
-                print(f"     ⚠️ Price not in bulk for {ticker}. Falling back.")
+                print(f"      ⚠️ Price not in bulk for {ticker}. Falling back.")
                 try: prices[ticker] = float(round(get_live_price(ticker), config.PRICE_DECIMAL_PLACES))
-                except ValueError: print(f"     ❌ Fallback failed for {ticker}")
+                except ValueError: print(f"      ❌ Fallback failed for {ticker}")
         return prices
     except Exception as e:
-        print(f"     ❌ Bulk fetch failed: {e}. Falling back individually...")
+        print(f"      ❌ Bulk fetch failed: {e}. Falling back individually...")
         prices = {}
         for t in valid_tickers:
             try: price = get_live_price(t); prices[t] = float(round(price, config.PRICE_DECIMAL_PLACES))
-            except ValueError: print(f"     ❌ Fallback failed for {t}")
-        print(f"     ✅ Fallback fetch completed for {len(prices)} tickers.")
+            except ValueError: print(f"      ❌ Fallback failed for {t}")
+        print(f"      ✅ Fallback fetch completed for {len(prices)} tickers.")
         return prices
 
 def initialize_user_account(user_id: str) -> dict:
@@ -586,14 +834,14 @@ def initialize_user_account(user_id: str) -> dict:
             initial_data = {'cash': config.DEFAULT_STARTING_CASH, 'initial_cash': config.DEFAULT_STARTING_CASH, 'account_initialized': True,
                             'created_at': firestore.SERVER_TIMESTAMP, 'day_start_portfolio_value': config.DEFAULT_STARTING_CASH,
                             'last_day_pnl_reset': today_str, 'net_cash_flow_today': 0.0 }
-            account_ref.set(initial_data); print(f"     Account created for {user_id} with ₹{config.DEFAULT_STARTING_CASH:,.2f}"); return initial_data
+            account_ref.set(initial_data); print(f"      Account created for {user_id} with ₹{config.DEFAULT_STARTING_CASH:,.2f}"); return initial_data
         else:
             account_data = account_doc.to_dict(); update_fields = {}
             if not account_data.get('account_initialized'): update_fields['account_initialized'] = True; update_fields['initial_cash'] = account_data.get('cash', config.DEFAULT_STARTING_CASH)
             if 'day_start_portfolio_value' not in account_data: update_fields['day_start_portfolio_value'] = account_data.get('cash', config.DEFAULT_STARTING_CASH)
             if 'last_day_pnl_reset' not in account_data: update_fields['last_day_pnl_reset'] = today_str
             if 'net_cash_flow_today' not in account_data: update_fields['net_cash_flow_today'] = 0.0
-            if update_fields: print(f"     Patching fields for {user_id}: {list(update_fields.keys())}"); account_ref.update(update_fields); account_data.update(update_fields)
+            if update_fields: print(f"      Patching fields for {user_id}: {list(update_fields.keys())}"); account_ref.update(update_fields); account_data.update(update_fields)
             last_reset = account_data.get('last_day_pnl_reset', '')
             if last_reset != today_str:
                 current_val = calculate_current_portfolio_value(user_id, account_data.get('cash', 0))
@@ -614,7 +862,7 @@ def calculate_current_portfolio_value(user_id: str, current_cash: float) -> floa
             prices = get_bulk_live_prices(tickers)
             for t, h in holdings_data.items(): total_val += h.get('quantity', 0) * prices.get(t, h.get('avg_price', 0))
         return current_cash + total_val
-    except Exception as e: print(f"     ⚠️ Error calculating portfolio value {user_id}: {e}. Returning cash."); return current_cash
+    except Exception as e: print(f"      ⚠️ Error calculating portfolio value {user_id}: {e}. Returning cash."); return current_cash
 
 def get_portfolio(user_id: str) -> dict:
     # (Existing code...)
@@ -682,7 +930,7 @@ def execute_trade(user_id: str, ticker: str, quantity: int, action: str):
                 tq = cq + quantity; n_avg = ((cq * ca) + trade_val) / tq; trans.update(hold_ref, {'quantity': tq, 'avg_price': n_avg})
             else: trans.set(hold_ref, {'quantity': quantity, 'avg_price': cp})
             trans.set(hist_ref, {'action': 'BUY', 'ticker': norm_ticker, 'quantity': quantity, 'price': cp, 'total_value': trade_val, 'timestamp': firestore.SERVER_TIMESTAMP})
-            print(f"     ✅ BUY success {user_id}"); return {"success": True, "action": "BUY", "ticker": norm_ticker, "quantity": quantity, "price": cp, "total_value": trade_val, "new_cash": new_cash}
+            print(f"      ✅ BUY success {user_id}"); return {"success": True, "action": "BUY", "ticker": norm_ticker, "quantity": quantity, "price": cp, "total_value": trade_val, "new_cash": new_cash}
         elif act == 'SELL':
             if not hold_snap.exists: raise ValueError(f"No shares of {norm_ticker} to sell.")
             ch = hold_snap.to_dict(); aq, avg_p = ch.get('quantity', 0), ch.get('avg_price', 0)
@@ -692,7 +940,7 @@ def execute_trade(user_id: str, ticker: str, quantity: int, action: str):
             if nq > 0: trans.update(hold_ref, {'quantity': nq})
             else: trans.delete(hold_ref)
             trans.set(hist_ref, {'action': 'SELL', 'ticker': norm_ticker, 'quantity': quantity, 'price': cp, 'total_value': trade_val, 'timestamp': firestore.SERVER_TIMESTAMP})
-            profit = (cp - avg_p) * quantity; print(f"     ✅ SELL success {user_id}"); return {"success": True, "action": "SELL", "ticker": norm_ticker, "quantity": quantity, "price": cp, "total_value": trade_val, "profit": profit, "new_cash": new_cash}
+            profit = (cp - avg_p) * quantity; print(f"      ✅ SELL success {user_id}"); return {"success": True, "action": "SELL", "ticker": norm_ticker, "quantity": quantity, "price": cp, "total_value": trade_val, "profit": profit, "new_cash": new_cash}
         else: raise ValueError(f"Invalid action: '{action}'.")
     try:
         trans_inst = db.transaction(); result = trade_trans(trans_inst)
@@ -701,21 +949,21 @@ def execute_trade(user_id: str, ticker: str, quantity: int, action: str):
                 hist_q = hist_coll.order_by('timestamp', direction=firestore.Query.ASCENDING).select([]).stream()
                 hist_refs = [doc.reference for doc in hist_q]
                 if len(hist_refs) > config.TRADE_HISTORY_LIMIT:
-                    num_del = len(hist_refs) - config.TRADE_HISTORY_LIMIT; print(f"     🧹 History limit ({config.TRADE_HISTORY_LIMIT}) exceeded. Deleting {num_del}...")
-                    batch = db.batch(); [batch.delete(hist_refs[i]) for i in range(num_del)]; batch.commit(); print(f"     ✅ History cleanup complete.")
-            except Exception as clean_err: print(f"     ⚠️ History cleanup error {user_id}: {clean_err}")
+                    num_del = len(hist_refs) - config.TRADE_HISTORY_LIMIT; print(f"      🧹 History limit ({config.TRADE_HISTORY_LIMIT}) exceeded. Deleting {num_del}...")
+                    batch = db.batch(); [batch.delete(hist_refs[i]) for i in range(num_del)]; batch.commit(); print(f"      ✅ History cleanup complete.")
+            except Exception as clean_err: print(f"      ⚠️ History cleanup error {user_id}: {clean_err}")
         return result
     except ValueError as ve:
-        print(f"     ❌ Trade failed {user_id}: {ve}")
+        print(f"      ❌ Trade failed {user_id}: {ve}")
         error_payload = {"error": True, "message": str(ve), "action": action.upper(), "ticker": norm_ticker, "quantity": quantity}
         if "Insufficient funds" in str(ve):
             try:
                 user_doc = user_ref.get()
                 if user_doc.exists: error_payload["available_cash"] = user_doc.to_dict().get('cash', 0)
                 error_payload["current_price"] = cp
-            except Exception as cash_err: print(f"     ⚠️ Could not fetch cash info for error message: {cash_err}")
+            except Exception as cash_err: print(f"      ⚠️ Could not fetch cash info for error message: {cash_err}")
         return error_payload
-    except Exception as e: print(f"     ❌ Unexpected trade error {user_id}: {e}"); return {"error": True, "message": f"Unexpected error: {str(e)}", "action": action.upper(), "ticker": norm_ticker, "quantity": quantity }
+    except Exception as e: print(f"      ❌ Unexpected trade error {user_id}: {e}"); return {"error": True, "message": f"Unexpected error: {str(e)}", "action": action.upper(), "ticker": norm_ticker, "quantity": quantity }
 
 # --- Flask App Setup & API Endpoints ---
 app = Flask(__name__)
@@ -756,7 +1004,7 @@ def adjust_cash_endpoint(user_id):
             if not snap.exists: raise ValueError(f"User {user_id} not found.")
             curr_cash = snap.to_dict().get('cash', 0); change = float(new_cash) - curr_cash
             trans.update(user_ref, {'cash': float(new_cash), 'net_cash_flow_today': firestore.Increment(change)})
-            print(f"     💰 Cash adjusted {user_id} to ₹{float(new_cash):,.2f}. Change: ₹{change:,.2f}")
+            print(f"      💰 Cash adjusted {user_id} to ₹{float(new_cash):,.2f}. Change: ₹{change:,.2f}")
         trans = db.transaction(); update_cash_trans(trans)
         return jsonify({"success": True, "new_cash": round(float(new_cash), config.PRICE_DECIMAL_PLACES)})
     except ValueError as ve: print(f"❌ Adjust Cash Error {user_id}: {ve}"); return jsonify({"error": str(ve)}), 404
@@ -803,13 +1051,13 @@ def get_watchlist_endpoint(user_id):
         details = []; prices = get_bulk_live_prices(tickers); infos = {t: get_ticker_info(t) for t in tickers}
         for t in tickers:
             cp, info = prices.get(t), infos.get(t)
-            if cp is None or info is None: print(f"     ⚠️ Missing watchlist data {t}."); details.append({"ticker": t, "price": "N/A", "change": "N/A", "dayRange": "N/A"}); continue
+            if cp is None or info is None: print(f"      ⚠️ Missing watchlist data {t}."); details.append({"ticker": t, "price": "N/A", "change": "N/A", "dayRange": "N/A"}); continue
             try:
                 pc = info.get('previousClose', cp); change = ((cp - pc) / pc) * 100 if pc else 0; dl, dh = info.get('dayLow', cp), info.get('dayHigh', cp)
                 item = {"ticker": t, "price": round(cp, config.PRICE_DECIMAL_PLACES), "change": round(change, 2),
-                        "dayRange": f"₹{dl:.{config.PRICE_DECIMAL_PLACES}f} - ₹{dh:.{config.PRICE_DECIMAL_PLACES}f}" if dl and dh else "N/A"}
+                         "dayRange": f"₹{dl:.{config.PRICE_DECIMAL_PLACES}f} - ₹{dh:.{config.PRICE_DECIMAL_PLACES}f}" if dl and dh else "N/A"}
                 details.append(item)
-            except Exception as e: print(f"     ❌ Error processing watchlist {t}: {e}"); details.append({"ticker": t, "price": "Error", "change": "Error", "dayRange": "Error"})
+            except Exception as e: print(f"      ❌ Error processing watchlist {t}: {e}"); details.append({"ticker": t, "price": "Error", "change": "Error", "dayRange": "Error"})
         return jsonify(details)
     except Exception as e: print(f"\n❌ CRITICAL WATCHLIST GET ERROR {user_id}: {traceback.format_exc()}\n"); return jsonify({"error": str(e)}), 500
 
@@ -851,9 +1099,9 @@ def add_to_watchlist(user_id: str, tickers: List[str]) -> dict:
             invalid_tickers.append(ticker_input)
 
     if added_count == 0 and not invalid_tickers:
-         return {"error": "No tickers provided or all were empty strings."}
+       return {"error": "No tickers provided or all were empty strings."}
     elif added_count == 0 and invalid_tickers:
-         return {"error": f"No valid tickers provided. Invalid inputs: {', '.join(invalid_tickers)}"}
+       return {"error": f"No valid tickers provided. Invalid inputs: {', '.join(invalid_tickers)}"}
 
     try:
         batch.commit()
@@ -862,10 +1110,10 @@ def add_to_watchlist(user_id: str, tickers: List[str]) -> dict:
             msg += f" Invalid/skipped: {', '.join(invalid_tickers)}."
         if len(tickers) > MAX_WATCHLIST_ADD:
              msg += f" Processed first {MAX_WATCHLIST_ADD} tickers."
-        print(f"     ✅ Watchlist add result for {user_id}: {msg}")
+        print(f"      ✅ Watchlist add result for {user_id}: {msg}")
         return {"status": "success", "message": msg, "added": added_tickers, "invalid": invalid_tickers}
     except Exception as e:
-        print(f"     ❌ Error committing watchlist add for {user_id}: {e}")
+        print(f"      ❌ Error committing watchlist add for {user_id}: {e}")
         return {"error": f"Database error while adding to watchlist: {str(e)}"}
 
 def remove_from_watchlist(user_id: str, ticker: str) -> dict:
@@ -881,15 +1129,15 @@ def remove_from_watchlist(user_id: str, ticker: str) -> dict:
         doc_snapshot = ref.get()
 
         if not doc_snapshot.exists:
-             print(f"     ⚠️ Ticker {norm_ticker} not found in watchlist {user_id}")
+             print(f"      ⚠️ Ticker {norm_ticker} not found in watchlist {user_id}")
              return {"error": f"Ticker '{norm_ticker}' not found in watchlist."}
 
         ref.delete()
-        print(f"     ✅ Removed {norm_ticker} from watchlist {user_id}")
+        print(f"      ✅ Removed {norm_ticker} from watchlist {user_id}")
         return {"status": "success", "message": f"Removed {norm_ticker}.", "removed_ticker": norm_ticker}
 
     except Exception as e:
-        print(f"     ❌ Error removing {ticker} from watchlist {user_id}: {e}")
+        print(f"      ❌ Error removing {ticker} from watchlist {user_id}: {e}")
         return {"error": f"Database error while removing from watchlist: {str(e)}"}
 
 @app.route('/api/watchlist/<user_id>/<ticker>', methods=['DELETE'])
@@ -967,7 +1215,7 @@ def chat_handler():
 
         # --- Agent-facing tool function definitions ---
         def execute_trade_for_agent(ticker: str, quantity: int, action: str) -> dict:
-            print(f"     🤖 Agent calls execute_trade: {action} {quantity} x {ticker}")
+            print(f"      🤖 Agent calls execute_trade: {action} {quantity} x {ticker}")
             available_cash = None; current_price = None
             try:
                 qty = int(quantity)
@@ -982,54 +1230,54 @@ def chat_handler():
                  is_insufficient = "Insufficient funds" in str(val_err)
                  error_payload = {"error": True, "message": str(val_err)}
                  if is_insufficient and current_price is not None and available_cash is not None:
-                      error_payload["current_price"] = current_price
-                      error_payload["available_cash"] = available_cash
-                      error_payload["requested_quantity"] = quantity
-                      error_payload["ticker"] = norm_ticker
+                     error_payload["current_price"] = current_price
+                     error_payload["available_cash"] = available_cash
+                     error_payload["requested_quantity"] = quantity
+                     error_payload["ticker"] = norm_ticker
                  return error_payload
-            except Exception as e: print(f"     ❌ Error in execute_trade_for_agent: {traceback.format_exc()}"); return {"error": True, "message": f"Unexpected error: {str(e)}"}
+            except Exception as e: print(f"      ❌ Error in execute_trade_for_agent: {traceback.format_exc()}"); return {"error": True, "message": f"Unexpected error: {str(e)}"}
 
         def get_portfolio_for_agent() -> dict:
-            print("     🤖 Agent calls get_portfolio");
+            print("      🤖 Agent calls get_portfolio");
             try: return get_portfolio(user_id)
-            except Exception as e: print(f"     ❌ Error in get_portfolio_for_agent: {traceback.format_exc()}"); return {"error": str(e)}
+            except Exception as e: print(f"      ❌ Error in get_portfolio_for_agent: {traceback.format_exc()}"); return {"error": str(e)}
 
         def add_to_watchlist_for_agent(tickers: List[str]) -> dict:
-            print(f"     🤖 Agent calls add_to_watchlist: {tickers}");
+            print(f"      🤖 Agent calls add_to_watchlist: {tickers}");
             if not isinstance(tickers, list) or not all(isinstance(t, str) for t in tickers): return {"error": "Invalid input: Requires a list of ticker strings."}
             try: return add_to_watchlist(user_id, tickers)
-            except Exception as e: print(f"     ❌ Error in add_to_watchlist_for_agent: {traceback.format_exc()}"); return {"error": str(e)}
+            except Exception as e: print(f"      ❌ Error in add_to_watchlist_for_agent: {traceback.format_exc()}"); return {"error": str(e)}
 
         def remove_from_watchlist_for_agent(ticker: str) -> dict:
             """Removes a SINGLE stock ticker from the user's watchlist."""
-            print(f"     🤖 Agent calls remove_from_watchlist: {ticker}");
+            print(f"      🤖 Agent calls remove_from_watchlist: {ticker}");
             if not isinstance(ticker, str) or not ticker.strip():
                 return {"error": "Invalid input: Requires a single non-empty ticker string."}
             try:
                 return remove_from_watchlist(user_id, ticker)
             except Exception as e:
-                print(f"     ❌ Error in remove_from_watchlist_for_agent: {traceback.format_exc()}");
+                print(f"      ❌ Error in remove_from_watchlist_for_agent: {traceback.format_exc()}");
                 return {"error": str(e)}
 
         def get_index_constituents_for_agent(index_name: str) -> dict:
-            print(f"     🤖 Agent calls get_index_constituents: '{index_name}'");
+            print(f"      🤖 Agent calls get_index_constituents: '{index_name}'");
             try: return get_index_constituents(index_name)
-            except Exception as e: print(f"     ❌ Error in get_index_constituents_for_agent: {traceback.format_exc()}"); return {"error": str(e)}
+            except Exception as e: print(f"      ❌ Error in get_index_constituents_for_agent: {traceback.format_exc()}"); return {"error": str(e)}
 
         def internet_search_news_for_agent(query: str, company_name: Optional[str] = None) -> dict:
-             print(f"     🤖 Agent calls internet_search_news: '{query}' (Company: {company_name})");
+             print(f"      🤖 Agent calls internet_search_news: '{query}' (Company: {company_name})");
              search_query = company_name if company_name else query
              try: return internet_search_news(search_query)
-             except Exception as e: print(f"     ❌ Error in internet_search_news_for_agent: {traceback.format_exc()}"); return {"error": str(e)}
+             except Exception as e: print(f"      ❌ Error in internet_search_news_for_agent: {traceback.format_exc()}"); return {"error": str(e)}
         def get_stock_news_for_agent(query: str, company_name: Optional[str] = None) -> dict:
-             print(f"     🤖 Agent calls get_stock_news (Fallback): '{query}' (Company: {company_name})");
+             print(f"      🤖 Agent calls get_stock_news (Fallback): '{query}' (Company: {company_name})");
              search_query = company_name if company_name else query
              try: return get_stock_news(search_query, company_name)
-             except Exception as e: print(f"     ❌ Error in get_stock_news_for_agent: {traceback.format_exc()}"); return {"error": str(e)}
+             except Exception as e: print(f"      ❌ Error in get_stock_news_for_agent: {traceback.format_exc()}"); return {"error": str(e)}
         def internet_search_for_agent(query: str) -> dict:
-             print(f"     🤖 Agent calls internet_search: '{query}'");
+             print(f"      🤖 Agent calls internet_search: '{query}'");
              try: return internet_search(query)
-             except Exception as e: print(f"     ❌ Error in internet_search_for_agent: {traceback.format_exc()}"); return {"error": str(e)}
+             except Exception as e: print(f"      ❌ Error in internet_search_for_agent: {traceback.format_exc()}"); return {"error": str(e)}
         # --- End tool definitions ---
 
         chat_history = []
@@ -1038,18 +1286,33 @@ def chat_handler():
                 msgs_ref = db.collection(f'users/{user_id}/chats/{chat_id}/messages')
                 msgs_query = msgs_ref.order_by('timestamp', direction=firestore.Query.ASCENDING).limit(config.MAX_CHAT_HISTORY).stream()
                 for msg in msgs_query: msg_data = msg.to_dict(); chat_history.append({'role': 'user' if msg_data.get('role') == 'user' else 'model', 'parts': [{'text': msg_data.get('text', '')}]})
-            except Exception as hist_err: print(f"     ⚠️ Failed history load {chat_id}: {hist_err}."); chat_history = []
+            except Exception as hist_err: print(f"      ⚠️ Failed history load {chat_id}: {hist_err}."); chat_history = []
 
         try:
             model = genai.GenerativeModel(
                 model_name=config.GEMINI_MODEL_NAME,
-                tools=[ screen_static_index, screen_custom_stock_list, get_index_constituents_for_agent, get_current_price, execute_trade_for_agent, get_portfolio_for_agent, get_fundamental_data, add_to_watchlist_for_agent, remove_from_watchlist_for_agent, internet_search_news_for_agent, get_stock_news_for_agent, internet_search_for_agent ],
+                tools=[
+                    screen_static_index, 
+                    screen_custom_stock_list, 
+                    get_index_constituents_for_agent, 
+                    get_current_price, 
+                    execute_trade_for_agent, 
+                    get_portfolio_for_agent, 
+                    get_fundamental_data, 
+                    add_to_watchlist_for_agent, 
+                    remove_from_watchlist_for_agent, 
+                    internet_search_news_for_agent, 
+                    get_stock_news_for_agent, 
+                    internet_search_for_agent,
+                    find_intraday_trade_setups,
+                    get_index_data_for_agent
+                ],
                 system_instruction=config.SYSTEM_INSTRUCTION)
             chat_session = model.start_chat(history=chat_history, enable_automatic_function_calling=True)
 
-            print(f"     Sending message to {config.GEMINI_MODEL_NAME}...")
+            print(f"      Sending message to {config.GEMINI_MODEL_NAME}...")
             response = chat_session.send_message(user_message)
-            print(f"     Received response from Gemini.")
+            print(f"      Received response from Gemini.")
 
             agent_reply = ""
             finish_details = "UNKNOWN"; finish_reason_raw = None
@@ -1067,10 +1330,10 @@ def chat_handler():
                     elif finish_reason_raw == 4: agent_reply = f"Blocked: recitation ({finish_details})."
                     elif finish_reason_raw == 2: agent_reply = "Response cut short (max length)."
                     else: agent_reply = f"Response generation failed ({finish_details})."
-                    print(f"     ⚠️ Gemini response fallback needed. Finish Reason: {finish_details}")
+                    print(f"      ⚠️ Gemini response fallback needed. Finish Reason: {finish_details}")
             except Exception as resp_err:
                  finish_details_str = finish_details or f"RAW({finish_reason_raw})"
-                 print(f"     ❌ Error processing Gemini response: {resp_err}. Finish Reason: {finish_details_str}")
+                 print(f"      ❌ Error processing Gemini response: {resp_err}. Finish Reason: {finish_details_str}")
                  agent_reply = f"Error processing response ({finish_details_str})."
                  traceback.print_exc()
         except Exception as model_err:
@@ -1082,11 +1345,11 @@ def chat_handler():
             if not chat_id:
                 chat_doc_ref = db.collection(f'users/{user_id}/chats').document(); chat_id = chat_doc_ref.id
                 title = user_message[:config.CHAT_TITLE_LENGTH] + ('...' if len(user_message) > config.CHAT_TITLE_LENGTH else '')
-                batch.set(chat_doc_ref, {'title': title, 'timestamp': firestore.SERVER_TIMESTAMP}); print(f"     Created chat: {chat_id}")
+                batch.set(chat_doc_ref, {'title': title, 'timestamp': firestore.SERVER_TIMESTAMP}); print(f"      Created chat: {chat_id}")
             msgs_coll = db.collection(f'users/{user_id}/chats/{chat_id}/messages')
             user_ref = msgs_coll.document(); batch.set(user_ref, {'role': 'user', 'text': user_message, 'timestamp': firestore.SERVER_TIMESTAMP})
             model_ref = msgs_coll.document(); batch.set(model_ref, {'role': 'model', 'text': agent_reply, 'timestamp': firestore.SERVER_TIMESTAMP})
-            batch.commit(); print(f"     ✅ Saved messages to chat {chat_id}")
+            batch.commit(); print(f"      ✅ Saved messages to chat {chat_id}")
             return jsonify({"reply": agent_reply, "chatId": chat_id})
         except Exception as db_err:
             print(f"❌ Error saving chat messages: {traceback.format_exc()}")
@@ -1103,12 +1366,13 @@ if __name__ == "__main__":
     print(f"🤖 Model: {config.GEMINI_MODEL_NAME} | History Limit: {config.MAX_CHAT_HISTORY}")
     print(f"🔥 Firestore: {'✅ Connected' if db else '❌ NOT CONNECTED!'}")
     print(f"📜 Trade History: {config.TRADE_HISTORY_LIMIT} | ⏱️ Cache TTL: {config.CACHE_TTL_SECONDS}s")
-    if not config.NEWSAPI_KEYS or not config.NEWSAPI_KEYS[0]: print("     ⚠️ NewsAPI keys MISSING.")
-    else: print(f"     ✅ NewsAPI Keys: {len(config.NEWSAPI_KEYS)} found.")
-    print("     ✅ Free Search (DDGS): Enabled | Free News (DDGS): Enabled (Preferred)")
-    print(f"     ✅ New Tool: Get Index Constituents (NSE API w/ Fallback)") # <<< Updated Startup Log
-    print(f"     ✅ Static Indices Loaded: {len(indices.STATIC_INDICES.keys())} mappings (e.g., NIFTY BANK, NIFTY IT)")
+    if not config.NEWSAPI_KEYS or not config.NEWSAPI_KEYS[0]: print("       ⚠️ NewsAPI keys MISSING.")
+    else: print(f"       ✅ NewsAPI Keys: {len(config.NEWSAPI_KEYS)} found.")
+    print("       ✅ Free Search (DDGS): Enabled | Free News (DDGS): Enabled (Preferred)")
+    print(f"       ✅ New Tool: Get Index Constituents (NSE API w/ Fallback)") # <<< Updated Startup Log
+    print(f"       ✅ New Tool: Find Intraday Trade Setups (1:2 R/R)    ") # <<< [NEW TOOL LOG]
+    print(f"       ✅ Static Indices Loaded: {len(indices.STATIC_INDICES.keys())} mappings (e.g., NIFTY BANK, NIFTY IT)")
     print("="*60 + "\n")
     port = int(os.environ.get('PORT', 8080))
-    print(f"🌍 Server starting on http://0.0.0.0:{port}")   
-    app.run(debug=False, host='0.0.0.0', port=port) 
+    print(f"🌍 Server starting on [http://0.0.0.0](http://0.0.0.0):{port}")   
+    app.run(debug=False, host='0.0.0.0', port=port)

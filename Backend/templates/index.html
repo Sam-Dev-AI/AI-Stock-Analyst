@@ -984,6 +984,7 @@
                             </div>
                             <!-- Row 2: Three-column grid -->
                             <div class="grid grid-cols-3 gap-3">
+                                <!-- Cash Balance -->
                                 <div
                                     class="bg-gradient-to-br from-slate-800 to-slate-900 p-4 rounded-xl border border-slate-700 shadow-lg flex flex-col h-full justify-between">
                                     <div class="flex justify-between items-center mb-2">
@@ -1004,21 +1005,39 @@
                                     <p class="text-xl font-bold text-green-500"
                                         x-text="'₹' + (portfolio.cash || 0).toLocaleString('en-IN')"></p>
                                 </div>
+
+                                <!-- Total P&L with Percentage -->
                                 <div
                                     class="bg-gradient-to-br from-slate-800 to-slate-900 p-4 rounded-xl border border-slate-700 shadow-lg flex flex-col h-full justify-between">
                                     <p class="text-xs text-slate-400 font-semibold mb-2">Total P&L</p>
-                                    <p class="text-xl font-bold"
-                                        :class="(portfolio.summary?.total_pnl || 0) >= 0 ? 'text-green-500' : 'text-red-500'"
-                                        x-text="((portfolio.summary?.total_pnl || 0) >= 0 ? '+' : '') + '₹' + (portfolio.summary?.total_pnl || 0).toLocaleString('en-IN')">
-                                    </p>
+                                    <div class="flex flex-col">
+                                        <p class="text-xl font-bold"
+                                            :class="(portfolio.summary?.total_pnl || 0) >= 0 ? 'text-green-500' : 'text-red-500'"
+                                            x-text="((portfolio.summary?.total_pnl || 0) >= 0 ? '+' : '') + '₹' + (portfolio.summary?.total_pnl || 0).toLocaleString('en-IN')">
+                                        </p>
+                                        <p class="text-sm mt-1"
+                                            :class="(portfolio.summary?.total_pnl || 0) >= 0 ? 'text-green-400' : 'text-red-400'"
+                                            x-show="portfolio.summary?.total_pnl_percent !== undefined"
+                                            x-text="((portfolio.summary?.total_pnl_percent || 0) >= 0 ? '+' : '') + (portfolio.summary?.total_pnl_percent || 0).toFixed(2) + '%'">
+                                        </p>
+                                    </div>
                                 </div>
+
+                                <!-- Today's P&L with Percentage -->
                                 <div
                                     class="bg-gradient-to-br from-slate-800 to-slate-900 p-4 rounded-xl border border-slate-700 shadow-lg flex flex-col h-full justify-between">
                                     <p class="text-xs text-slate-400 font-semibold mb-2">Today's P&L</p>
-                                    <p class="text-xl font-bold"
-                                        :class="(portfolio.summary?.day_pnl || 0) >= 0 ? 'text-green-500' : 'text-red-500'"
-                                        x-text="((portfolio.summary?.day_pnl || 0) >= 0 ? '+' : '') + '₹' + (portfolio.summary?.day_pnl || 0).toLocaleString('en-IN')">
-                                    </p>
+                                    <div class="flex flex-col">
+                                        <p class="text-xl font-bold"
+                                            :class="(portfolio.summary?.day_pnl || 0) >= 0 ? 'text-green-500' : 'text-red-500'"
+                                            x-text="((portfolio.summary?.day_pnl || 0) >= 0 ? '+' : '') + '₹' + (portfolio.summary?.day_pnl || 0).toLocaleString('en-IN')">
+                                        </p>
+                                        <p class="text-sm mt-1"
+                                            :class="(portfolio.summary?.day_pnl || 0) >= 0 ? 'text-green-400' : 'text-red-400'"
+                                            x-show="portfolio.summary?.day_pnl_percent !== undefined"
+                                            x-text="((portfolio.summary?.day_pnl_percent || 0) >= 0 ? '+' : '') + (portfolio.summary?.day_pnl_percent || 0).toFixed(2) + '%'">
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1758,31 +1777,35 @@
                 },
 
                 async loadChat(chatId, showAlert = false) {
-                    this.currentChatId = chatId;
-                    this.chatLoading = true;
-                    this.clearSearch(); // Clear search when loading a new chat
-                    this.searchVisible = false; // Hide search bar when loading new chat
+                    this.currentChatId = chatId
+                    this.chatLoading = true
+                    this.clearSearch() // Clear search when loading a new chat
+                    this.searchVisible = false // Hide search bar when loading new chat
 
-                    const chat = this.chatList.find(c => c.chatId === chatId);
-                    document.getElementById('chat-title').textContent = chat ? chat.title : 'Chat';
+                    // Find and update chat title
+                    const chat = this.chatList.find(c => c.chatId === chatId)
+                    document.getElementById('chat-title').textContent = chat ? chat.title : 'Chat'
 
-                    const container = document.getElementById('message-container');
-                    container.innerHTML = '';
+                    // CRITICAL FIX: Clear container FIRST, then set loading
+                    const container = document.getElementById('message-container')
+                    container.innerHTML = '' // Clear immediately
 
-                    if (showAlert) await this.getProactiveAlert();
+                    if (showAlert) await this.getProactiveAlert()
 
                     try {
-                        const response = await fetch(`${API_BASE_URL}/api/chat/${this.currentUser.uid}/${chatId}`);
+                        const response = await fetch(`${API_BASE_URL}/api/chat/${this.currentUser.uid}/${chatId}`)
                         if (response.ok) {
-                            const messages = await response.json();
-                            messages.forEach(msg => this.appendMessage(msg.text, msg.role, false));
+                            const messages = await response.json()
+                            // Clear again just before appending to ensure no duplicates
+                            container.innerHTML = ''
+                            messages.forEach(msg => this.appendMessage(msg.text, msg.role, false))
                         }
                     } catch (error) {
-                        console.error("Error loading messages:", error);
+                        console.error('Error loading messages:', error)
                     } finally {
-                        this.chatLoading = false;
-                        this.scrollToBottom();
-                        this.mobileSidebarOpen = false;
+                        this.chatLoading = false
+                        this.scrollToBottom()
+                        this.mobileSidebarOpen = false
                     }
                 },
 
