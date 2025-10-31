@@ -3,7 +3,7 @@ import os
 # ============================================
 # API KEYS
 # ============================================
-GENIE_API_KEY = "AIzaSyDMXVLvuQOBRCGv6M5qJYUyYPHv1Z8sIz4"
+GENIE_API_KEY = "Your Genie API Key Here"
 
 NEWSAPI_KEYS = [
 "4fec09d5becd42efbd6f474f2c540e18",
