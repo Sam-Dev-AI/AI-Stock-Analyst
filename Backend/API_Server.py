@@ -42,7 +42,7 @@ try:
             cred = credentials.Certificate(cred_path)
             firebase_admin.initialize_app(cred)
         else:
-            print("GOOGLE_APPLICATION_CREDENTIALS not set or invalid. Trying Application Default Credentials.")
+            #print("GOOGLE_APPLICATION_CREDENTIALS not set or invalid. Trying Application Default Credentials.")
             firebase_admin.initialize_app()
             print("Initialized Firestore with Application Default Credentials.")
 
@@ -1250,7 +1250,7 @@ def chat_handler():
 
         def remove_from_watchlist_for_agent(ticker: str) -> dict:
             """Removes a SINGLE stock ticker from the user's watchlist."""
-            print(f"      🤖 Agent calls remove_from_watchlist: {ticker}");
+            print(f"      🤖 Agent calls remove_from_watchlist: {ticker}")
             if not isinstance(ticker, str) or not ticker.strip():
                 return {"error": "Invalid input: Requires a single non-empty ticker string."}
             try:
@@ -1260,17 +1260,17 @@ def chat_handler():
                 return {"error": str(e)}
 
         def get_index_constituents_for_agent(index_name: str) -> dict:
-            print(f"      🤖 Agent calls get_index_constituents: '{index_name}'");
+            print(f"      🤖 Agent calls get_index_constituents: '{index_name}'")
             try: return get_index_constituents(index_name)
             except Exception as e: print(f"      ❌ Error in get_index_constituents_for_agent: {traceback.format_exc()}"); return {"error": str(e)}
 
         def internet_search_news_for_agent(query: str, company_name: Optional[str] = None) -> dict:
-             print(f"      🤖 Agent calls internet_search_news: '{query}' (Company: {company_name})");
+             print(f"      🤖 Agent calls internet_search_news: '{query}' (Company: {company_name})")
              search_query = company_name if company_name else query
              try: return internet_search_news(search_query)
              except Exception as e: print(f"      ❌ Error in internet_search_news_for_agent: {traceback.format_exc()}"); return {"error": str(e)}
         def get_stock_news_for_agent(query: str, company_name: Optional[str] = None) -> dict:
-             print(f"      🤖 Agent calls get_stock_news (Fallback): '{query}' (Company: {company_name})");
+             print(f"      🤖 Agent calls get_stock_news (Fallback): '{query}' (Company: {company_name})")
              search_query = company_name if company_name else query
              try: return get_stock_news(search_query, company_name)
              except Exception as e: print(f"      ❌ Error in get_stock_news_for_agent: {traceback.format_exc()}"); return {"error": str(e)}
@@ -1340,7 +1340,7 @@ def chat_handler():
             print(f"❌ Error during Gemini API call: {traceback.format_exc()}")
             return jsonify({"error": "AI communication error."}), 500
 
-        try: # Save to DB
+        try: 
             batch = db.batch(); chat_doc_ref = None
             if not chat_id:
                 chat_doc_ref = db.collection(f'users/{user_id}/chats').document(); chat_id = chat_doc_ref.id
@@ -1369,8 +1369,8 @@ if __name__ == "__main__":
     if not config.NEWSAPI_KEYS or not config.NEWSAPI_KEYS[0]: print("       ⚠️ NewsAPI keys MISSING.")
     else: print(f"       ✅ NewsAPI Keys: {len(config.NEWSAPI_KEYS)} found.")
     print("       ✅ Free Search (DDGS): Enabled | Free News (DDGS): Enabled (Preferred)")
-    print(f"       ✅ New Tool: Get Index Constituents (NSE API w/ Fallback)") # <<< Updated Startup Log
-    print(f"       ✅ New Tool: Find Intraday Trade Setups (1:2 R/R)    ") # <<< [NEW TOOL LOG]
+    print(f"       ✅ New Tool: Get Index Constituents (NSE API w/ Fallback)") 
+    print(f"       ✅ New Tool: Find Intraday Trade Setups (1:2 R/R)    ") 
     print(f"       ✅ Static Indices Loaded: {len(indices.STATIC_INDICES.keys())} mappings (e.g., NIFTY BANK, NIFTY IT)")
     print("="*60 + "\n")
     port = int(os.environ.get('PORT', 8080))

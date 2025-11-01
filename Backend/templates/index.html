@@ -8,7 +8,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
         rel="stylesheet">
-    <!-- Use Alpine v3 for better reactivity and $forceUpdate -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js" defer></script>
     <style>
         * {
@@ -65,7 +64,6 @@
             border: 1px solid #334155;
         }
 
-        /* New class for clickable chart images */
         .message-chart {
             background: #1e293b;
             border-radius: 18px;
@@ -460,8 +458,105 @@
                 opacity: 0.5;
             }
         }
+
+        /* NEW: Mobile-specific responsive improvements */
+        @media (max-width: 640px) {
+
+            .message-user,
+            .message-agent {
+                max-width: 95%;
+                padding: 12px 16px;
+                font-size: 14px;
+            }
+
+            .portfolio-tabs {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .portfolio-tabs button {
+                white-space: nowrap;
+                flex-shrink: 0;
+                min-width: 100px;
+            }
+
+            /* Responsive grid adjustments */
+            .grid.grid-cols-3 {
+                grid-template-columns: repeat(1, 1fr) !important;
+            }
+
+            /* Text size adjustments for small screens */
+            h1,
+            h2,
+            h3 {
+                font-size: clamp(1.25rem, 5vw, 2rem);
+            }
+
+            /* Stack flex items on mobile */
+            .flex.gap-4,
+            .flex.gap-3 {
+                flex-wrap: wrap;
+            }
+
+            /* Better touch targets */
+            button,
+            a {
+                min-height: 44px;
+                min-width: 44px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .text-3xl {
+                font-size: 1.5rem;
+            }
+
+            .text-2xl {
+                font-size: 1.25rem;
+            }
+
+            .text-xl {
+                font-size: 1.125rem;
+            }
+
+            /* Reduce padding on very small screens */
+            .p-6 {
+                padding: 1rem;
+            }
+
+            .p-4 {
+                padding: 0.75rem;
+            }
+
+            /* Adjust modal sizes */
+            .max-w-md {
+                max-width: calc(100vw - 32px);
+            }
+        }
+
+        /* Landscape orientation adjustments */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .portfolio-window {
+                height: 95vh !important;
+            }
+
+            .auth-form {
+                padding: 1rem;
+            }
+        }
+
+        /* Search highlight styles */
+        mark.search-highlight {
+            background-color: yellow;
+            color: black;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        mark.search-highlight.active {
+            background-color: orange;
+        }
     </style>
-    <!-- NEW: TradingView Lightweight Charts Library -->
     <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
 </head>
 
@@ -503,6 +598,33 @@
                                 class="input-focus w-full bg-gray-700/50 text-white px-4 py-3.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 transition border border-gray-600"
                                 placeholder="Confirm Password">
 
+                            <!-- Google Sign-In Separator -->
+                            <div class="relative my-4">
+                                <div class="absolute inset-0 flex items-center">
+                                    <div class="w-full border-t border-gray-600"></div>
+                                </div>
+                                <div class="relative flex justify-center text-sm">
+                                    <span class="px-2 bg-gray-900 text-gray-400">Or continue with</span>
+                                </div>
+                            </div>
+
+                            <!-- Google Sign-In Button -->
+                            <button type="button" @click="signInWithGoogle" :disabled="isLoading"
+                                class="w-full bg-white hover:bg-gray-100 text-gray-900 font-bold py-3.5 rounded-xl transition-all duration-200 flex items-center justify-center gap-3 border border-gray-300 shadow-md">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24">
+                                    <path fill="#4285F4"
+                                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                                    <path fill="#34A853"
+                                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                                    <path fill="#FBBC05"
+                                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                                    <path fill="#EA4335"
+                                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                                </svg>
+                                <span x-show="!isLoading">Sign in with Google</span>
+                                <span x-show="isLoading">Processing...</span>
+                            </button>
+
                             <div x-show="authError" x-transition
                                 class="text-red-400 text-sm bg-red-900/20 border border-red-800/50 p-3 rounded-xl">
                                 <span x-text="authError"></span>
@@ -536,52 +658,90 @@
                 </div>
 
                 <div class="form-container sign-up-container">
-                    <form @submit.prevent="handleLogin()" class="auth-form">
+                    <form @submit.prevent="handleLogin" class="auth-form">
                         <div class="mb-6 text-center w-full">
-                            <div
-                                class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-500 to-green-700 rounded-2xl mb-4 shadow-lg">
-                                <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z" />
-                                </svg>
-                            </div>
-                            <h1 class="text-3xl font-bold text-white mb-2">Welcome Back!</h1>
-                            <p class="text-base text-gray-400">Login to your account</p>
+                            <h2
+                                class="text-3xl font-bold bg-gradient-to-r from-green-400 to-green-600 bg-clip-text text-transparent">
+                                Welcome Back
+                            </h2>
                         </div>
 
                         <div class="w-full space-y-4 max-w-sm">
+                            <!-- Email Input -->
                             <input type="email" x-model="email" required autocomplete="email"
-                                class="input-focus w-full bg-gray-700/50 text-white px-4 py-3.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 transition border border-gray-600"
+                                class="input-focus w-full bg-gray-700/50 text-white px-4 py-3.5 rounded-xl text-lg font-bold focus:outline-none focus:ring-2 focus:ring-green-500 border border-gray-600 transition-all duration-300"
                                 placeholder="Email Address">
+
+                            <!-- Password Input -->
                             <input type="password" x-model="password" required autocomplete="current-password"
-                                class="input-focus w-full bg-gray-700/50 text-white px-4 py-3.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 transition border border-gray-600"
+                                class="input-focus w-full bg-gray-700/50 text-white px-4 py-3.5 rounded-xl text-lg font-bold focus:outline-none focus:ring-2 focus:ring-green-500 border border-gray-600 transition-all duration-300"
                                 placeholder="Password">
 
+                            <!-- Forgot Password Link -->
+                            <div class="flex justify-end">
+                                <button type="button" @click="showForgotPassword = true"
+                                    class="text-sm text-green-500 hover:text-green-400 font-semibold transition-colors">
+                                    Forgot Password?
+                                </button>
+                            </div>
+
+                            <!-- Google Sign-In Separator -->
+                            <div class="relative my-4">
+                                <div class="absolute inset-0 flex items-center">
+                                    <div class="w-full border-t border-gray-600"></div>
+                                </div>
+                                <div class="relative flex justify-center text-sm">
+                                    <span class="px-2 bg-gray-900 text-gray-400">Or continue with</span>
+                                </div>
+                            </div>
+
+                            <!-- Google Sign-In Button -->
+                            <button type="button" @click="signInWithGoogle" :disabled="isLoading"
+                                class="w-full bg-white hover:bg-gray-100 text-gray-900 font-bold py-3.5 rounded-xl transition-all duration-200 flex items-center justify-center gap-3 border border-gray-300 shadow-md">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24">
+                                    <path fill="#4285F4"
+                                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                                    <path fill="#34A853"
+                                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                                    <path fill="#FBBC05"
+                                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                                    <path fill="#EA4335"
+                                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                                </svg>
+                                <span x-show="!isLoading">Sign in with Google</span>
+                                <span x-show="isLoading">Processing...</span>
+                            </button>
+
+                            <!-- Error Message -->
                             <div x-show="authError" x-transition
                                 class="text-red-400 text-sm bg-red-900/20 border border-red-800/50 p-3 rounded-xl">
                                 <span x-text="authError"></span>
                             </div>
 
+                            <!-- Login Button -->
                             <button type="submit" :disabled="isLoading"
-                                class="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg">
+                                class="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-3.5 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl">
                                 <span x-show="!isLoading">Login</span>
                                 <span x-show="isLoading" class="flex items-center justify-center">
-                                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <svg class="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg"
+                                        fill="none" viewBox="0 0 24 24">
                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
                                             stroke-width="4"></circle>
                                         <path class="opacity-75" fill="currentColor"
                                             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                                         </path>
                                     </svg>
-                                    <span>Logging in...</span>
+                                    Logging in...
                                 </span>
                             </button>
 
+                            <!-- Sign Up Link -->
                             <div class="text-center pt-2">
                                 <p class="text-sm text-gray-400">
                                     Don't have an account?
                                     <button type="button" @click="isLoginView = false; authError = ''"
-                                        class="text-green-500 font-semibold hover:text-green-400">Sign Up</button>
+                                        class="text-green-500 font-semibold hover:text-green-400 transition-colors">Sign
+                                        Up</button>
                                 </p>
                             </div>
                         </div>
@@ -611,6 +771,76 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+    <div x-show="showForgotPassword" x-cloak @click.self="showForgotPassword = false"
+        class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div
+            class="bg-gradient-to-br from-slate-900 to-slate-950 rounded-3xl border-2 border-green-500/30 w-full max-w-md p-8 shadow-2xl">
+
+            <!-- Close Button -->
+            <button type="button" @click="showForgotPassword = false"
+                class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+
+            <h3 class="text-2xl font-bold text-white mb-2">Reset Password</h3>
+            <p class="text-slate-400 text-sm mb-6">Enter your email to receive a password reset link</p>
+
+            <form @submit.prevent="handleForgotPassword" class="space-y-4">
+                <!-- Email Input -->
+                <input type="email" x-model="resetEmail" required autocomplete="email"
+                    class="w-full bg-slate-800 text-white px-5 py-4 rounded-xl text-lg font-bold focus:outline-none focus:ring-2 focus:ring-green-500 border border-slate-700 transition-all duration-300"
+                    placeholder="Your Email Address">
+
+                <!-- Success Message -->
+                <div x-show="resetSuccess" x-transition
+                    class="text-green-400 text-sm bg-green-900/20 border border-green-800/50 p-4 rounded-xl flex items-center gap-2">
+                    <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                    <span>Reset email sent! Check your inbox.</span>
+                </div>
+
+                <!-- Error Message -->
+                <div x-show="resetError" x-transition
+                    class="text-red-400 text-sm bg-red-900/20 border border-red-800/50 p-4 rounded-xl flex items-start gap-2">
+                    <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                    <span x-text="resetError"></span>
+                </div>
+
+                <!-- Buttons -->
+                <div class="flex gap-3 pt-4">
+                    <button type="button" @click="showForgotPassword = false"
+                        class="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-xl transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" :disabled="isLoading"
+                        class="flex-1 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-3 rounded-xl transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2">
+                        <span x-show="!isLoading">Send Reset Link</span>
+                        <span x-show="isLoading" class="flex items-center gap-2">
+                            <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                    stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                            </svg>
+                            Sending...
+                        </span>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -1593,7 +1823,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
 
         const firebaseConfig = {
@@ -1612,7 +1842,17 @@
 
         window.firebaseAuth = auth;
         window.firebaseAnalytics = analytics;
-        window.firebaseAuthFunctions = { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence };
+        window.firebaseAuthFunctions = {
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword,
+            onAuthStateChanged,
+            signOut,
+            setPersistence,
+            browserLocalPersistence,
+            GoogleAuthProvider,
+            signInWithPopup,
+            sendPasswordResetEmail
+        };
         window.logAnalyticsEvent = (eventName, params) => logEvent(analytics, eventName, params);
     </script>
 
@@ -1639,6 +1879,10 @@
                 confirmPassword: '',
                 authError: '',
                 currentUser: null,
+                showForgotPassword: false,
+                resetEmail: '',
+                resetSuccess: false,
+                resetError: '',
 
                 mobileSidebarOpen: false,
                 isSidebarMinimized: false,
@@ -1745,6 +1989,39 @@
                         await window.firebaseAuthFunctions.createUserWithEmailAndPassword(window.firebaseAuth, this.email, this.password);
                     } catch (error) {
                         this.authError = error.message.replace('Firebase: ', '');
+                    } finally {
+                        this.isLoading = false;
+                    }
+                },
+                async signInWithGoogle() {
+                    this.isLoading = true;
+                    this.authError = '';
+                    try {
+                        const { GoogleAuthProvider, signInWithPopup } = window.firebaseAuthFunctions;
+                        const provider = new GoogleAuthProvider();
+                        await signInWithPopup(window.firebaseAuth, provider);
+                    } catch (error) {
+                        this.authError = error.message.replace('Firebase: ', '');
+                    } finally {
+                        this.isLoading = false;
+                    }
+                },
+
+                async handleForgotPassword() {
+                    this.isLoading = true;
+                    this.resetError = '';
+                    this.resetSuccess = false;
+                    try {
+                        const { sendPasswordResetEmail } = window.firebaseAuthFunctions;
+                        await sendPasswordResetEmail(window.firebaseAuth, this.resetEmail);
+                        this.resetSuccess = true;
+                        setTimeout(() => {
+                            this.showForgotPassword = false;
+                            this.resetEmail = '';
+                            this.resetSuccess = false;
+                        }, 3000);
+                    } catch (error) {
+                        this.resetError = error.message.replace('Firebase: ', '');
                     } finally {
                         this.isLoading = false;
                     }
