@@ -59,19 +59,24 @@ _cache = {}
 CACHE_TTL_SECONDS = config.CACHE_TTL_SECONDS
 
 def set_cache(key, value, ttl_seconds=CACHE_TTL_SECONDS):
-    """Sets a value in the cache with a specific TTL."""
+    """Sets a value in the cache with a specific TTL, if caching is enabled."""
+    if not config.CACHE_STORE:  # Check the global config switch
+        return  # Do nothing if caching is disabled
     _cache[key] = (value, time.time() + ttl_seconds)
     pass
 
 def get_cache(key):
-    """Gets a value from the cache if it exists and hasn't expired."""
+    """Gets a value from the cache if it exists, hasn't expired, and caching is enabled."""
+    if not config.CACHE_STORE:  # Check the global config switch
+        return None  # Force a cache miss if caching is disabled
+
     if key in _cache:
         value, expiry_time = _cache[key]
         if time.time() < expiry_time:
-            print(f"      CACHE HIT for {key}")
+            print(f"     CACHE HIT for {key}")
             return value
         else:
-            del _cache[key]
+            del _cache[key]  # Cache expired, delete it
     return None
 
 def normalize_ticker(ticker_input: str) -> Optional[str]:
@@ -1366,13 +1371,14 @@ if __name__ == "__main__":
     print(f"🤖 Model: {config.GEMINI_MODEL_NAME} | History Limit: {config.MAX_CHAT_HISTORY}")
     print(f"🔥 Firestore: {'✅ Connected' if db else '❌ NOT CONNECTED!'}")
     print(f"📜 Trade History: {config.TRADE_HISTORY_LIMIT} | ⏱️ Cache TTL: {config.CACHE_TTL_SECONDS}s")
-    if not config.NEWSAPI_KEYS or not config.NEWSAPI_KEYS[0]: print("       ⚠️ NewsAPI keys MISSING.")
-    else: print(f"       ✅ NewsAPI Keys: {len(config.NEWSAPI_KEYS)} found.")
-    print("       ✅ Free Search (DDGS): Enabled | Free News (DDGS): Enabled (Preferred)")
-    print(f"       ✅ New Tool: Get Index Constituents (NSE API w/ Fallback)") 
-    print(f"       ✅ New Tool: Find Intraday Trade Setups (1:2 R/R)    ") 
-    print(f"       ✅ Static Indices Loaded: {len(indices.STATIC_INDICES.keys())} mappings (e.g., NIFTY BANK, NIFTY IT)")
+    print(f"⚡ Cache Store: {'✅ ENABLED' if config.CACHE_STORE else '❌ DISABLED (Testing Mode)'}") # <-- ADD THIS LINE
+    if not config.NEWSAPI_KEYS or not config.NEWSAPI_KEYS[0]: print("     ⚠️ NewsAPI keys MISSING.")
+    else: print(f"     ✅ NewsAPI Keys: {len(config.NEWSAPI_KEYS)} found.")
+    print("     ✅ Free Search (DDGS): Enabled | Free News (DDGS): Enabled (Preferred)")
+    print(f"     ✅ New Tool: Get Index Constituents (NSE API w/ Fallback)") 
+    print(f"     ✅ New Tool: Find Intraday Trade Setups (1:2 R/R)     ") 
+    print(f"     ✅ Static Indices Loaded: {len(indices.STATIC_INDICES.keys())} mappings (e.g., NIFTY BANK, NIFTY IT)")
     print("="*60 + "\n")
     port = int(os.environ.get('PORT', 8080))
-    print(f"🌍 Server starting on [http://0.0.0.0](http://0.0.0.0):{port}")   
+    print(f"🌍 Server starting on [http://0.0.0.0](http://0.0.0.0):{port}")    
     app.run(debug=False, host='0.0.0.0', port=port)
