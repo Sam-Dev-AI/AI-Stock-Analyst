@@ -93,7 +93,7 @@ text
 
 ## 🔧 Configuration
 Change in config.py
-
+```
 GENIE_API_KEY = "your-gemini-api-key"
 NEWSAPI_KEYS = [
     "newsapi-key-1",
@@ -102,6 +102,7 @@ NEWSAPI_KEYS = [
 ]
 ZERODHA_API_KEY = "your-zerodha-api-key"
 ZERODHA_API_SECRET = "your-zerodha-secret"
+```
 
 ### Firebase Setup
 
@@ -184,7 +185,6 @@ README.md
    --allow-unauthenticated
    --memory 2Gi
    --timeout 300
-
 ```
 
 ---
