@@ -1,14 +1,8 @@
-<!-- --------------------------------------------------------------------- -->
-<!-- 🚀 AI STOCK ANALYST PLATFORM — README.md -->
-<!-- Designed for Professional Presentation (Zerodha / Tech Recruiters) -->
-<!-- --------------------------------------------------------------------- -->
-
 <div align="center">
 
-<img src="https://upload.wikimedia.org/wikipedia/commons/2/28/Zerodha_logo.svg" alt="Zerodha Logo" width="200"/>
+# AI Stock Analyst Platform
 
-# 💹 **AI Stock Analyst Platform**
-### _Powered by Synance AI — Intelligent Trading for Indian Markets (NSE)_
+*Powered by Synance AI — Intelligent Trading for Indian Markets (NSE)*
 
 [![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-Visit_Platform-blue?style=for-the-badge)](https://stock-agent-774764824527.us-central1.run.app)
 [![Google Cloud](https://img.shields.io/badge/Google_Cloud-Run-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white)](https://cloud.google.com/run)
@@ -22,235 +16,207 @@
 
 ## 🧠 Overview
 
-**AI Stock Analyst Platform** is a full-stack, AI-powered **trading and analytics system** for the **Indian Stock Market (NSE)**.  
-Built with **Flask**, **Firebase**, and **Gemini 2.5 Flash**, it leverages **Synance AI**, an autonomous trading intelligence engine combining **technical analysis**, **portfolio optimization**, and **news sentiment**.
-
-The platform supports **paper trading** and **live Zerodha Kite API integration**, bridging simulation with real-world execution.
+AI Stock Analyst Platform is a full-stack, AI-powered trading and analytics platform for Indian Stock Markets (NSE). It leverages Synance AI for technical analysis, portfolio optimization, and market news sentiment within a streamlined modern interface.
 
 ---
 
-## 🧩 What Makes It Unique
+## 🚀 Features
 
 | Feature | Description |
 |:---|:---|
-| **🧠 Synance AI Engine** | Proprietary AI core that merges RSI, EMA, and sentiment for actionable insights. |
-| **⚙️ Zerodha Integration (Kite API)** | Live-trading ready system with authentication, portfolio sync, and order execution. |
-| **💬 Conversational Trading** | Execute trades or get analysis via natural language commands. |
-| **📊 Intelligent Screening** | Multi-index (Nifty, Bank, IT, Auto, etc.) analysis using RSI & EMA. |
-| **📰 Sentiment Analysis** | Combines NewsAPI and DuckDuckGo for market sentiment scoring. |
-| **💼 Portfolio Optimization** | AI-driven risk and rebalancing recommendations. |
-| **💻 Real-Time UI** | Tailwind CSS + Alpine.js frontend with dark mode and streaming updates. |
-| **☁️ Cloud Native** | Fully containerized with Google Cloud Run and Firestore backend. |
+| 🧠 Synance AI Engine | Proprietary AI that fuses RSI, EMA, and news sentiment for actionable trading insights |
+| ⚙️ Zerodha Integration | Live-trading using Kite API, authentication, portfolio sync, and order execution |
+| 💬 Conversational Trading | Use natural language for trades and analytics |
+| 📊 Intelligent Screening | Multi-index analysis (Nifty, Bank, IT, Auto, etc.), RSI & EMA screening |
+| 📰 News Sentiment | Aggregates and scores news sentiment using NewsAPI and DuckDuckGo |
+| 💼 Portfolio Optimization | AI-driven rebalancing and risk assessment |
+| 💻 Real-Time UI | Tailwind CSS + Alpine.js, dark mode, streaming updates |
+| ☁️ Cloud Native | Dockerized, Google Cloud Run and Firestore backend |
 
 ---
 
 ## 🌐 Live Platform
 
-> **[https://stock-agent-774764824527.us-central1.run.app](https://stock-agent-774764824527.us-central1.run.app)**  
-> _(Optimized for desktop, tablet, and mobile)_
+**Web:** [https://stock-agent-774764824527.us-central1.run.app](https://stock-agent-774764824527.us-central1.run.app)
 
-**Try:**
-"Analyze Reliance for swing trading"
-"Buy 10 shares of TCS"
-"Show my portfolio performance"
-"Find top 3 bullish IT stocks"
-
-yaml
-Copy code
+**Try queries like:**
+- "Analyze Reliance for swing trading"
+- "Buy 10 shares of TCS"
+- "Show my portfolio performance"
+- "Find top 3 bullish IT stocks"
 
 ---
 
-## ✨ Key Features
+## 🧩 Technology Stack
 
-### 🤖 AI-Powered Insights
-- Gemini 2.5 Flash (or any Gemini model) for financial reasoning  
-- Synance AI combines sentiment, technical indicators & market data  
-- Conversational control over portfolio and trade execution  
-
-### 📊 Market Analysis & Screening
-- Supports 15+ NSE indices  
-- Recent News, RSI, EMA, momentum & trend analysis  
-- Fetches live prices and recent news  
-
-### 💼 Portfolio & Trading
-- ₹10L paper trading wallet  
-- Trade history, day P&L, and portfolio metrics  
-- Zerodha integration for live order execution  
-- AI-based risk/reward analysis  
-
-### 💻 Frontend & UX
-- Tailwind CSS + Alpine.js + Firebase Auth  
-- Floating portfolio dashboard  
-- Multi-chat thread management  
-- Real-time updates & sleek UI animations  
+| Layer       | Tools                                    |
+|-------------|------------------------------------------|
+| Frontend    | Alpine.js, Tailwind CSS, Firebase Auth   |
+| Backend     | Flask, Gemini 2.5 Flash, yfinance, pandas, TA-Lib |
+| AI Engine   | Synance AI Core (custom financial logic) |
+| Database    | Firebase Firestore                       |
+| Infra       | Docker, Google Cloud Run                 |
+| Integration | Zerodha Kite Connect API                 |
 
 ---
 
-## 🧱 Technology Stack
+## ⚙️ Installation & Setup
 
-| Layer | Tools Used |
-|:---|:---|
-| **Frontend** | Alpine.js • Tailwind CSS • Firebase Auth |
-| **Backend** | Flask • Gemini 2.5 Flash • yfinance • pandas • TA-Lib |
-| **AI Engine** | Synance AI Core (custom financial logic) |
-| **Database** | Firebase Firestore |
-| **Infrastructure** | Docker • Google Cloud Run |
-| **Integration** | Zerodha Kite Connect API |
+### Backend
+
+git clone https://github.com/yourusername/ai-stock-analyst.git
+cd ai-stock-analyst
+pip install -r requirements.txt
+
+text
+
+**Main dependencies:**
+- flask>=2.3.0
+- flask-cors>=4.0.0
+- google-generativeai>=0.3.0
+- yfinance>=0.2.28
+- firebase-admin>=6.2.0
+- pandas>=2.0.0
+- ta>=0.11.0
+- duckduckgo-search>=3.9.0
+- requests>=2.31.0
+- gunicorn>=21.2.0
+- cachetools>=5.3.3
+
+### Frontend
+- Alpine.js 3.x
+- Tailwind CSS 3.x
+- Firebase JS SDK v10+
+- Inter Font (Google Fonts)
 
 ---
 
-## ⚙️ Requirements
+## 🔧 Configuration
 
-### 🧩 Backend
-```bash
-flask>=2.3.0
-flask-cors>=4.0.0
-google-generativeai>=0.3.0
-yfinance>=0.2.28
-firebase-admin>=6.2.0
-pandas>=2.0.0
-ta>=0.11.0
-duckduckgo-search>=3.9.0
-requests>=2.31.0
-gunicorn>=21.2.0
-cachetools>=5.3.3
-🌐 Frontend
-Alpine.js 3.x
+### Environment Variables
 
-Tailwind CSS 3.x
-
-Firebase JS SDK v10+
-
-Inter Font (Google Fonts)
-
-🔧 Configuration
-1️⃣ Environment Variables
-bash
-Copy code
 export GOOGLE_APPLICATION_CREDENTIALS="/path/to/serviceAccountKey.json"
 export GENIE_API_KEY="your-gemini-api-key"
 export NEWSAPI_KEY="your-newsapi-key"
 export ZERODHA_API_KEY="your-zerodha-api-key"
 export ZERODHA_API_SECRET="your-zerodha-secret"
-2️⃣ config.py
-python
-Copy code
-GENIE_API_KEY = "your-gemini-api-key"
-NEWSAPI_KEYS = [
-    "newsapi-key-1",
-    "newsapi-key-2",
-    "newsapi-key-3"
-]
-ZERODHA_API_KEY = "your-zerodha-api-key"
-ZERODHA_API_SECRET = "your-zerodha-secret"
-3️⃣ Firebase Setup
-Create Firebase project
 
-Enable Auth (Email/Password)
+text
 
-Create Firestore DB (Production)
+### Firebase Setup
 
-Download serviceAccountKey.json
+1. Create Firebase project
+2. Enable Auth (Email/Password)
+3. Create Firestore DB
+4. Download `serviceAccountKey.json`
+5. Add firebaseConfig to `index.html`
 
-Add firebaseConfig to frontend index.html
+---
 
-🧩 Project Structure
-bash
-Copy code
+## 🧱 Project Structure
+
 ai-stock-analyst/
-├── app.py                      # Flask backend entry
-├── config.py                   # API keys & constants
-├── indices.py                  # NSE index data
-├── requirements.txt            # Dependencies
-├── Dockerfile                  # Docker setup
+├── app.py # Flask backend entry
+├── config.py # API keys & constants
+├── indices.py # NSE index data
+├── requirements.txt # Dependencies
+├── Dockerfile # Docker setup
 ├── templates/
-│   ├── index.html              # Main frontend (Alpine.js)
-│   └── components/             # UI elements
+│ └── index.html # Frontend (Alpine.js)
 ├── static/
-│   ├── css/                    # Tailwind styles
-│   └── js/                     # Chat logic & Firebase config
+│ ├── css/ # Tailwind styles
+│ └── js/ # Chat logic & Firebase config
 ├── utils/
-│   ├── portfolio_manager.py    # AI-based optimization
-│   ├── trade_executor.py       # Order simulation/execution
-│   ├── news_fetcher.py         # Sentiment analyzer
-│   └── indicators.py           # RSI, EMA, momentum tools
+│ ├── portfolio_manager.py# AI-based optimization
+│ ├── trade_executor.py # Order simulation/execution
+│ ├── news_fetcher.py # Sentiment analyzer
+│ └── indicators.py # RSI, EMA, momentum tools
 └── credentials/
-    └── serviceAccountKey.json  # Firebase credentials
-🔑 Core Functionalities
-🔹 normalize_ticker()
-python
-Copy code
-def normalize_ticker(ticker_input: str) -> Optional[str]:
-    """Converts 'Reliance' or 'reliance.ns' → 'RELIANCE.NS'"""
-🔹 screen_static_index()
-python
-Copy code
-def screen_static_index(index_name="NIFTY 50", num_stocks=5):
-    """Screens top performing stocks using RSI & EMA indicators"""
-🔹 analyze_portfolio()
-python
-Copy code
-def analyze_portfolio(holdings: list):
-    """Calculates P&L, diversification, and sector-wise allocation"""
-🔹 execute_trade()
-python
-Copy code
-def execute_trade(ticker: str, qty: int, action: str, user_id: str):
-    """Performs BUY/SELL operation (paper or live via Zerodha)"""
-🔹 get_news_sentiment()
-python
-Copy code
-def get_news_sentiment(stock: str):
-    """Fetches & classifies news as bullish/bearish/neutral"""
-☁️ Deployment
-🐳 Docker
-bash
-Copy code
+└── serviceAccountKey.json # Firebase credentials
+
+text
+
+---
+
+## 🧩 Key Functionality (Sample)
+
+- Normalize ticker symbols
+    ```
+    def normalize_ticker(ticker_input: str) -> Optional[str]:
+        """Converts 'Reliance' or 'reliance.ns' → 'RELIANCE.NS'"""
+    ```
+- Screen top stocks via RSI & EMA
+    ```
+    def screen_static_index(index_name="NIFTY 50", num_stocks=5):
+        """Screens top performing stocks using RSI & EMA indicators"""
+    ```
+- Portfolio analytics
+    ```
+    def analyze_portfolio(holdings: list):
+        """Calculates P&L, diversification, and sector-wise allocation"""
+    ```
+- Trade execution (paper/live)
+    ```
+    def execute_trade(ticker: str, qty: int, action: str, user_id: str):
+        """Performs BUY/SELL operation (paper or live via Zerodha)"""
+    ```
+- News sentiment
+    ```
+    def get_news_sentiment(stock: str):
+        """Fetches & classifies news as bullish/bearish/neutral"""
+    ```
+
+---
+
+## ☁️ Deployment
+
+### Docker Local
+
 docker build -t ai-stock-analyst .
-docker run -p 8080:8080 \
-  -v /path/to/serviceAccountKey.json:/app/credentials.json \
-  -e GOOGLE_APPLICATION_CREDENTIALS=/app/credentials.json \
-  ai-stock-analyst
-🌍 Google Cloud Run
-bash
-Copy code
+docker run -p 8080:8080
+-v /path/to/serviceAccountKey.json:/app/credentials.json
+-e GOOGLE_APPLICATION_CREDENTIALS=/app/credentials.json
+ai-stock-analyst
+
+text
+
+### Google Cloud Run
+
 gcloud auth login
 gcloud config set project YOUR_PROJECT_ID
-gcloud run deploy ai-stock-analyst \
-  --source . \
-  --platform managed \
-  --region asia-south1 \
-  --allow-unauthenticated \
-  --memory 2Gi \
-  --timeout 300
-🔮 Future Enhancements
- Real-time WebSocket market streaming
+gcloud run deploy ai-stock-analyst
+--source .
+--platform managed
+--region asia-south1
+--allow-unauthenticated
+--memory 2Gi
+--timeout 300
 
- Strategy backtesting & trade replay
+text
 
- Options & derivatives analytics
+---
 
- Multi-language support (Hindi & regional)
+## 🔮 Future Roadmap
 
- Mobile App (Flutter)
+- Real-time WebSocket streaming
+- Strategy backtesting & trade replay
+- Options & derivatives analytics
+- Hindi & regional language support
+- Mobile App (Flutter)
+- Social/copy trading
+- Full Zerodha live trading in production
 
- Social/copy trading features
+---
 
- Full live broker integration with Zerodha (production release)
+## 👨‍💻 Author & Contact
 
-👨‍💻 Author
-Samir Lade
+**Samir Lade**  
+Email: [ladesamir10@gmail.com](mailto:ladesamir10@gmail.com)  
+Live Platform: [stock-agent-774764824527.us-central1.run.app](https://stock-agent-774764824527.us-central1.run.app)
 
-🌐 Live Platform: stock-agent-774764824527.us-central1.run.app
-
-💻 GitHub: @Sam-Dev-AI
-
-✉️ Email: ladesamir10@gmail.com
+---
 
 <div align="center">
-⭐ Star this repository if you like it!
-Built with ❤️ by Samir — Empowering Indian Traders through AI
-
-⬆ Back to Top
-
-</div> ```
+⭐ Star this repository if you like it!  
+Built with ❤️ by Samir — Empowering Indian Traders through AI  
+</div>
