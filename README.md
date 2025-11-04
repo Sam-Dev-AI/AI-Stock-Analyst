@@ -2,9 +2,10 @@
 
 # AI Stock Analyst Platform
 
-*Intelligent Trading for Indian Markets (NSE)*
-
 [![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-Visit_Platform-blue?style=for-the-badge)](https://stock-agent-774764824527.us-central1.run.app)
+  
+*Intelligent Trading Platform for Indian Markets (NSE)*
+
 [![Google Cloud](https://img.shields.io/badge/Google_Cloud-Run-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white)](https://cloud.google.com/run)
 [![Zerodha API](https://img.shields.io/badge/Zerodha-Kite_API-00BFA5?style=for-the-badge&logo=zerodha&logoColor=white)](https://kite.trade/)
 [![Python](https://img.shields.io/badge/Python-3.9+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
