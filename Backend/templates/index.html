@@ -1101,9 +1101,43 @@
                             d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" />
                     </svg>
                 </div>
-                <div class="min-w-0">
-                    <h3 class="text-white font-bold text-lg truncate">Portfolio</h3>
-                    <div class="flex items-center gap-2">
+                <div class="min-w-0 flex-1 flex flex-col justify-center">
+                    <div class="flex items-center gap-4">
+                        <h3 class="text-white font-bold text-xl truncate">Portfolio</h3>
+
+                        <a @click.prevent="startZerodhaConnect()" :disabled="zerodhaSyncLoading"
+                            class="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-full font-bold transition-all disabled:opacity-50 cursor-pointer"
+                            :class="zerodhaSynced ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'"
+                            title="Connect/Resync with Zerodha">
+
+                            <svg x-show="zerodhaSyncLoading" class="animate-spin h-3.5 w-3.5 text-white"
+                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                    stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                            </svg>
+
+                            <span x-show="!zerodhaSyncLoading" class="flex items-center gap-1">
+
+                                <template x-if="zerodhaSynced">
+                                    <span class="flex items-center gap-1">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span>Synced</span>
+                                    </span>
+                                </template>
+
+                                <span x-show="!zerodhaSynced">Connect Zerodha</span>
+                            </span>
+                        </a>
+                    </div>
+
+                    <div class="flex items-center gap-2 mt-1">
                         <button
                             @click="portfolioTab === 'portfolio' ? loadPortfolio() : (portfolioTab === 'watchlist' ? loadWatchlistPrices() : loadTradeHistory())"
                             class="p-1 -ml-1 text-green-100 hover:text-white transition" title="Reload">
@@ -1198,19 +1232,46 @@
                             <!-- Row 1: Total Portfolio Value -->
                             <div
                                 class="bg-gradient-to-br from-blue-800 to-blue-900 p-4 rounded-xl border border-blue-700 shadow-lg">
-                                <div class="flex items-center gap-2 mb-2">
-                                    <div class="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                                        <svg class="w-4 h-4 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-                                            <path
-                                                d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.993.883L4 8v9a2 2 0 002 2h8a2 2 0 002-2V8l-.007-.117A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm-2 5V6a2 2 0 114 0v1H8z">
-                                            </path>
-                                        </svg>
+
+                                <div class="grid grid-cols-2 gap-4">
+
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <div
+                                                class="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                                                <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z">
+                                                    </path>
+                                                </svg>
+                                            </div>
+                                            <p class="text-xs text-slate-300 font-semibold">Total Invested</p>
+                                        </div>
+                                        <p class="text-2xl font-bold text-white"
+                                            x-text="'₹' + (portfolio.summary?.total_invested || 0).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})">
+                                        </p>
                                     </div>
-                                    <p class="text-xs text-slate-300 font-semibold">Total Portfolio Value</p>
+
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <div
+                                                class="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                                                <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                                </svg>
+                                            </div>
+                                            <p class="text-xs text-slate-300 font-semibold">Current Value</p>
+                                        </div>
+                                        <p class="text-2xl font-bold text-white"
+                                            x-text="'₹' + (portfolio.summary?.portfolio_value || 0).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})">
+                                        </p>
+                                    </div>
+
                                 </div>
-                                <p class="text-3xl font-bold text-white"
-                                    x-text="'₹' + (portfolio.summary?.portfolio_value || 0).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})">
-                                </p>
                             </div>
                             <!-- Row 2: Three-column grid -->
                             <div class="grid grid-cols-3 gap-3">
@@ -1857,8 +1918,8 @@
     </script>
 
     <script>
-        
-        const API_BASE_URL = "https://stock-agent-774764824527.us-central1.run.app";
+
+        const API_BASE_URL = "http://127.0.0.1:8080";
 
         // --- Static Data (Defined globally for scope access) ---
         const NIFTY_50_STOCKS_GLOBAL = ['RELIANCE.NS', 'TCS.NS', 'HDFCBANK.NS', 'ICICIBANK.NS', 'INFY.NS', 'HINDUNILVR.NS', 'BHARTIARTL.NS', 'ITC.NS', 'SBIN.NS', 'LICI.NS', 'HCLTECH.NS', 'KOTAKBANK.NS', 'LT.NS', 'BAJFINANCE.NS', 'AXISBANK.NS', 'ASIANPAINT.NS', 'MARUTI.NS', 'SUNPHARMA.NS', 'TITAN.NS', 'WIPRO.NS', 'ULTRACEMCO.NS', 'ADANIENT.NS', 'ONGC.NS', 'NTPC.NS', 'JSWSTEEL.NS', 'TATAMOTORS.NS', 'POWERGRID.NS', 'BAJAJFINSV.NS', 'TATASTEEL.NS', 'COALINDIA.NS', 'INDUSINDBK.NS', 'HINDALCO.NS', 'TECHM.NS', 'GRASIM.NS', 'ADANIPORTS.NS', 'BRITANNIA.NS', 'CIPLA.NS', 'EICHERMOT.NS', 'DRREDDY.NS', 'NESTLEIND.NS', 'HEROMOTOCO.NS', 'BAJAJ-AUTO.NS', 'BPCL.NS', 'SHREECEM.NS', 'TATACONSUM.NS', 'UPL.NS', 'APOLLOHOSP.NS', 'DIVISLAB.NS'];
@@ -1866,7 +1927,7 @@
         const COMPANY_NAMES_GLOBAL = {
             'RELIANCE.NS': 'Reliance Industries', 'TCS.NS': 'Tata Consultancy Services', 'HDFCBANK.NS': 'HDFC Bank', 'ICICIBANK.NS': 'ICICI Bank', 'INFY.NS': 'Infosys', 'HINDUNILVR.NS': 'Hindustan Unilever', 'BHARTIARTL.NS': 'Bharti Airtel', 'ITC.NS': 'ITC Limited', 'SBIN.NS': 'State Bank of India', 'LICI.NS': 'Life Insurance Corp', 'HCLTECH.NS': 'HCL Technologies', 'KOTAKBANK.NS': 'Kotak Mahindra Bank', 'LT.NS': 'Larsen & Toubro', 'BAJFINANCE.NS': 'Bajaj Finance', 'AXISBANK.NS': 'Axis Bank', 'ASIANPAINT.NS': 'Asian Paints', 'MARUTI.NS': 'Maruti Suzuki', 'SUNPHARMA.NS': 'Sun Pharma', 'TITAN.NS': 'Titan Company', 'WIPRO.NS': 'Wipro', 'ULTRACEMCO.NS': 'UltraTech Cement', 'ADANIENT.NS': 'Adani Enterprises', 'ONGC.NS': 'Oil & Natural Gas', 'NTPC.NS': 'NTPC Limited', 'JSWSTEEL.NS': 'JSW Steel', 'TATAMOTORS.NS': 'Tata Motors', 'POWERGRID.NS': 'Power Grid Corp', 'BAJAJFINSV.NS': 'Bajaj Finserv', 'TATASTEEL.NS': 'Tata Steel', 'COALINDIA.NS': 'Coal India', 'INDUSINDBK.NS': 'IndusInd Bank', 'HINDALCO.NS': 'Hindalco Industries', 'TECHM.NS': 'Tech Mahindra', 'GRASIM.NS': 'Grasim Industries', 'ADANIPORTS.NS': 'Adani Ports', 'BRITANNIA.NS': 'Britannia Industries', 'CIPLA.NS': 'Cipla', 'EICHERMOT.NS': 'Eicher Motors', 'DRREDDY.NS': 'Dr. Reddys Labs', 'NESTLEIND.NS': 'Nestle India', 'HEROMOTOCO.NS': 'Hero MotoCorp', 'BAJAJ-AUTO.NS': 'Bajaj Auto', 'BPCL.NS': 'Bharat Petroleum', 'SHREECEM.NS': 'Shree Cement', 'TATACONSUM.NS': 'Tata Consumer', 'UPL.NS': 'UPL Limited', 'APOLLOHOSP.NS': 'Apollo Hospitals', 'DIVISLAB.NS': 'Divis Laboratories'
         };
-        
+
 
 
         function chatApp() {
@@ -1934,13 +1995,81 @@
                 totalTradeValue: 0,
                 loadingPrice: false,
 
-                
+                // New Zerodha Sync State
+                zerodhaSynced: false,
+                zerodhaSyncMessage: 'Not connected. Sync your Zerodha holdings.',
+                zerodhaSyncLoading: false,
+
+                async secureFetch(url, options = {}) {
+                    if (!this.currentUser) {
+                        console.error("Auth Error: No user logged in.");
+                        this.authError = "You are not logged in. Please refresh.";
+                        this.handleLogout(); // Force logout
+                        return Promise.reject(new Error("User not authenticated"));
+                    }
+
+                    try {
+                        // 1. Get a fresh, valid ID token (forces refresh if expired)
+                        const token = await this.currentUser.getIdToken(true);
+
+                        // 2. Prepare headers
+                        const headers = new Headers(options.headers || {});
+                        headers.set('Authorization', `Bearer ${token}`);
+
+                        // 3. Merge new options
+                        const secureOptions = {
+                            ...options,
+                            headers: headers
+                        };
+
+                        // 4. Make the call
+                        const response = await fetch(url, secureOptions);
+
+                        // 5. Handle unauthorized responses from the server
+                        if (response.status === 401 || response.status === 403) {
+                            console.error("Auth Error: Server rejected token.");
+                            this.authError = "Your session has expired. Please log in again.";
+                            this.handleLogout(); // Force logout
+                            return Promise.reject(new Error("Token rejected by server"));
+                        }
+
+                        return response; // Return the response for the original function to handle
+
+                    } catch (error) {
+                        console.error("Error in secureFetch:", error);
+                        // This is likely a Firebase token error
+                        this.authError = "Could not verify your session. Please log in again.";
+                        this.handleLogout();
+                        return Promise.reject(error);
+                    }
+                },
+                // ============================================
+                // END OF SECURE FETCH HELPER
+                // ============================================
 
                 async init() {
                     await this.initFirebase();
+                    if (window.location.search.includes('sync=success')) {
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }
                 },
 
-                
+                startZerodhaConnect() {
+                    if (!this.currentUser) return;
+
+                    // Set UI state to loading/connecting
+                    this.zerodhaSyncLoading = true;
+                    this.zerodhaSynced = false;
+                    this.zerodhaSyncMessage = 'Redirecting to Zerodha...';
+                    const connectUrl = `${API_BASE_URL}/api/zerodha/connect/${this.currentUser.uid}`;
+                    window.open(connectUrl, '_blank');
+                    setTimeout(() => {
+                        this.zerodhaSyncLoading = false;
+                        // The checkZerodhaSyncStatus function will be called on the next portfolio reload.
+                        this.zerodhaSyncMessage = 'Check portfolio/reload after connecting on Zerodha site.';
+                    }, 5000);
+                },
+
 
                 async initFirebase() {
                     await new Promise(resolve => {
@@ -1976,6 +2105,7 @@
                     } else {
                         this.startNewChat(true);
                     }
+                    await this.checkZerodhaSyncStatus();
                 },
 
                 async getProactiveAlert() {
@@ -2051,7 +2181,8 @@
                 async fetchChatList() {
                     if (!this.currentUser) return;
                     try {
-                        const response = await fetch(`${API_BASE_URL}/api/chats/${this.currentUser.uid}`);
+                        // USE SECURE FETCH
+                        const response = await this.secureFetch(`${API_BASE_URL}/api/chats/${this.currentUser.uid}`);
                         if (response.ok) this.chatList = await response.json();
                     } catch (error) {
                         console.error("Error fetching chat list:", error);
@@ -2068,17 +2199,16 @@
                     const chat = this.chatList.find(c => c.chatId === chatId)
                     document.getElementById('chat-title').textContent = chat ? chat.title : 'Chat'
 
-                    // CRITICAL FIX: Clear container FIRST, then set loading
                     const container = document.getElementById('message-container')
                     container.innerHTML = '' // Clear immediately
 
                     if (showAlert) await this.getProactiveAlert()
 
                     try {
-                        const response = await fetch(`${API_BASE_URL}/api/chat/${this.currentUser.uid}/${chatId}`)
+                        // USE SECURE FETCH
+                        const response = await this.secureFetch(`${API_BASE_URL}/api/chat/${this.currentUser.uid}/${chatId}`)
                         if (response.ok) {
                             const messages = await response.json()
-                            // Clear again just before appending to ensure no duplicates
                             container.innerHTML = ''
                             messages.forEach(msg => this.appendMessage(msg.text, msg.role, false))
                         }
@@ -2106,7 +2236,8 @@
 
                 async deleteChat(chatId) {
                     try {
-                        const response = await fetch(`${API_BASE_URL}/api/chat/${this.currentUser.uid}/${chatId}`, { method: 'DELETE' });
+                        // USE SECURE FETCH
+                        const response = await this.secureFetch(`${API_BASE_URL}/api/chat/${this.currentUser.uid}/${chatId}`, { method: 'DELETE' });
                         if (response.ok) {
                             await this.fetchChatList();
                             if (this.currentChatId === chatId) {
@@ -2134,7 +2265,8 @@
                     if (!this.newChatTitle || !this.chatToRename.id || this.newChatTitle.trim() === '') return;
 
                     try {
-                        const response = await fetch(`${API_BASE_URL}/api/chat/${this.currentUser.uid}/${this.chatToRename.id}`, {
+                        // USE SECURE FETCH
+                        const response = await this.secureFetch(`${API_BASE_URL}/api/chat/${this.currentUser.uid}/${this.chatToRename.id}`, {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ title: this.newChatTitle.trim() })
@@ -2170,7 +2302,8 @@
                     if (input) input.disabled = true;
 
                     try {
-                        const response = await fetch(`${API_BASE_URL}/api/chat`, {
+                        // USE SECURE FETCH
+                        const response = await this.secureFetch(`${API_BASE_URL}/api/chat`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -2196,7 +2329,10 @@
                         }
                     } catch (error) {
                         document.getElementById(`typing-${typingId}`)?.remove();
-                        this.appendMessage('Network error. Please try again.', 'system');
+                        // secureFetch already handles auth errors, so this is likely a network error
+                        if (error.message !== "Token rejected by server" && error.message !== "User not authenticated") {
+                            this.appendMessage('Network error. Please try again.', 'system');
+                        }
                     } finally {
                         if (sendButton) sendButton.disabled = false;
                         if (input) {
@@ -2220,9 +2356,9 @@
 
                     if (sender === 'system') {
                         content = `<div class="flex items-start gap-3">
-                         <div class="flex-shrink-0"><svg class="w-5 h-5 text-amber-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg></div>
-                         <p class="text-sm whitespace-pre-wrap">${text}</p>
-                        </div>`;
+                     <div class="flex-shrink-0"><svg class="w-5 h-5 text-amber-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg></div>
+                     <p class="text-sm whitespace-pre-wrap">${text}</p>
+                   </div>`;
                     }
 
                     div.innerHTML = `<div class="${senderClass} px-4 py-3 max-w-[85%] sm:max-w-[80%] shadow-lg">${content}</div>`;
@@ -2237,14 +2373,14 @@
                     div.id = `typing-${id}`;
                     div.className = 'message flex justify-start';
                     div.innerHTML = `
-                  <div class="message-agent px-4 py-3 shadow-lg">
-                      <div class="flex gap-1">
-                          <div class="w-2 h-2 bg-slate-500 rounded-full typing-dot"></div>
-                          <div class="w-2 h-2 bg-slate-500 rounded-full typing-dot"></div>
-                          <div class="w-2 h-2 bg-slate-500 rounded-full typing-dot"></div>
-                      </div>
+              <div class="message-agent px-4 py-3 shadow-lg">
+                  <div class="flex gap-1">
+                      <div class="w-2 h-2 bg-slate-500 rounded-full typing-dot"></div>
+                      <div class="w-2 h-2 bg-slate-500 rounded-full typing-dot"></div>
+                      <div class="w-2 h-2 bg-slate-500 rounded-full typing-dot"></div>
                   </div>
-                `;
+              </div>
+            `;
                     container.appendChild(div);
                     this.scrollToBottom();
                 },
@@ -2292,28 +2428,21 @@
                     this.searchResults = [];
                     this.currentSearchResultIndex = -1;
 
-                    // Don't search for empty or very short strings
-                    if (!this.searchQuery || this.searchQuery.length < 1) { // Allow single character searches now if needed, but only whole word
+                    if (!this.searchQuery || this.searchQuery.length < 1) {
                         return;
                     }
 
                     const query = this.searchQuery.toLowerCase();
-                    // Select all <p> tags inside message bubbles
                     const messageParagraphs = document.querySelectorAll('.message-agent p, .message-user p');
                     const regex = new RegExp(`\\b${this.searchQuery.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}\\b`, 'gi');
-
 
                     let results = [];
                     messageParagraphs.forEach(p => {
                         const text = p.innerText;
-
                         if (regex.test(text)) {
-
                             p.innerHTML = text.replace(regex, match => `<mark class="search-highlight">${match}</mark>`);
-
                             results.push(...p.querySelectorAll('mark.search-highlight'));
                         }
-
                         regex.lastIndex = 0;
                     });
 
@@ -2373,6 +2502,47 @@
                     this.loadPortfolio();
                 },
 
+                async loadInitialData() {
+                    await this.fetchChatList();
+                    if (this.chatList.length > 0) {
+                        this.loadChat(this.chatList[0].chatId, true);
+                    } else {
+                        this.startNewChat(true);
+                    }
+                    await this.checkZerodhaSyncStatus();
+
+                },
+
+                async checkZerodhaSyncStatus() {
+                    if (!this.currentUser) return;
+                    try {
+                        const userDocUrl = `${API_BASE_URL}/api/portfolio/${this.currentUser.uid}`;
+                        const response = await this.secureFetch(userDocUrl);
+
+                        if (response.ok) {
+                            const portfolioData = await response.json();
+                            let isSynced = portfolioData.zerodha_synced_once === true;
+
+                            // 2. Fallback check on the summary object (where P&L data is)
+                            if (!isSynced && portfolioData.summary && portfolioData.summary.zerodha_synced_once === true) {
+                                isSynced = true;
+                            }
+
+                            if (isSynced) {
+                                this.zerodhaSynced = true;
+                                this.zerodhaSyncMessage = '✅ Synced: Real holdings loaded. Click to Resync.';
+                            } else {
+                                this.zerodhaSynced = false;
+                                this.zerodhaSyncMessage = 'Not connected. Sync your Zerodha holdings.';
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Zerodha status check error:', error);
+                        this.zerodhaSynced = false;
+                        this.zerodhaSyncMessage = 'Error checking sync status.';
+                    }
+                },
+
                 async loadPortfolio() {
                     if (!this.currentUser) return;
 
@@ -2380,7 +2550,8 @@
                     if (this.reloadIntervalId) clearInterval(this.reloadIntervalId);
 
                     try {
-                        const response = await fetch(`${API_BASE_URL}/api/portfolio/${this.currentUser.uid}`);
+                        // USE SECURE FETCH
+                        const response = await this.secureFetch(`${API_BASE_URL}/api/portfolio/${this.currentUser.uid}`);
                         if (response.ok) {
                             this.portfolio = await response.json();
                             this.portfolioLastUpdated = Date.now();
@@ -2414,7 +2585,8 @@
                     if (!this.currentUser) return;
                     this.portfolioLoading = true;
                     try {
-                        const response = await fetch(`${API_BASE_URL}/api/watchlist/${this.currentUser.uid}`);
+                        // USE SECURE FETCH
+                        const response = await this.secureFetch(`${API_BASE_URL}/api/watchlist/${this.currentUser.uid}`);
                         if (response.ok) {
                             this.watchlist = await response.json();
                         } else {
@@ -2431,7 +2603,8 @@
                     if (!this.currentUser) return;
                     this.portfolioLoading = true;
                     try {
-                        const response = await fetch(`${API_BASE_URL}/api/history/${this.currentUser.uid}`);
+                        // USE SECURE FETCH
+                        const response = await this.secureFetch(`${API_BASE_URL}/api/history/${this.currentUser.uid}`);
                         if (response.ok) {
                             this.tradeHistory = await response.json();
                         } else {
@@ -2449,15 +2622,12 @@
                 formatTradeTimestamp(isoString) {
                     if (!isoString) return 'N/A';
                     const date = new Date(isoString);
-                    // Attempt to handle both UTC ('Z') and potentially server-local times
                     if (isoString.endsWith('Z')) {
-                        // If it's UTC, format it nicely for India time
                         return date.toLocaleString('en-IN', {
                             day: 'numeric', month: 'short', year: 'numeric',
                             hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Asia/Kolkata'
                         });
                     } else {
-                        // Otherwise, assume it's already in a local-ish time and format directly
                         return date.toLocaleString('en-IN', {
                             day: 'numeric', month: 'short', year: 'numeric',
                             hour: 'numeric', minute: '2-digit', hour12: true
@@ -2473,7 +2643,8 @@
                 async adjustCash() {
                     if (this.newCashAmount < 0 || this.newCashAmount > 1000000) return;
                     try {
-                        const response = await fetch(`${API_BASE_URL}/api/adjust-cash/${this.currentUser.uid}`, {
+                        // USE SECURE FETCH
+                        const response = await this.secureFetch(`${API_BASE_URL}/api/adjust-cash/${this.currentUser.uid}`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ cash: this.newCashAmount })
@@ -2495,7 +2666,6 @@
                     this.selectedStocks = [];
                     this.stockSearch = '';
                     this.filteredStocks = NIFTY_50_STOCKS_GLOBAL;
-                    // this.filterStocks(); // No need to call filter initially if showing all
                 },
 
                 filterStocks() {
@@ -2520,8 +2690,6 @@
                             this.selectedStocks.push(stock);
                         }
                     }
-                    // Force Alpine update if needed (often not necessary with array pushes/splices)
-                    // this.$forceUpdate(); 
                 },
 
                 isStockSelected(stock) {
@@ -2537,9 +2705,10 @@
                         this.openTradeModal('BUY', this.selectedStock, 1); // Default quantity to 1
                         this.stockPickerOpen = false;
                     } else if (this.stockPickerMode === 'watchlist' && this.selectedStocks.length > 0) {
-                        this.isLoading = true; // Use global loading indicator maybe? Or specific?
+                        this.isLoading = true;
                         try {
-                            const response = await fetch(`${API_BASE_URL}/api/watchlist/${this.currentUser.uid}`, {
+                            // USE SECURE FETCH
+                            const response = await this.secureFetch(`${API_BASE_URL}/api/watchlist/${this.currentUser.uid}`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ tickers: this.selectedStocks })
@@ -2549,7 +2718,6 @@
                                 this.selectedStocks = [];
                                 this.stockPickerOpen = false;
                                 await this.loadWatchlistPrices(); // Reload watchlist after adding
-                                // Switch portfolio view to watchlist?
                                 this.portfolioTab = 'watchlist';
                             } else {
                                 const errorData = await response.json();
@@ -2557,7 +2725,9 @@
                             }
                         } catch (error) {
                             console.error("Watchlist add error:", error);
-                            this.appendMessage('Network error while adding to watchlist.', 'system');
+                            if (error.message !== "Token rejected by server" && error.message !== "User not authenticated") {
+                                this.appendMessage('Network error while adding to watchlist.', 'system');
+                            }
                         } finally {
                             this.isLoading = false;
                         }
@@ -2566,7 +2736,8 @@
 
                 async removeFromWatchlist(ticker) {
                     try {
-                        const response = await fetch(`${API_BASE_URL}/api/watchlist/${this.currentUser.uid}/${ticker}`, {
+                        // USE SECURE FETCH
+                        const response = await this.secureFetch(`${API_BASE_URL}/api/watchlist/${this.currentUser.uid}/${ticker}`, {
                             method: 'DELETE'
                         });
                         if (response.ok) {
@@ -2582,14 +2753,15 @@
                 async openTradeModal(action, ticker, quantity) {
                     this.tradeAction = action;
                     this.tradeTicker = ticker;
-                    this.tradeQuantity = quantity || 1; // Ensure quantity is valid
+                    this.tradeQuantity = quantity || 1;
                     this.tradeError = '';
                     this.loadingPrice = true;
                     this.tradeModalOpen = true;
-                    this.currentStockPrice = 0; // Reset price to 0 initially
-                    this.totalTradeValue = 0;   // Reset total to 0
+                    this.currentStockPrice = 0;
+                    this.totalTradeValue = 0;
 
                     try {
+                        // This is a public endpoint, so no secureFetch is needed
                         const response = await fetch(`${API_BASE_URL}/api/stock/price/${ticker}`);
                         if (!response.ok) {
                             const errData = await response.json();
@@ -2597,7 +2769,6 @@
                         }
                         const data = await response.json();
 
-                        // --- FIX: Use current_price ---
                         if (data && data.current_price !== undefined) {
                             this.currentStockPrice = data.current_price;
                         } else if (data && data.error) {
@@ -2605,7 +2776,6 @@
                         } else {
                             throw new Error('Invalid price data received.');
                         }
-                        // --- END FIX ---
 
                         this.calculateTradeValue(); // Calculate AFTER getting the price
                     } catch (error) {
@@ -2619,11 +2789,8 @@
                 },
 
                 calculateTradeValue() {
-                    // Ensure tradeQuantity is a positive number, default to 0 if not
                     const quantity = (typeof this.tradeQuantity === 'number' && this.tradeQuantity > 0) ? this.tradeQuantity : 0;
-                    // Calculate value, ensuring price is also valid
                     const price = (typeof this.currentStockPrice === 'number' && this.currentStockPrice >= 0) ? this.currentStockPrice : 0;
-                    // Use Math.round for better handling of potential floating point issues
                     this.totalTradeValue = Math.round(price * quantity * 100) / 100; // Round to 2 decimal places
                 },
 
@@ -2631,7 +2798,6 @@
                 async executeTrade() {
                     this.tradeLoading = true;
                     this.tradeError = '';
-                    // Validate quantity client-side first
                     if (!Number.isInteger(this.tradeQuantity) || this.tradeQuantity <= 0) {
                         this.tradeError = "Quantity must be a positive whole number.";
                         this.tradeLoading = false;
@@ -2639,7 +2805,8 @@
                     }
 
                     try {
-                        const response = await fetch(`${API_BASE_URL}/api/trade/${this.currentUser.uid}`, {
+                        // USE SECURE FETCH
+                        const response = await this.secureFetch(`${API_BASE_URL}/api/trade/${this.currentUser.uid}`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -2655,18 +2822,19 @@
                             this.tradeModalOpen = false;
                             await this.loadPortfolio(); // Reload portfolio data
                         } else {
-                            // Use the specific error message from the backend if available
                             this.tradeError = data.message || data.error || 'Trade failed. Please check details.';
                         }
                     } catch (error) {
                         console.error("Trade execution error:", error);
-                        this.tradeError = 'Network error during trade execution.';
+                        if (error.message !== "Token rejected by server" && error.message !== "User not authenticated") {
+                            this.tradeError = 'Network error during trade execution.';
+                        }
                     } finally {
                         this.tradeLoading = false;
                     }
                 }
             } // End of return object
-        } // End of chatApp function
+        }
     </script>
 </body>
 

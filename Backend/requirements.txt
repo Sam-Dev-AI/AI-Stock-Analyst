@@ -9,3 +9,6 @@ gunicorn
 nsepy
 firebase-admin
 ddgs
+gunicorn    
+google-cloud-secret-manager
+kiteconnect

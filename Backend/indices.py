@@ -1,8 +1,4 @@
-import config
-
 # Nifty 50 (Top 50 Large Cap)
-# Note: This is also defined in config.py, ensure consistency if changed.
-NIFTY_50 = config.NIFTY_50_TICKERS
 NIFTY_50 = [
     'RELIANCE.NS', 'TCS.NS', 'HDFCBANK.NS', 'ICICIBANK.NS', 'INFY.NS', 'HINDUNILVR.NS',
     'BHARTIARTL.NS', 'ITC.NS', 'SBIN.NS', 'LICI.NS', 'HCLTECH.NS', 'KOTAKBANK.NS',
@@ -15,6 +11,12 @@ NIFTY_50 = [
     'BPCL.NS', 'SHREECEM.NS', 'TATACONSUM.NS', 'UPL.NS', 'APOLLOHOSP.NS', 'DIVISLAB.NS',
     'M&M.NS', 'LTIM.NS' 
 ]
+
+# NEW: Company names mapping, now stored with its list
+COMPANY_NAMES = {
+    'RELIANCE.NS': 'Reliance Industries', 'TCS.NS': 'Tata Consultancy Services', 'HDFCBANK.NS': 'HDFC Bank', 'ICICIBANK.NS': 'ICICI Bank', 'INFY.NS': 'Infosys', 'HINDUNILVR.NS': 'Hindustan Unilever', 'BHARTIARTL.NS': 'Bharti Airtel', 'ITC.NS': 'ITC Limited', 'SBIN.NS': 'State Bank of India', 'LICI.NS': 'Life Insurance Corp', 'HCLTECH.NS': 'HCL Technologies', 'KOTAKBANK.NS': 'Kotak Mahindra Bank', 'LT.NS': 'Larsen & Toubro', 'BAJFINANCE.NS': 'Bajaj Finance', 'AXISBANK.NS': 'Axis Bank', 'ASIANPAINT.NS': 'Asian Paints', 'MARUTI.NS': 'Maruti Suzuki', 'SUNPHARMA.NS': 'Sun Pharma', 'TITAN.NS': 'Titan Company', 'WIPRO.NS': 'Wipro', 'ULTRACEMCO.NS': 'UltraTech Cement', 'ADANIENT.NS': 'Adani Enterprises', 'ONGC.NS': 'Oil & Natural Gas', 'NTPC.NS': 'NTPC Limited', 'JSWSTEEL.NS': 'JSW Steel', 'TATAMOTORS.NS': 'Tata Motors', 'POWERGRID.NS': 'Power Grid Corp', 'BAJAJFINSV.NS': 'Bajaj Finserv', 'TATASTEEL.NS': 'Tata Steel', 'COALINDIA.NS': 'Coal India', 'INDUSINDBK.NS': 'IndusInd Bank', 'HINDALCO.NS': 'Hindalco Industries', 'TECHM.NS': 'Tech Mahindra', 'GRASIM.NS': 'Grasim Industries', 'ADANIPORTS.NS': 'Adani Ports', 'BRITANNIA.NS': 'Britannia Industries', 'CIPLA.NS': 'Cipla', 'EICHERMOT.NS': 'Eicher Motors', 'DRREDDY.NS': 'Dr. Reddys Labs', 'NESTLEIND.NS': 'Nestle India', 'HEROMOTOCO.NS': 'Hero MotoCorp', 'BAJAJ-AUTO.NS': 'Bajaj Auto', 'BPCL.NS': 'Bharat Petroleum', 'SHREECEM.NS': 'Shree Cement', 'TATACONSUM.NS': 'Tata Consumer', 'UPL.NS': 'UPL Limited', 'APOLLOHOSP.NS': 'Apollo Hospitals', 'DIVISLAB.NS': 'Divis Laboratories', 'M&M.NS': 'Mahindra & Mahindra', 'LTIM.NS': 'LTIMindtree'
+}
+
 
 # Nifty Bank (Currently 12 stocks)
 NIFTY_BANK = [
@@ -47,7 +49,7 @@ NIFTY_FMCG = [
 NIFTY_FINANCIAL_SERVICES = [
     'HDFCBANK.NS', 'ICICIBANK.NS', 'BAJFINANCE.NS', 'KOTAKBANK.NS', 'AXISBANK.NS',
     'SBIN.NS', 'BAJAJFINSV.NS', 'HDFCLIFE.NS', 'SBILIFE.NS', 'ICICIGI.NS',
-    'INDUSINDBK.NS', 'SBICARD.NS', 'BAJAJHLDNG.NS', 'CHOLAFIN.NS', # HDFC removed post-merger
+    'INDUSINDBK.NS', 'SBICARD.NS', 'BAJAJHLDNG.NS', 'CHOLAFIN.NS',
     'ICICIPRULI.NS', 'BANKBARODA.NS', 'PNB.NS', 'SRTRANSFIN.NS', 'MUTHOOTFIN.NS',
     'IDFCFIRSTB.NS'
 ]
@@ -83,7 +85,7 @@ NIFTY_PRIVATE_BANK = [
 
 # Nifty Realty (Currently 10 stocks)
 NIFTY_REALTY = [
-    'DLF.NS', 'GODREJPROP.NS', 'MACTEch.NS', # Macrotech Developers (Lodha)
+    'DLF.NS', 'GODREJPROP.NS', 'MACTECh.NS', # Macrotech Developers (Lodha)
     'PHOENIXLTD.NS', 'PRESTIGE.NS', 'OBEROIRLTY.NS', 'BRIGADE.NS',
     'IBREALEST.NS', 'SOBHA.NS', 'SUNTECK.NS'
 ]
@@ -135,4 +137,4 @@ STATIC_INDICES = {
     "NIFTY 100": NIFTY_BROAD_PROXY,
     "NIFTY 200": NIFTY_BROAD_PROXY,
     "NIFTY 500": NIFTY_BROAD_PROXY, 
-}           
+}

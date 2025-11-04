@@ -1,18 +1,20 @@
 import os
+DEBUG_MODE = True # Set to False in production
+
+ZERODHA_API_KEY = "YOUR_ZERODHA_API_KEY"
+ZERODHA_API_SECRET = "Your_ZERODHA_API_SECRET"
+ZERODHA_REDIRECT_URL = "https://your-cloud-run-service-url/api/zerodha/callback"
 
 # ============================================
 # API KEYS
 # ============================================
+GENIE_API_KEY ="Your_GENIE_API_KEY"
 
-GENIE_API_KEY ="Your_Gemini_API_Key_Here"
-
-if not GENIE_API_KEY:
-    print("WARNING: GEMINI_API_KEY environment variable not set.")
-
+#get from https://newsapi.org/
 NEWSAPI_KEYS = [
-"4fec09d5becd42efbd6f474f2c540e18",
-"8554bc10e9c74502b31d866a3eb6bb4f",
-"c7a70174aab44b729ba51c4677f808c3"
+"NEWSAPI_KEY_1",
+"NEWSAPI_KEY_2", #add more keys as needed 100 request per day per account
+"NEWSAPI_KEY_3"
 ]
 NEWS_API_MODE = 'sequential'
 
@@ -61,7 +63,7 @@ CHAT_TITLE_MAX_LENGTH = 100
 # ============================================
 # PERFORMANCE OPTIMIZATION
 # ============================================
-CACHE_STORE = False
+CACHE_STORE = True # Enable or disable caching
 CACHE_TTL_SECONDS = 300 
 CACHE_PRICE_DATA_SECONDS = 300
 CACHE_NEWS_DATA_SECONDS = 1800
@@ -117,38 +119,38 @@ Analysis:
 (MUST give one concluding recommendation.)
 ( - e.g., Sell: "Recommendation: Your [TICKER] position is down and news is negative. Consider selling.")
 ( - e.g., Hold: "Recommendation: Your [TICKER] position is down, but news is neutral. Monitor closely.")
-( - e.g., Buy: "Recommendation: You have ₹[cash] available. Consider deploying this capital.")
 ( - e.g., Stable: "Recommendation: Your portfolio is stable. Continue to monitor.")
 
-SCOPE:
-Indian stock market only. Politely redirect off-topic queries.
-Rules:
+**NEW SCOPE:**
+You can analyze **any valid NSE stock (.NS ticker)**, not just the Nifty 50.
+Always be polite and redirect off-topic queries.
 -give x stocks when user asks for x stocks.
 -If user asks for specific sectors, focus on those sectors.
 
 TOOLS:
 - get_current_price: stock prices
 - get_index_data_for_agent: index levels
-- screen_static_index: screen stocks from indices
+- screen_static_index: screen stocks from pre-defined indices (Nifty 50, Bank, IT, etc.)
 - screen_custom_stock_list: screen custom ticker lists
-- get_index_constituents_for_agent: fetch index constituents
-- execute_trade_for_agent: execute NSE trades (.NS only)
-- get_portfolio_for_agent: fetch user's portfolio
-- get_fundamental_data: company fundamentals including sector
+- get_index_constituents_for_agent: fetch all tickers for any NSE index
+- execute_trade_for_agent: execute paper trades for ANY .NS stock
+- get_portfolio_for_agent: fetch user's paper portfolio
+- get_fundamental_data: company fundamentals for ANY .NS stock
 - add_to_watchlist_for_agent: add stocks (list)
 - remove_from_watchlist_for_agent: remove stock (single)
 - internet_search_news_for_agent: search news (preferred)
 - get_stock_news_for_agent: fetch news (fallback)
 - find_intraday_trade_setups: find intraday opportunities
 - internet_search_for_agent: general search
+- sync_zerodha_portfolio_for_agent: **NEW** Syncs real Zerodha portfolio to this paper account.
 
 BEHAVIOR:
 1. Focus on latest user message only.
 2. Check Nifty trend before recommendations.
 3. Execute NSE trades immediately when requested.
 4. Portfolio queries: Call `get_portfolio_for_agent` and use the PORTFOLIO SUMMARY FORMAT.
-5. Never refuse recommendations - default to Nifty 50.
-6. Be proactive - act like a portfolio manager.
+5. Stock Recommendations: Default to Nifty 50 but you can analyze any stock the user asks about.
+6. **Zerodha Sync:** If user asks to "sync with Zerodha", "import my portfolio", call `sync_zerodha_portfolio_for_agent`. This will OVERWRITE their paper portfolio.
 
 TRADE EXECUTION:
 When user wants to buy stocks with specific amounts:
@@ -176,7 +178,7 @@ When user asks for new stock ideas (e.g., "suggest stocks"):
      - Technicals: [e.g., Price is above its 30-day EMA and RSI is 64.]
      - News:- [summarize recent news and key positive/negative news points, 2-3 bullet points]
      - Portfolio Fit: (Use "You". Omit if not notable.)
-       - [e.g., "You currently hold [TICKER]..." or "This would diversify you into the [Sector] sector."]      
+       - [e.g., "You currently hold [TICKER]..." or "This would diversify you into the [Sector] sector."]       
      - Rationale: [Brief paragraph on why this is a strong buy.]
 
    - Concluding Summary: [A final paragraph on why these picks suit the market/portfolio.]

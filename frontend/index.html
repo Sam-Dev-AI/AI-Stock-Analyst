@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
         rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js" defer></script>
     <style>
         * {
             margin: 0;
@@ -64,13 +64,30 @@
             border: 1px solid #334155;
         }
 
+        .message-chart {
+            background: #1e293b;
+            border-radius: 18px;
+            border: 1px solid #334155;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .message-chart:hover {
+            border-color: #10b981;
+            transform: scale(1.02);
+        }
+
+        .message-chart img {
+            border-radius: 12px;
+            max-width: 100%;
+            height: auto;
+        }
+
         .message-system {
             background: #292504;
-            /* Dark yellow background */
             border: 1px solid #a16207;
-            /* Amber border */
             color: #fefce8;
-            /* Light yellow text */
             border-radius: 18px;
         }
 
@@ -441,8 +458,106 @@
                 opacity: 0.5;
             }
         }
+
+        /* NEW: Mobile-specific responsive improvements */
+        @media (max-width: 640px) {
+
+            .message-user,
+            .message-agent {
+                max-width: 95%;
+                padding: 12px 16px;
+                font-size: 14px;
+            }
+
+            .portfolio-tabs {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .portfolio-tabs button {
+                white-space: nowrap;
+                flex-shrink: 0;
+                min-width: 100px;
+            }
+
+            /* Responsive grid adjustments */
+            .grid.grid-cols-3 {
+                grid-template-columns: repeat(1, 1fr) !important;
+            }
+
+            /* Text size adjustments for small screens */
+            h1,
+            h2,
+            h3 {
+                font-size: clamp(1.25rem, 5vw, 2rem);
+            }
+
+            /* Stack flex items on mobile */
+            .flex.gap-4,
+            .flex.gap-3 {
+                flex-wrap: wrap;
+            }
+
+            /* Better touch targets */
+            button,
+            a {
+                min-height: 44px;
+                min-width: 44px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .text-3xl {
+                font-size: 1.5rem;
+            }
+
+            .text-2xl {
+                font-size: 1.25rem;
+            }
+
+            .text-xl {
+                font-size: 1.125rem;
+            }
+
+            /* Reduce padding on very small screens */
+            .p-6 {
+                padding: 1rem;
+            }
+
+            .p-4 {
+                padding: 0.75rem;
+            }
+
+            /* Adjust modal sizes */
+            .max-w-md {
+                max-width: calc(100vw - 32px);
+            }
+        }
+
+        /* Landscape orientation adjustments */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .portfolio-window {
+                height: 95vh !important;
+            }
+
+            .auth-form {
+                padding: 1rem;
+            }
+        }
+
+        /* Search highlight styles */
+        mark.search-highlight {
+            background-color: yellow;
+            color: black;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        mark.search-highlight.active {
+            background-color: orange;
+        }
     </style>
-    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
 </head>
 
 <body class="bg-slate-950 text-white antialiased auth-loading" x-data="chatApp()" x-init="init()">
@@ -483,6 +598,33 @@
                                 class="input-focus w-full bg-gray-700/50 text-white px-4 py-3.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 transition border border-gray-600"
                                 placeholder="Confirm Password">
 
+                            <!-- Google Sign-In Separator -->
+                            <div class="relative my-4">
+                                <div class="absolute inset-0 flex items-center">
+                                    <div class="w-full border-t border-gray-600"></div>
+                                </div>
+                                <div class="relative flex justify-center text-sm">
+                                    <span class="px-2 bg-gray-900 text-gray-400">Or continue with</span>
+                                </div>
+                            </div>
+
+                            <!-- Google Sign-In Button -->
+                            <button type="button" @click="signInWithGoogle" :disabled="isLoading"
+                                class="w-full bg-white hover:bg-gray-100 text-gray-900 font-bold py-3.5 rounded-xl transition-all duration-200 flex items-center justify-center gap-3 border border-gray-300 shadow-md">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24">
+                                    <path fill="#4285F4"
+                                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                                    <path fill="#34A853"
+                                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                                    <path fill="#FBBC05"
+                                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                                    <path fill="#EA4335"
+                                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                                </svg>
+                                <span x-show="!isLoading">Sign in with Google</span>
+                                <span x-show="isLoading">Processing...</span>
+                            </button>
+
                             <div x-show="authError" x-transition
                                 class="text-red-400 text-sm bg-red-900/20 border border-red-800/50 p-3 rounded-xl">
                                 <span x-text="authError"></span>
@@ -516,52 +658,90 @@
                 </div>
 
                 <div class="form-container sign-up-container">
-                    <form @submit.prevent="handleLogin()" class="auth-form">
+                    <form @submit.prevent="handleLogin" class="auth-form">
                         <div class="mb-6 text-center w-full">
-                            <div
-                                class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-500 to-green-700 rounded-2xl mb-4 shadow-lg">
-                                <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z" />
-                                </svg>
-                            </div>
-                            <h1 class="text-3xl font-bold text-white mb-2">Welcome Back!</h1>
-                            <p class="text-base text-gray-400">Login to your account</p>
+                            <h2
+                                class="text-3xl font-bold bg-gradient-to-r from-green-400 to-green-600 bg-clip-text text-transparent">
+                                Welcome Back
+                            </h2>
                         </div>
 
                         <div class="w-full space-y-4 max-w-sm">
+                            <!-- Email Input -->
                             <input type="email" x-model="email" required autocomplete="email"
-                                class="input-focus w-full bg-gray-700/50 text-white px-4 py-3.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 transition border border-gray-600"
+                                class="input-focus w-full bg-gray-700/50 text-white px-4 py-3.5 rounded-xl text-lg font-bold focus:outline-none focus:ring-2 focus:ring-green-500 border border-gray-600 transition-all duration-300"
                                 placeholder="Email Address">
+
+                            <!-- Password Input -->
                             <input type="password" x-model="password" required autocomplete="current-password"
-                                class="input-focus w-full bg-gray-700/50 text-white px-4 py-3.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 transition border border-gray-600"
+                                class="input-focus w-full bg-gray-700/50 text-white px-4 py-3.5 rounded-xl text-lg font-bold focus:outline-none focus:ring-2 focus:ring-green-500 border border-gray-600 transition-all duration-300"
                                 placeholder="Password">
 
+                            <!-- Forgot Password Link -->
+                            <div class="flex justify-end">
+                                <button type="button" @click="showForgotPassword = true"
+                                    class="text-sm text-green-500 hover:text-green-400 font-semibold transition-colors">
+                                    Forgot Password?
+                                </button>
+                            </div>
+
+                            <!-- Google Sign-In Separator -->
+                            <div class="relative my-4">
+                                <div class="absolute inset-0 flex items-center">
+                                    <div class="w-full border-t border-gray-600"></div>
+                                </div>
+                                <div class="relative flex justify-center text-sm">
+                                    <span class="px-2 bg-gray-900 text-gray-400">Or continue with</span>
+                                </div>
+                            </div>
+
+                            <!-- Google Sign-In Button -->
+                            <button type="button" @click="signInWithGoogle" :disabled="isLoading"
+                                class="w-full bg-white hover:bg-gray-100 text-gray-900 font-bold py-3.5 rounded-xl transition-all duration-200 flex items-center justify-center gap-3 border border-gray-300 shadow-md">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24">
+                                    <path fill="#4285F4"
+                                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                                    <path fill="#34A853"
+                                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                                    <path fill="#FBBC05"
+                                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                                    <path fill="#EA4335"
+                                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                                </svg>
+                                <span x-show="!isLoading">Sign in with Google</span>
+                                <span x-show="isLoading">Processing...</span>
+                            </button>
+
+                            <!-- Error Message -->
                             <div x-show="authError" x-transition
                                 class="text-red-400 text-sm bg-red-900/20 border border-red-800/50 p-3 rounded-xl">
                                 <span x-text="authError"></span>
                             </div>
 
+                            <!-- Login Button -->
                             <button type="submit" :disabled="isLoading"
-                                class="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg">
+                                class="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-3.5 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl">
                                 <span x-show="!isLoading">Login</span>
                                 <span x-show="isLoading" class="flex items-center justify-center">
-                                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <svg class="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg"
+                                        fill="none" viewBox="0 0 24 24">
                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
                                             stroke-width="4"></circle>
                                         <path class="opacity-75" fill="currentColor"
                                             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                                         </path>
                                     </svg>
-                                    <span>Logging in...</span>
+                                    Logging in...
                                 </span>
                             </button>
 
+                            <!-- Sign Up Link -->
                             <div class="text-center pt-2">
                                 <p class="text-sm text-gray-400">
                                     Don't have an account?
                                     <button type="button" @click="isLoginView = false; authError = ''"
-                                        class="text-green-500 font-semibold hover:text-green-400">Sign Up</button>
+                                        class="text-green-500 font-semibold hover:text-green-400 transition-colors">Sign
+                                        Up</button>
                                 </p>
                             </div>
                         </div>
@@ -591,6 +771,76 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+    <div x-show="showForgotPassword" x-cloak @click.self="showForgotPassword = false"
+        class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div
+            class="bg-gradient-to-br from-slate-900 to-slate-950 rounded-3xl border-2 border-green-500/30 w-full max-w-md p-8 shadow-2xl">
+
+            <!-- Close Button -->
+            <button type="button" @click="showForgotPassword = false"
+                class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+
+            <h3 class="text-2xl font-bold text-white mb-2">Reset Password</h3>
+            <p class="text-slate-400 text-sm mb-6">Enter your email to receive a password reset link</p>
+
+            <form @submit.prevent="handleForgotPassword" class="space-y-4">
+                <!-- Email Input -->
+                <input type="email" x-model="resetEmail" required autocomplete="email"
+                    class="w-full bg-slate-800 text-white px-5 py-4 rounded-xl text-lg font-bold focus:outline-none focus:ring-2 focus:ring-green-500 border border-slate-700 transition-all duration-300"
+                    placeholder="Your Email Address">
+
+                <!-- Success Message -->
+                <div x-show="resetSuccess" x-transition
+                    class="text-green-400 text-sm bg-green-900/20 border border-green-800/50 p-4 rounded-xl flex items-center gap-2">
+                    <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                    <span>Reset email sent! Check your inbox.</span>
+                </div>
+
+                <!-- Error Message -->
+                <div x-show="resetError" x-transition
+                    class="text-red-400 text-sm bg-red-900/20 border border-red-800/50 p-4 rounded-xl flex items-start gap-2">
+                    <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                    <span x-text="resetError"></span>
+                </div>
+
+                <!-- Buttons -->
+                <div class="flex gap-3 pt-4">
+                    <button type="button" @click="showForgotPassword = false"
+                        class="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-xl transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" :disabled="isLoading"
+                        class="flex-1 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-3 rounded-xl transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2">
+                        <span x-show="!isLoading">Send Reset Link</span>
+                        <span x-show="isLoading" class="flex items-center gap-2">
+                            <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                    stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                            </svg>
+                            Sending...
+                        </span>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -699,7 +949,12 @@
                                 d="M4 6h16M4 12h16M4 18h16"></path>
                         </svg>
                     </button>
-                    <div class="flex items-center gap-3 min-w-0 flex-1">
+
+                    <div class="flex items-center gap-3 min-w-0 flex-1" x-show="!searchVisible"
+                        x-transition:enter="transition ease-out duration-100"
+                        x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-75"
+                        x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95">
                         <div
                             class="w-11 h-11 rounded-xl bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center shadow-lg flex-shrink-0">
                             <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -711,9 +966,63 @@
                             <p class="text-xs text-slate-400">AI Stock Analyst</p>
                         </div>
                     </div>
+
+                    <div class="flex-1 min-w-0" x-show="searchVisible"
+                        x-transition:enter="transition ease-out duration-100"
+                        x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-75"
+                        x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95">
+                        <div
+                            class="flex items-center gap-2 bg-slate-800 border border-slate-700 rounded-xl px-3 py-1.5 w-full">
+                            <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                            <input type="text" x-ref="searchInput" x-model="searchQuery"
+                                @input.debounce.300ms="performSearch()" @keydown.enter.prevent="navigateSearch('next')"
+                                @keydown.arrow-down.prevent="navigateSearch('next')"
+                                @keydown.arrow-up.prevent="navigateSearch('prev')"
+                                @keydown.escape.prevent="toggleSearch()" placeholder="Search in chat..."
+                                class="w-full bg-transparent text-white placeholder-slate-400 focus:outline-none text-sm py-1">
+
+                            <span x-show="searchQuery.length > 1" class="text-xs text-slate-500 flex-shrink-0"
+                                x-text="searchResults.length > 0 ? `${currentSearchResultIndex + 1} of ${searchResults.length}` : '0 of 0'"></span>
+
+                            <button @click="navigateSearch('prev')" :disabled="searchResults.length === 0"
+                                class="p-1 text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 15l7-7 7 7"></path>
+                                </svg>
+                            </button>
+                            <button @click="navigateSearch('next')" :disabled="searchResults.length === 0"
+                                class="p-1 text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            <button @click="toggleSearch()" class="p-1 text-slate-400 hover:text-white">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="flex items-center gap-2 sm:gap-3">
+                    <button @click="toggleSearch()" x-show="!searchVisible"
+                        class="p-2.5 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white transition"
+                        title="Search Chat">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </button>
+
                     <button @click="openPortfolio()"
                         class="flex items-center gap-2 px-3 sm:px-5 py-2.5 rounded-xl bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 transition shadow-lg hover:shadow-green-500/30">
                         <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -778,6 +1087,7 @@
         </main>
     </div>
 
+    <!-- Portfolio Window -->
     <div x-show="portfolioOpen" x-cloak class="portfolio-window"
         :class="{'minimized': portfolioMinimized, 'maximized': portfolioMaximized}" x-transition>
 
@@ -791,9 +1101,43 @@
                             d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" />
                     </svg>
                 </div>
-                <div class="min-w-0">
-                    <h3 class="text-white font-bold text-lg truncate">Portfolio</h3>
-                    <div class="flex items-center gap-2">
+                <div class="min-w-0 flex-1 flex flex-col justify-center">
+                    <div class="flex items-center gap-4">
+                        <h3 class="text-white font-bold text-xl truncate">Portfolio</h3>
+
+                        <a @click.prevent="startZerodhaConnect()" :disabled="zerodhaSyncLoading"
+                            class="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-full font-bold transition-all disabled:opacity-50 cursor-pointer"
+                            :class="zerodhaSynced ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'"
+                            title="Connect/Resync with Zerodha">
+
+                            <svg x-show="zerodhaSyncLoading" class="animate-spin h-3.5 w-3.5 text-white"
+                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                    stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                            </svg>
+
+                            <span x-show="!zerodhaSyncLoading" class="flex items-center gap-1">
+
+                                <template x-if="zerodhaSynced">
+                                    <span class="flex items-center gap-1">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span>Synced</span>
+                                    </span>
+                                </template>
+
+                                <span x-show="!zerodhaSynced">Connect Zerodha</span>
+                            </span>
+                        </a>
+                    </div>
+
+                    <div class="flex items-center gap-2 mt-1">
                         <button
                             @click="portfolioTab === 'portfolio' ? loadPortfolio() : (portfolioTab === 'watchlist' ? loadWatchlistPrices() : loadTradeHistory())"
                             class="p-1 -ml-1 text-green-100 hover:text-white transition" title="Reload">
@@ -837,327 +1181,407 @@
             </div>
         </div>
 
+        <!-- START: Portfolio Tab Content Section -->
         <div class="portfolio-content bg-gradient-to-b from-slate-900 to-slate-950">
+            <!-- 1. TAB BUTTONS -->
             <div class="portfolio-tabs flex border-b border-slate-700 px-4 pt-2 gap-2">
-                <button @click="portfolioTab = 'portfolio'; loadPortfolio()"
+                <!-- FIX: Added portfolioLoading = true to each click event -->
+                <button @click="portfolioLoading = true; portfolioTab = 'portfolio'; loadPortfolio()"
                     :class="portfolioTab === 'portfolio' ? 'active' : 'text-slate-400 hover:text-white hover:bg-slate-800'"
                     class="px-4 sm:px-6 py-2.5 text-sm font-bold transition rounded-t-xl">
                     💼 Holdings
                 </button>
-                <button @click="portfolioTab = 'watchlist'; loadWatchlistPrices()"
+                <button @click="portfolioLoading = true; portfolioTab = 'watchlist'; loadWatchlistPrices()"
                     :class="portfolioTab === 'watchlist' ? 'active' : 'text-slate-400 hover:text-white hover:bg-slate-800'"
                     class="px-4 sm:px-6 py-2.5 text-sm font-bold transition rounded-t-xl">
                     👁️ Watchlist
                 </button>
-                <button @click="portfolioTab = 'history'; loadTradeHistory()"
+                <button @click="portfolioLoading = true; portfolioTab = 'history'; loadTradeHistory()"
                     :class="portfolioTab === 'history' ? 'active' : 'text-slate-400 hover:text-white hover:bg-slate-800'"
                     class="px-4 sm:px-6 py-2.5 text-sm font-bold transition rounded-t-xl">
                     📜 History
                 </button>
             </div>
 
-            <div x-show="portfolioTab === 'portfolio'" class="flex-1 overflow-y-auto p-4">
-                <div x-show="portfolioLoading" class="animate-pulse">
-                    <div class="grid grid-cols-2 gap-3 mb-4">
-                        <div class="bg-slate-800 h-24 rounded-xl"></div>
-                        <div class="bg-slate-800 h-24 rounded-xl"></div>
-                        <div class="bg-slate-800 h-24 rounded-xl col-span-2"></div>
-                    </div>
-                    <div class="bg-slate-800 h-12 rounded-xl mb-4"></div>
-                    <div class="space-y-3">
-                        <div class="bg-slate-800 h-32 rounded-xl"></div>
-                        <div class="bg-slate-800 h-32 rounded-xl"></div>
-                    </div>
-                </div>
+            <!-- 2. TAB CONTENT WRAPPER (This is the critical fix for mixed content) -->
+            <div class="relative flex-1 overflow-hidden">
 
-                <div x-show="!portfolioLoading" x-transition>
-                    <div class="grid grid-cols-2 gap-3 mb-4">
-                        <div
-                            class="bg-gradient-to-br from-slate-800 to-slate-900 p-4 rounded-xl border border-slate-700 shadow-lg relative">
-                            <div class="flex items-center gap-2 mb-2">
-                                <div class="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
-                                    <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                                        <path
-                                            d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z">
-                                        </path>
-                                        <path fill-rule="evenodd"
-                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z"
-                                            clip-rule="evenodd"></path>
-                                    </svg>
-                                </div>
-                                <p class="text-xs text-slate-400 font-semibold">Cash Balance</p>
-                                <button @click="openCashEditModal()"
-                                    class="ml-auto p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-green-400 transition"
-                                    title="Edit balance">
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                        <path
-                                            d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z">
-                                        </path>
-                                        <path fill-rule="evenodd"
-                                            d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
-                                            clip-rule="evenodd"></path>
-                                    </svg>
-                                </button>
+                <!-- 2a. Holdings Content (Now with absolute positioning) -->
+                <div x-show="portfolioTab === 'portfolio'" class="absolute inset-0 overflow-y-auto p-4" x-transition>
+
+                    <!-- Loading Skeleton -->
+                    <div x-show="portfolioLoading" class="animate-pulse">
+                        <div class="space-y-3 mb-4">
+                            <div class="bg-slate-800 h-24 rounded-xl col-span-2"></div>
+                            <div class="grid grid-cols-3 gap-3">
+                                <div class="bg-slate-800 h-24 rounded-xl"></div>
+                                <div class="bg-slate-800 h-24 rounded-xl"></div>
+                                <div class="bg-slate-800 h-24 rounded-xl"></div>
                             </div>
-                            <p class="text-2xl font-bold text-white"
-                                x-text="'₹' + (portfolio.cash || 0).toLocaleString('en-IN')"></p>
                         </div>
-
-                        <div
-                            class="bg-gradient-to-br from-slate-800 to-slate-900 p-4 rounded-xl border border-slate-700 shadow-lg">
-                            <div class="flex items-center gap-2 mb-2">
-                                <div class="w-8 h-8 rounded-lg flex items-center justify-center"
-                                    :class="(portfolio.summary?.total_pnl || 0) >= 0 ? 'bg-green-500/20' : 'bg-red-500/20'">
-                                    <svg class="w-4 h-4"
-                                        :class="(portfolio.summary?.total_pnl || 0) >= 0 ? 'text-green-500' : 'text-red-500'"
-                                        fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z"
-                                            clip-rule="evenodd"></path>
-                                    </svg>
-                                </div>
-                                <p class="text-xs text-slate-400 font-semibold">Total P&L</p>
-                            </div>
-                            <p class="text-2xl font-bold"
-                                :class="(portfolio.summary?.total_pnl || 0) >= 0 ? 'text-green-500' : 'text-red-500'"
-                                x-text="((portfolio.summary?.total_pnl || 0) >= 0 ? '+' : '') + '₹' + (portfolio.summary?.total_pnl || 0).toLocaleString('en-IN')">
-                            </p>
-                            <p class="text-xs text-slate-400 mt-1"
-                                x-text="'(' + ((portfolio.summary?.total_pnl || 0) >= 0 ? '+' : '') + ((portfolio.summary?.total_pnl / (portfolio.summary?.total_invested || 1) * 100) || 0).toFixed(2) + '%)'">
-                            </p>
-                        </div>
-
-                        <div
-                            class="bg-gradient-to-br from-slate-800 to-slate-900 p-4 rounded-xl border border-slate-700 shadow-lg col-span-2">
-                            <div class="flex items-center gap-2 mb-2">
-                                <div class="w-8 h-8 rounded-lg flex items-center justify-center"
-                                    :class="(portfolio.summary?.day_pnl || 0) >= 0 ? 'bg-green-500/20' : 'bg-red-500/20'">
-                                    <svg class="w-4 h-4"
-                                        :class="(portfolio.summary?.day_pnl || 0) >= 0 ? 'text-green-500' : 'text-red-500'"
-                                        fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z"
-                                            clip-rule="evenodd"></path>
-                                    </svg>
-                                </div>
-                                <p class="text-xs text-slate-400 font-semibold">Today's P&L</p>
-                            </div>
-                            <p class="text-2xl font-bold"
-                                :class="(portfolio.summary?.day_pnl || 0) >= 0 ? 'text-green-500' : 'text-red-500'"
-                                x-text="((portfolio.summary?.day_pnl || 0) >= 0 ? '+' : '') + '₹' + (portfolio.summary?.day_pnl || 0).toLocaleString('en-IN')">
-                            </p>
-                            <p class="text-xs text-slate-400 mt-1"
-                                x-text="((portfolio.summary?.day_pnl_percent || 0) >= 0 ? '+' : '') + (portfolio.summary?.day_pnl_percent || 0).toFixed(2) + '%'">
-                            </p>
+                        <div class="bg-slate-800 h-12 rounded-xl mb-4"></div>
+                        <div class="space-y-3">
+                            <div class="bg-slate-800 h-32 rounded-xl"></div>
+                            <div class="bg-slate-800 h-32 rounded-xl"></div>
                         </div>
                     </div>
 
-                    <button @click="openStockPicker('trade')"
-                        class="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-3.5 rounded-xl transition mb-4 shadow-lg hover:shadow-green-500/30 transform hover:scale-[1.02]">
-                        <div class="flex items-center justify-center gap-2">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                            <span>New Trade</span>
-                        </div>
-                    </button>
-
-                    <div class="space-y-3">
-                        <div x-show="!portfolio.holdings || portfolio.holdings.length === 0" class="text-center py-12">
+                    <!-- Real Data -->
+                    <div x-show="!portfolioLoading">
+                        <div class="space-y-3 mb-4">
+                            <!-- Row 1: Total Portfolio Value -->
                             <div
-                                class="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <svg class="w-10 h-10 text-slate-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
-                                    <path fill-rule="evenodd"
-                                        d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
-                            </div>
-                            <p class="text-slate-400 font-semibold">No holdings yet</p>
-                            <p class="text-slate-500 text-sm mt-1">Start trading to build your portfolio</p>
-                        </div>
+                                class="bg-gradient-to-br from-blue-800 to-blue-900 p-4 rounded-xl border border-blue-700 shadow-lg">
 
-                        <template x-for="holding in portfolio.holdings" :key="holding.ticker">
-                            <div
-                                class="bg-gradient-to-br from-slate-800 to-slate-900 p-4 rounded-xl border border-slate-700 shadow-lg hover:shadow-xl hover:border-slate-600 transition-all">
-                                <div class="flex justify-between items-start mb-3">
-                                    <div class="flex-1">
-                                        <div class="flex items-center gap-2 mb-1">
-                                            <h4 class="font-bold text-white" x-text="holding.ticker"></h4>
-                                            <span class="px-2 py-0.5 bg-slate-700 rounded text-xs text-slate-300"
-                                                x-text="holding.quantity + ' shares'"></span>
+                                <div class="grid grid-cols-2 gap-4">
+
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <div
+                                                class="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                                                <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z">
+                                                    </path>
+                                                </svg>
+                                            </div>
+                                            <p class="text-xs text-slate-300 font-semibold">Total Invested</p>
                                         </div>
-                                        <p class="text-xs text-slate-400">Avg: ₹<span x-text="holding.avg_price"></span>
+                                        <p class="text-2xl font-bold text-white"
+                                            x-text="'₹' + (portfolio.summary?.total_invested || 0).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})">
                                         </p>
                                     </div>
-                                    <div class="text-right">
-                                        <p class="font-bold text-lg text-white">₹<span
-                                                x-text="holding.current_price"></span></p>
-                                        <div class="flex items-center gap-1 justify-end">
-                                            <svg class="w-4 h-4"
-                                                :class="holding.pnl >= 0 ? 'text-green-500' : 'text-red-500'"
-                                                fill="currentColor" viewBox="0 0 20 20">
+
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <div
+                                                class="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                                                <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                                </svg>
+                                            </div>
+                                            <p class="text-xs text-slate-300 font-semibold">Current Value</p>
+                                        </div>
+                                        <p class="text-2xl font-bold text-white"
+                                            x-text="'₹' + (portfolio.summary?.portfolio_value || 0).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})">
+                                        </p>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <!-- Row 2: Three-column grid -->
+                            <div class="grid grid-cols-3 gap-3">
+                                <!-- Cash Balance -->
+                                <div
+                                    class="bg-gradient-to-br from-slate-800 to-slate-900 p-4 rounded-xl border border-slate-700 shadow-lg flex flex-col h-full justify-between">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <p class="text-xs text-slate-400 font-semibold">Cash Balance</p>
+                                        <button @click="openCashEditModal()"
+                                            class="p-1.5 text-slate-500 hover:text-green-500 hover:bg-slate-700 rounded-lg transition"
+                                            title="Edit Cash">
+                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                <path
+                                                    d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z">
+                                                </path>
                                                 <path fill-rule="evenodd"
-                                                    :d="holding.pnl >= 0 ? 'M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z' : 'M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z'"
+                                                    d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
                                                     clip-rule="evenodd"></path>
                                             </svg>
-                                            <p class="text-sm font-bold"
-                                                :class="holding.pnl >= 0 ? 'text-green-500' : 'text-red-500'"
-                                                x-text="(holding.pnl >= 0 ? '+' : '') + holding.pnl_percent.toFixed(2) + '%'">
+                                        </button>
+                                    </div>
+                                    <p class="text-xl font-bold text-green-500"
+                                        x-text="'₹' + (portfolio.cash || 0).toLocaleString('en-IN')"></p>
+                                </div>
+
+                                <!-- Total P&L with Percentage -->
+                                <div
+                                    class="bg-gradient-to-br from-slate-800 to-slate-900 p-4 rounded-xl border border-slate-700 shadow-lg flex flex-col h-full justify-between">
+                                    <p class="text-xs text-slate-400 font-semibold mb-2">Total P&L</p>
+                                    <div class="flex flex-col">
+                                        <p class="text-xl font-bold"
+                                            :class="(portfolio.summary?.total_pnl || 0) >= 0 ? 'text-green-500' : 'text-red-500'"
+                                            x-text="((portfolio.summary?.total_pnl || 0) >= 0 ? '+' : '') + '₹' + (portfolio.summary?.total_pnl || 0).toLocaleString('en-IN')">
+                                        </p>
+                                        <p class="text-sm mt-1"
+                                            :class="(portfolio.summary?.total_pnl || 0) >= 0 ? 'text-green-400' : 'text-red-400'"
+                                            x-show="portfolio.summary?.total_pnl_percent !== undefined"
+                                            x-text="((portfolio.summary?.total_pnl_percent || 0) >= 0 ? '+' : '') + (portfolio.summary?.total_pnl_percent || 0).toFixed(2) + '%'">
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Today's P&L with Percentage -->
+                                <div
+                                    class="bg-gradient-to-br from-slate-800 to-slate-900 p-4 rounded-xl border border-slate-700 shadow-lg flex flex-col h-full justify-between">
+                                    <p class="text-xs text-slate-400 font-semibold mb-2">Today's P&L</p>
+                                    <div class="flex flex-col">
+                                        <p class="text-xl font-bold"
+                                            :class="(portfolio.summary?.day_pnl || 0) >= 0 ? 'text-green-500' : 'text-red-500'"
+                                            x-text="((portfolio.summary?.day_pnl || 0) >= 0 ? '+' : '') + '₹' + (portfolio.summary?.day_pnl || 0).toLocaleString('en-IN')">
+                                        </p>
+                                        <p class="text-sm mt-1"
+                                            :class="(portfolio.summary?.day_pnl || 0) >= 0 ? 'text-green-400' : 'text-red-400'"
+                                            x-show="portfolio.summary?.day_pnl_percent !== undefined"
+                                            x-text="((portfolio.summary?.day_pnl_percent || 0) >= 0 ? '+' : '') + (portfolio.summary?.day_pnl_percent || 0).toFixed(2) + '%'">
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- New Trade Button -->
+                        <button @click="openStockPicker('trade')"
+                            class="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-3.5 rounded-xl transition mb-4 shadow-lg hover:shadow-green-500/30 transform hover:scale-[1.02]">
+                            <div class="flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <span>New Trade</span>
+                            </div>
+                        </button>
+
+                        <!-- Holdings List -->
+                        <div class="space-y-3">
+                            <!-- Empty Holdings Message -->
+                            <div x-show="!portfolio.holdings || portfolio.holdings.length === 0"
+                                class="text-center py-12">
+                                <div
+                                    class="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <svg class="w-10 h-10 text-slate-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                                        <path fill-rule="evenodd"
+                                            d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3z"
+                                            clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <p class="text-slate-400 font-semibold">No holdings yet</p>
+                                <p class="text-slate-500 text-sm mt-1">Start trading to build your portfolio</p>
+                            </div>
+
+                            <!-- Holdings Loop -->
+                            <template x-for="holding in portfolio.holdings" :key="holding.ticker">
+                                <div
+                                    class="bg-gradient-to-br from-slate-800 to-slate-900 p-4 rounded-xl border border-slate-700 shadow-lg hover:shadow-xl hover:border-slate-600 transition-all">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <div class="flex-1">
+                                            <div class="flex items-center gap-2 mb-1">
+                                                <h4 class="font-bold text-white" x-text="holding.ticker"></h4>
+                                                <span class="px-2 py-0.5 bg-slate-700 rounded text-xs text-slate-300"
+                                                    x-text="holding.quantity + ' shares'"></span>
+                                            </div>
+                                            <p class="text-xs text-slate-400">Avg: ₹<span
+                                                    x-text="holding.avg_price"></span>
+                                            </p>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="font-bold text-lg text-white">₹<span
+                                                    x-text="holding.current_price"></span></p>
+                                            <!-- Total P&L % -->
+                                            <div class="flex items-center gap-1 justify-end">
+                                                <svg class="w-4 h-4"
+                                                    :class="holding.pnl >= 0 ? 'text-green-500' : 'text-red-500'"
+                                                    fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd"
+                                                        :d="holding.pnl >= 0 ? 'M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z' : 'M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z'"
+                                                        clip-rule="evenodd"></path>
+                                                </svg>
+                                                <p class="text-sm font-bold"
+                                                    :class="holding.pnl >= 0 ? 'text-green-500' : 'text-red-500'">
+                                                    <span
+                                                        x-text="(holding.pnl >= 0 ? '+' : '') + holding.pnl_percent.toFixed(2) + '%'"></span>
+                                                </p>
+                                            </div>
+                                            <!-- Day's P&L % -->
+                                            <div class="flex items-center gap-1 justify-end text-xs"
+                                                :class="holding.approx_day_pnl >= 0 ? 'text-green-500' : 'text-red-500'">
+                                                <span>Day:</span>
+                                                <span
+                                                    x-text="(holding.approx_day_pnl >= 0 ? '+' : '') + holding.approx_day_pnl_pct.toFixed(2) + '%'"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- TOTAL VALUE / INVESTED / P&L GRID -->
+                                    <div
+                                        class="grid grid-cols-2 gap-4 text-xs text-slate-400 mb-3 pb-3 border-b border-slate-700">
+
+                                        <div class="text-left flex gap-4">
+                                            <div>
+                                                <span>Invested</span>
+                                                <p class="font-semibold text-white">₹<span
+                                                        x-text="holding.invested_value.toLocaleString('en-IN')"></span>
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <span>Current Value</span>
+                                                <p class="font-semibold text-white">₹<span
+                                                        x-text="holding.current_value.toLocaleString('en-IN')"></span>
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div class="text-right">
+                                            <span>Total P&L</span>
+                                            <p class="font-semibold"
+                                                :class="holding.pnl >= 0 ? 'text-green-500' : 'text-red-500'">
+                                                <span
+                                                    x-text="(holding.pnl >= 0 ? '+' : '') + '₹' + (holding.pnl).toLocaleString('en-IN')"></span>
                                             </p>
                                         </div>
                                     </div>
+                                    <button @click="openTradeModal('SELL', holding.ticker, holding.quantity)"
+                                        class="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white text-sm font-bold py-2.5 rounded-lg transition transform hover:scale-[1.02]">
+                                        Sell All
+                                    </button>
                                 </div>
-                                <div
-                                    class="flex items-center justify-between text-xs text-slate-400 mb-3 pb-3 border-b border-slate-700">
-                                    <span>Invested: ₹<span
-                                            x-text="holding.invested_value.toLocaleString('en-IN')"></span></span>
-                                    <span :class="holding.pnl >= 0 ? 'text-green-500' : 'text-red-500'"
-                                        class="font-semibold">
-                                        P&L: <span
-                                            x-text="(holding.pnl >= 0 ? '+' : '') + '₹' + (holding.pnl).toLocaleString('en-IN')"></span>
-                                    </span>
+                            </template>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- 2b. Watchlist Content (Now with absolute positioning) -->
+                <div x-show="portfolioTab === 'watchlist'" class="absolute inset-0 overflow-y-auto p-4" x-transition>
+                    <button @click="openStockPicker('watchlist')"
+                        class="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-3.5 rounded-xl transition mb-4 shadow-lg hover:shadow-green-500/30 transform hover:scale-[1.02]">
+                        <div class="flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path>
+                                <path fill-rule="evenodd"
+                                    d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            <span>Add to Watchlist</span>
+                        </div>
+                    </button>
+
+                    <div x-show="watchlist.length === 0" class="text-center py-12">
+                        <div class="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-10 h-10 text-slate-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path>
+                                <path fill-rule="evenodd"
+                                    d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <p class="text-slate-400 font-semibold">Your watchlist is empty</p>
+                        <p class="text-slate-500 text-sm mt-1">Add stocks to track their performance</p>
+                    </div>
+
+                    <div class="space-y-3">
+                        <template x-for="stock in watchlist" :key="stock.ticker">
+                            <div
+                                class="bg-gradient-to-br from-slate-800 to-slate-900 p-4 rounded-xl border border-slate-700 hover:border-slate-600 transition-all shadow-lg">
+                                <div class="flex items-start justify-between mb-3">
+                                    <div class="flex-1">
+                                        <h4 class="font-bold text-white text-lg mb-1" x-text="stock.ticker"></h4>
+                                        <p class="text-xs text-slate-400" x-text="getCompanyName(stock.ticker)"></p>
+                                    </div>
+                                    <button @click="removeFromWatchlist(stock.ticker)"
+                                        class="text-red-400 hover:text-red-500 p-2 hover:bg-red-500/10 rounded-lg transition">
+                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                                clip-rule="evenodd"></path>
+                                        </svg>
+                                    </button>
                                 </div>
-                                <button @click="openTradeModal('SELL', holding.ticker, holding.quantity)"
-                                    class="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white text-sm font-bold py-2.5 rounded-lg transition transform hover:scale-[1.02]">
-                                    Sell All
-                                </button>
+
+                                <div class="grid grid-cols-3 gap-3 text-sm">
+                                    <div class="bg-slate-700/30 p-2 rounded-lg">
+                                        <p class="text-xs text-slate-400 mb-1">Current Price</p>
+                                        <p class="font-bold text-white">₹<span x-text="stock.price || '-'"></span></p>
+                                    </div>
+                                    <div class="bg-slate-700/30 p-2 rounded-lg">
+                                        <p class="text-xs text-slate-400 mb-1">Today's Change</p>
+                                        <p class="font-bold"
+                                            :class="stock.change >= 0 ? 'text-green-500' : 'text-red-500'"
+                                            x-text="stock.change ? ((stock.change >= 0 ? '+' : '') + stock.change.toFixed(2) + '%') : '-'">
+                                        </p>
+                                    </div>
+                                    <div class="bg-slate-700/30 p-2 rounded-lg">
+                                        <p class="text-xs text-slate-400 mb-1">Day Range</p>
+                                        <p class="font-bold text-white text-xs" x-text="stock.dayRange || '-'"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- 2c. History Content (Now with absolute positioning) -->
+                <div x-show="portfolioTab === 'history'" class="absolute inset-0 overflow-y-auto p-4" x-transition>
+
+                    <div x-show="portfolioLoading" class="animate-pulse space-y-3">
+                        <div class="bg-slate-800 h-16 rounded-xl"></div>
+                        <div class="bg-slate-800 h-16 rounded-xl"></div>
+                        <div class="bg-slate-800 h-16 rounded-xl"></div>
+                        <div class="bg-slate-800 h-16 rounded-xl"></div>
+                    </div>
+
+                    <div x-show="!portfolioLoading && tradeHistory.length === 0" class="text-center py-12">
+                        <div class="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-10 h-10 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                </path>
+                            </svg>
+                        </div>
+                        <p class="text-slate-400 font-semibold">No trade history</p>
+                        <p class="text-slate-500 text-sm mt-1">Your executed trades will appear here.</p>
+                    </div>
+
+                    <div x-show="!portfolioLoading && tradeHistory.length > 0" class="space-y-3">
+                        <template x-for="trade in tradeHistory" :key="trade.timestamp">
+                            <div
+                                class="bg-slate-800/50 p-3 rounded-xl border border-slate-700 flex items-center justify-between gap-4">
+                                <div class="flex items-center gap-3 flex-1 min-w-0">
+                                    <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                                        :class="trade.action === 'BUY' ? 'bg-green-500/20' : 'bg-red-500/20'">
+                                        <svg x-show="trade.action === 'BUY'" class="w-5 h-5 text-green-400" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 4v16m8-8H4"></path>
+                                        </svg>
+                                        <svg x-show="trade.action === 'SELL'" class="w-5 h-5 text-red-400" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M18 12H6"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="font-bold text-white truncate"><span x-text="trade.action"></span>
+                                            <span x-text="trade.ticker"></span>
+                                        </p>
+                                        <p class="text-xs text-slate-400"
+                                            x-text="formatTradeTimestamp(trade.timestamp)">
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="text-right flex-shrink-0">
+                                    <p class="font-semibold text-white">₹<span
+                                            x-text="trade.total_value.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})"></span>
+                                    </p>
+                                    <p class="text-xs text-slate-400"><span x-text="trade.quantity"></span> @ ₹<span
+                                            x-text="trade.price.toFixed(2)"></span></p>
+                                </div>
                             </div>
                         </template>
                     </div>
                 </div>
 
             </div>
-
-            <div x-show="portfolioTab === 'watchlist'" class="flex-1 overflow-y-auto p-4">
-                <button @click="openStockPicker('watchlist')"
-                    class="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-3.5 rounded-xl transition mb-4 shadow-lg hover:shadow-green-500/30 transform hover:scale-[1.02]">
-                    <div class="flex items-center justify-center gap-2">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path>
-                            <path fill-rule="evenodd"
-                                d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
-                                clip-rule="evenodd"></path>
-                        </svg>
-                        <span>Add to Watchlist</span>
-                    </div>
-                </button>
-
-                <div x-show="watchlist.length === 0" class="text-center py-12">
-                    <div class="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-10 h-10 text-slate-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path>
-                            <path fill-rule="evenodd"
-                                d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
-                                clip-rule="evenodd"></path>
-                        </svg>
-                    </div>
-                    <p class="text-slate-400 font-semibold">Your watchlist is empty</p>
-                    <p class="text-slate-500 text-sm mt-1">Add stocks to track their performance</p>
-                </div>
-
-                <div class="space-y-3">
-                    <template x-for="stock in watchlist" :key="stock.ticker">
-                        <div
-                            class="bg-gradient-to-br from-slate-800 to-slate-900 p-4 rounded-xl border border-slate-700 hover:border-slate-600 transition-all shadow-lg">
-                            <div class="flex items-start justify-between mb-3">
-                                <div class="flex-1">
-                                    <h4 class="font-bold text-white text-lg mb-1" x-text="stock.ticker"></h4>
-                                    <p class="text-xs text-slate-400" x-text="getCompanyName(stock.ticker)"></p>
-                                </div>
-                                <button @click="removeFromWatchlist(stock.ticker)"
-                                    class="text-red-400 hover:text-red-500 p-2 hover:bg-red-500/10 rounded-lg transition">
-                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                            clip-rule="evenodd"></path>
-                                    </svg>
-                                </button>
-                            </div>
-
-                            <div class="grid grid-cols-3 gap-3 text-sm">
-                                <div class="bg-slate-700/30 p-2 rounded-lg">
-                                    <p class="text-xs text-slate-400 mb-1">Current Price</p>
-                                    <p class="font-bold text-white">₹<span x-text="stock.price || '-'"></span></p>
-                                </div>
-                                <div class="bg-slate-700/30 p-2 rounded-lg">
-                                    <p class="text-xs text-slate-400 mb-1">Today's Change</p>
-                                    <p class="font-bold" :class="stock.change >= 0 ? 'text-green-500' : 'text-red-500'"
-                                        x-text="stock.change ? ((stock.change >= 0 ? '+' : '') + stock.change.toFixed(2) + '%') : '-'">
-                                    </p>
-                                </div>
-                                <div class="bg-slate-700/30 p-2 rounded-lg">
-                                    <p class="text-xs text-slate-400 mb-1">Day Range</p>
-                                    <p class="font-bold text-white text-xs" x-text="stock.dayRange || '-'"></p>
-                                </div>
-                            </div>
-                        </div>
-                    </template>
-                </div>
-            </div>
-
-            <div x-show="portfolioTab === 'history'" class="flex-1 overflow-y-auto p-4">
-                <div x-show="portfolioLoading" class="animate-pulse space-y-3">
-                    <div class="bg-slate-800 h-16 rounded-xl"></div>
-                    <div class="bg-slate-800 h-16 rounded-xl"></div>
-                    <div class="bg-slate-800 h-16 rounded-xl"></div>
-                    <div class="bg-slate-800 h-16 rounded-xl"></div>
-                </div>
-
-                <div x-show="!portfolioLoading && tradeHistory.length === 0" class="text-center py-12">
-                    <div class="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-10 h-10 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                            </path>
-                        </svg>
-                    </div>
-                    <p class="text-slate-400 font-semibold">No trade history</p>
-                    <p class="text-slate-500 text-sm mt-1">Your executed trades will appear here.</p>
-                </div>
-
-                <div x-show="!portfolioLoading && tradeHistory.length > 0" class="space-y-3">
-                    <template x-for="trade in tradeHistory" :key="trade.timestamp">
-                        <div
-                            class="bg-slate-800/50 p-3 rounded-xl border border-slate-700 flex items-center justify-between gap-4">
-                            <div class="flex items-center gap-3 flex-1 min-w-0">
-                                <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
-                                    :class="trade.action === 'BUY' ? 'bg-green-500/20' : 'bg-red-500/20'">
-                                    <svg x-show="trade.action === 'BUY'" class="w-5 h-5 text-green-400" fill="none"
-                                        stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 4v16m8-8H4"></path>
-                                    </svg>
-                                    <svg x-show="trade.action === 'SELL'" class="w-5 h-5 text-red-400" fill="none"
-                                        stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M18 12H6"></path>
-                                    </svg>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <p class="font-bold text-white truncate"><span x-text="trade.action"></span> <span
-                                            x-text="trade.ticker"></span></p>
-                                    <p class="text-xs text-slate-400" x-text="formatTradeTimestamp(trade.timestamp)">
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="text-right flex-shrink-0">
-                                <p class="font-semibold text-white">₹<span
-                                        x-text="trade.total_value.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})"></span>
-                                </p>
-                                <p class="text-xs text-slate-400"><span x-text="trade.quantity"></span> @ ₹<span
-                                        x-text="trade.price.toFixed(2)"></span></p>
-                            </div>
-                        </div>
-                    </template>
-                </div>
-            </div>
-
         </div>
     </div>
+    <!-- END Portfolio Window -->
 
+    <!-- START: Cash Edit Modal -->
     <div x-show="cashEditModalOpen" x-cloak @click.self="cashEditModalOpen = false"
         class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[120] flex items-center justify-center p-4">
         <div
@@ -1186,7 +1610,9 @@
             </div>
         </div>
     </div>
+    <!-- END: Cash Edit Modal -->
 
+    <!-- START: Stock Picker Modal -->
     <div x-show="stockPickerOpen" x-cloak @click.self="stockPickerOpen = false"
         class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[110] flex items-center justify-center p-4">
         <div
@@ -1221,7 +1647,8 @@
                 </div>
 
                 <div class="relative mb-4">
-                    <input type="text" x-model="stockSearch" @input="filterStocks()" placeholder="Search stocks..."
+                    <input type="text" x-model="stockSearch" @input.debounce.300ms="filterStocks()"
+                        placeholder="Search stocks..."
                         class="w-full bg-white/10 backdrop-blur-sm text-white placeholder-green-200/60 px-5 py-3.5 pl-12 rounded-xl focus:outline-none focus:ring-2 focus:ring-white/30 border border-white/20 font-medium">
                     <svg class="w-5 h-5 text-green-200 absolute left-4 top-1/2 -translate-y-1/2" fill="none"
                         stroke="currentColor" viewBox="0 0 24 24">
@@ -1294,7 +1721,9 @@
             </div>
         </div>
     </div>
+    <!-- END: Stock Picker Modal -->
 
+    <!-- START: Trade Modal -->
     <div x-show="tradeModalOpen" x-cloak @click.self="tradeModalOpen = false"
         class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[120] flex items-center justify-center p-4">
         <div
@@ -1351,8 +1780,9 @@
 
                     <div>
                         <label class="block text-sm font-bold text-slate-300 mb-2">Quantity (shares)</label>
-                        <input type="number" x-model.number="tradeQuantity" @input="calculateTradeValue()" min="1"
-                            placeholder="Number of shares" required
+                        <input type="number" x-model.number="tradeQuantity"
+                            @input.debounce.300ms="calculateTradeValue()" min="1" placeholder="Number of shares"
+                            required
                             class="w-full bg-slate-800/50 text-white px-5 py-4 rounded-xl text-lg font-semibold focus:outline-none focus:ring-2 focus:ring-green-500 border border-slate-700">
                     </div>
 
@@ -1361,7 +1791,7 @@
                         <div class="space-y-3">
                             <div class="flex justify-between items-center">
                                 <span class="text-sm text-slate-300">Shares</span>
-                                <span class="text-lg font-bold text-white" x-text="tradeQuantity"></span>
+                                <span class="text-lg font-bold text-white" x-text="tradeQuantity || 0"></span>
                             </div>
                             <div class="flex justify-between items-center">
                                 <span class="text-sm text-slate-300">Price per share</span>
@@ -1454,7 +1884,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
 
         const firebaseConfig = {
@@ -1473,11 +1903,22 @@
 
         window.firebaseAuth = auth;
         window.firebaseAnalytics = analytics;
-        window.firebaseAuthFunctions = { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence };
+        window.firebaseAuthFunctions = {
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword,
+            onAuthStateChanged,
+            signOut,
+            setPersistence,
+            browserLocalPersistence,
+            GoogleAuthProvider,
+            signInWithPopup,
+            sendPasswordResetEmail
+        };
         window.logAnalyticsEvent = (eventName, params) => logEvent(analytics, eventName, params);
     </script>
 
     <script>
+
         const API_BASE_URL = "http://127.0.0.1:8080";
 
         // --- Static Data (Defined globally for scope access) ---
@@ -1486,7 +1927,7 @@
         const COMPANY_NAMES_GLOBAL = {
             'RELIANCE.NS': 'Reliance Industries', 'TCS.NS': 'Tata Consultancy Services', 'HDFCBANK.NS': 'HDFC Bank', 'ICICIBANK.NS': 'ICICI Bank', 'INFY.NS': 'Infosys', 'HINDUNILVR.NS': 'Hindustan Unilever', 'BHARTIARTL.NS': 'Bharti Airtel', 'ITC.NS': 'ITC Limited', 'SBIN.NS': 'State Bank of India', 'LICI.NS': 'Life Insurance Corp', 'HCLTECH.NS': 'HCL Technologies', 'KOTAKBANK.NS': 'Kotak Mahindra Bank', 'LT.NS': 'Larsen & Toubro', 'BAJFINANCE.NS': 'Bajaj Finance', 'AXISBANK.NS': 'Axis Bank', 'ASIANPAINT.NS': 'Asian Paints', 'MARUTI.NS': 'Maruti Suzuki', 'SUNPHARMA.NS': 'Sun Pharma', 'TITAN.NS': 'Titan Company', 'WIPRO.NS': 'Wipro', 'ULTRACEMCO.NS': 'UltraTech Cement', 'ADANIENT.NS': 'Adani Enterprises', 'ONGC.NS': 'Oil & Natural Gas', 'NTPC.NS': 'NTPC Limited', 'JSWSTEEL.NS': 'JSW Steel', 'TATAMOTORS.NS': 'Tata Motors', 'POWERGRID.NS': 'Power Grid Corp', 'BAJAJFINSV.NS': 'Bajaj Finserv', 'TATASTEEL.NS': 'Tata Steel', 'COALINDIA.NS': 'Coal India', 'INDUSINDBK.NS': 'IndusInd Bank', 'HINDALCO.NS': 'Hindalco Industries', 'TECHM.NS': 'Tech Mahindra', 'GRASIM.NS': 'Grasim Industries', 'ADANIPORTS.NS': 'Adani Ports', 'BRITANNIA.NS': 'Britannia Industries', 'CIPLA.NS': 'Cipla', 'EICHERMOT.NS': 'Eicher Motors', 'DRREDDY.NS': 'Dr. Reddys Labs', 'NESTLEIND.NS': 'Nestle India', 'HEROMOTOCO.NS': 'Hero MotoCorp', 'BAJAJ-AUTO.NS': 'Bajaj Auto', 'BPCL.NS': 'Bharat Petroleum', 'SHREECEM.NS': 'Shree Cement', 'TATACONSUM.NS': 'Tata Consumer', 'UPL.NS': 'UPL Limited', 'APOLLOHOSP.NS': 'Apollo Hospitals', 'DIVISLAB.NS': 'Divis Laboratories'
         };
-        // --- End Static Data ---
+
 
 
         function chatApp() {
@@ -1500,12 +1941,22 @@
                 confirmPassword: '',
                 authError: '',
                 currentUser: null,
+                showForgotPassword: false,
+                resetEmail: '',
+                resetSuccess: false,
+                resetError: '',
 
                 mobileSidebarOpen: false,
                 isSidebarMinimized: false,
                 currentChatId: null,
                 chatList: [],
                 chatLoading: false,
+
+                // Search State
+                searchVisible: false,
+                searchQuery: '',
+                searchResults: [], // Will store the highlighted <mark> elements
+                currentSearchResultIndex: -1,
 
                 portfolioOpen: false,
                 portfolioMinimized: false,
@@ -1544,9 +1995,81 @@
                 totalTradeValue: 0,
                 loadingPrice: false,
 
+                // New Zerodha Sync State
+                zerodhaSynced: false,
+                zerodhaSyncMessage: 'Not connected. Sync your Zerodha holdings.',
+                zerodhaSyncLoading: false,
+
+                async secureFetch(url, options = {}) {
+                    if (!this.currentUser) {
+                        console.error("Auth Error: No user logged in.");
+                        this.authError = "You are not logged in. Please refresh.";
+                        this.handleLogout(); // Force logout
+                        return Promise.reject(new Error("User not authenticated"));
+                    }
+
+                    try {
+                        // 1. Get a fresh, valid ID token (forces refresh if expired)
+                        const token = await this.currentUser.getIdToken(true);
+
+                        // 2. Prepare headers
+                        const headers = new Headers(options.headers || {});
+                        headers.set('Authorization', `Bearer ${token}`);
+
+                        // 3. Merge new options
+                        const secureOptions = {
+                            ...options,
+                            headers: headers
+                        };
+
+                        // 4. Make the call
+                        const response = await fetch(url, secureOptions);
+
+                        // 5. Handle unauthorized responses from the server
+                        if (response.status === 401 || response.status === 403) {
+                            console.error("Auth Error: Server rejected token.");
+                            this.authError = "Your session has expired. Please log in again.";
+                            this.handleLogout(); // Force logout
+                            return Promise.reject(new Error("Token rejected by server"));
+                        }
+
+                        return response; // Return the response for the original function to handle
+
+                    } catch (error) {
+                        console.error("Error in secureFetch:", error);
+                        // This is likely a Firebase token error
+                        this.authError = "Could not verify your session. Please log in again.";
+                        this.handleLogout();
+                        return Promise.reject(error);
+                    }
+                },
+                // ============================================
+                // END OF SECURE FETCH HELPER
+                // ============================================
+
                 async init() {
                     await this.initFirebase();
+                    if (window.location.search.includes('sync=success')) {
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }
                 },
+
+                startZerodhaConnect() {
+                    if (!this.currentUser) return;
+
+                    // Set UI state to loading/connecting
+                    this.zerodhaSyncLoading = true;
+                    this.zerodhaSynced = false;
+                    this.zerodhaSyncMessage = 'Redirecting to Zerodha...';
+                    const connectUrl = `${API_BASE_URL}/api/zerodha/connect/${this.currentUser.uid}`;
+                    window.open(connectUrl, '_blank');
+                    setTimeout(() => {
+                        this.zerodhaSyncLoading = false;
+                        // The checkZerodhaSyncStatus function will be called on the next portfolio reload.
+                        this.zerodhaSyncMessage = 'Check portfolio/reload after connecting on Zerodha site.';
+                    }, 5000);
+                },
+
 
                 async initFirebase() {
                     await new Promise(resolve => {
@@ -1582,10 +2105,12 @@
                     } else {
                         this.startNewChat(true);
                     }
+                    await this.checkZerodhaSyncStatus();
                 },
 
                 async getProactiveAlert() {
                     console.log("Checking for proactive alerts...");
+                    // Placeholder for future implementation
                 },
 
                 async handleSignup() {
@@ -1599,6 +2124,39 @@
                         await window.firebaseAuthFunctions.createUserWithEmailAndPassword(window.firebaseAuth, this.email, this.password);
                     } catch (error) {
                         this.authError = error.message.replace('Firebase: ', '');
+                    } finally {
+                        this.isLoading = false;
+                    }
+                },
+                async signInWithGoogle() {
+                    this.isLoading = true;
+                    this.authError = '';
+                    try {
+                        const { GoogleAuthProvider, signInWithPopup } = window.firebaseAuthFunctions;
+                        const provider = new GoogleAuthProvider();
+                        await signInWithPopup(window.firebaseAuth, provider);
+                    } catch (error) {
+                        this.authError = error.message.replace('Firebase: ', '');
+                    } finally {
+                        this.isLoading = false;
+                    }
+                },
+
+                async handleForgotPassword() {
+                    this.isLoading = true;
+                    this.resetError = '';
+                    this.resetSuccess = false;
+                    try {
+                        const { sendPasswordResetEmail } = window.firebaseAuthFunctions;
+                        await sendPasswordResetEmail(window.firebaseAuth, this.resetEmail);
+                        this.resetSuccess = true;
+                        setTimeout(() => {
+                            this.showForgotPassword = false;
+                            this.resetEmail = '';
+                            this.resetSuccess = false;
+                        }, 3000);
+                    } catch (error) {
+                        this.resetError = error.message.replace('Firebase: ', '');
                     } finally {
                         this.isLoading = false;
                     }
@@ -1623,7 +2181,8 @@
                 async fetchChatList() {
                     if (!this.currentUser) return;
                     try {
-                        const response = await fetch(`${API_BASE_URL}/api/chats/${this.currentUser.uid}`);
+                        // USE SECURE FETCH
+                        const response = await this.secureFetch(`${API_BASE_URL}/api/chats/${this.currentUser.uid}`);
                         if (response.ok) this.chatList = await response.json();
                     } catch (error) {
                         console.error("Error fetching chat list:", error);
@@ -1631,33 +2190,41 @@
                 },
 
                 async loadChat(chatId, showAlert = false) {
-                    this.currentChatId = chatId;
-                    this.chatLoading = true;
-                    const chat = this.chatList.find(c => c.chatId === chatId);
-                    document.getElementById('chat-title').textContent = chat ? chat.title : 'Chat';
+                    this.currentChatId = chatId
+                    this.chatLoading = true
+                    this.clearSearch() // Clear search when loading a new chat
+                    this.searchVisible = false // Hide search bar when loading new chat
 
-                    const container = document.getElementById('message-container');
-                    container.innerHTML = '';
+                    // Find and update chat title
+                    const chat = this.chatList.find(c => c.chatId === chatId)
+                    document.getElementById('chat-title').textContent = chat ? chat.title : 'Chat'
 
-                    if (showAlert) await this.getProactiveAlert();
+                    const container = document.getElementById('message-container')
+                    container.innerHTML = '' // Clear immediately
+
+                    if (showAlert) await this.getProactiveAlert()
 
                     try {
-                        const response = await fetch(`${API_BASE_URL}/api/chat/${this.currentUser.uid}/${chatId}`);
+                        // USE SECURE FETCH
+                        const response = await this.secureFetch(`${API_BASE_URL}/api/chat/${this.currentUser.uid}/${chatId}`)
                         if (response.ok) {
-                            const messages = await response.json();
-                            messages.forEach(msg => this.appendMessage(msg.text, msg.role, false));
+                            const messages = await response.json()
+                            container.innerHTML = ''
+                            messages.forEach(msg => this.appendMessage(msg.text, msg.role, false))
                         }
                     } catch (error) {
-                        console.error("Error loading messages:", error);
+                        console.error('Error loading messages:', error)
                     } finally {
-                        this.chatLoading = false;
-                        this.scrollToBottom();
-                        this.mobileSidebarOpen = false;
+                        this.chatLoading = false
+                        this.scrollToBottom()
+                        this.mobileSidebarOpen = false
                     }
                 },
 
                 async startNewChat(showAlert = false) {
                     this.currentChatId = null;
+                    this.clearSearch(); // Clear search for new chat
+                    this.searchVisible = false; // Hide search bar for new chat
                     document.getElementById('chat-title').textContent = "New Chat";
                     document.getElementById('message-container').innerHTML = '';
 
@@ -1669,7 +2236,8 @@
 
                 async deleteChat(chatId) {
                     try {
-                        const response = await fetch(`${API_BASE_URL}/api/chat/${this.currentUser.uid}/${chatId}`, { method: 'DELETE' });
+                        // USE SECURE FETCH
+                        const response = await this.secureFetch(`${API_BASE_URL}/api/chat/${this.currentUser.uid}/${chatId}`, { method: 'DELETE' });
                         if (response.ok) {
                             await this.fetchChatList();
                             if (this.currentChatId === chatId) {
@@ -1697,7 +2265,8 @@
                     if (!this.newChatTitle || !this.chatToRename.id || this.newChatTitle.trim() === '') return;
 
                     try {
-                        const response = await fetch(`${API_BASE_URL}/api/chat/${this.currentUser.uid}/${this.chatToRename.id}`, {
+                        // USE SECURE FETCH
+                        const response = await this.secureFetch(`${API_BASE_URL}/api/chat/${this.currentUser.uid}/${this.chatToRename.id}`, {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ title: this.newChatTitle.trim() })
@@ -1733,7 +2302,8 @@
                     if (input) input.disabled = true;
 
                     try {
-                        const response = await fetch(`${API_BASE_URL}/api/chat`, {
+                        // USE SECURE FETCH
+                        const response = await this.secureFetch(`${API_BASE_URL}/api/chat`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -1759,7 +2329,10 @@
                         }
                     } catch (error) {
                         document.getElementById(`typing-${typingId}`)?.remove();
-                        this.appendMessage('Network error. Please try again.', 'system');
+                        // secureFetch already handles auth errors, so this is likely a network error
+                        if (error.message !== "Token rejected by server" && error.message !== "User not authenticated") {
+                            this.appendMessage('Network error. Please try again.', 'system');
+                        }
                     } finally {
                         if (sendButton) sendButton.disabled = false;
                         if (input) {
@@ -1783,9 +2356,9 @@
 
                     if (sender === 'system') {
                         content = `<div class="flex items-start gap-3">
-                         <div class="flex-shrink-0"><svg class="w-5 h-5 text-amber-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg></div>
-                         <p class="text-sm whitespace-pre-wrap">${text}</p>
-                       </div>`;
+                     <div class="flex-shrink-0"><svg class="w-5 h-5 text-amber-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg></div>
+                     <p class="text-sm whitespace-pre-wrap">${text}</p>
+                   </div>`;
                     }
 
                     div.innerHTML = `<div class="${senderClass} px-4 py-3 max-w-[85%] sm:max-w-[80%] shadow-lg">${content}</div>`;
@@ -1800,14 +2373,14 @@
                     div.id = `typing-${id}`;
                     div.className = 'message flex justify-start';
                     div.innerHTML = `
-                    <div class="message-agent px-4 py-3 shadow-lg">
-                        <div class="flex gap-1">
-                            <div class="w-2 h-2 bg-slate-500 rounded-full typing-dot"></div>
-                            <div class="w-2 h-2 bg-slate-500 rounded-full typing-dot"></div>
-                            <div class="w-2 h-2 bg-slate-500 rounded-full typing-dot"></div>
-                        </div>
-                    </div>
-                `;
+              <div class="message-agent px-4 py-3 shadow-lg">
+                  <div class="flex gap-1">
+                      <div class="w-2 h-2 bg-slate-500 rounded-full typing-dot"></div>
+                      <div class="w-2 h-2 bg-slate-500 rounded-full typing-dot"></div>
+                      <div class="w-2 h-2 bg-slate-500 rounded-full typing-dot"></div>
+                  </div>
+              </div>
+            `;
                     container.appendChild(div);
                     this.scrollToBottom();
                 },
@@ -1826,11 +2399,148 @@
                     textarea.style.height = Math.min(textarea.scrollHeight, 128) + 'px';
                 },
 
+                // --- NEW SEARCH FUNCTIONS ---
+                toggleSearch() {
+                    this.searchVisible = !this.searchVisible;
+                    if (this.searchVisible) {
+                        // Focus the input when search bar opens
+                        this.$nextTick(() => this.$refs.searchInput.focus());
+                    } else {
+                        this.clearSearch(); // Clear search when closing
+                    }
+                },
+
+                clearHighlights() {
+                    // Find all message paragraphs and reset their content to plain text
+                    document.querySelectorAll('#message-container p').forEach(p => {
+                        // Check if the parent div has one of the message classes before resetting
+                        const parentDiv = p.closest('div[class*="message-"]');
+                        if (parentDiv && (parentDiv.classList.contains('message-agent') ||
+                            parentDiv.classList.contains('message-user') ||
+                            parentDiv.classList.contains('message-system'))) {
+                            p.innerHTML = p.innerText;
+                        }
+                    });
+                },
+
+                performSearch() {
+                    this.clearHighlights();
+                    this.searchResults = [];
+                    this.currentSearchResultIndex = -1;
+
+                    if (!this.searchQuery || this.searchQuery.length < 1) {
+                        return;
+                    }
+
+                    const query = this.searchQuery.toLowerCase();
+                    const messageParagraphs = document.querySelectorAll('.message-agent p, .message-user p');
+                    const regex = new RegExp(`\\b${this.searchQuery.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}\\b`, 'gi');
+
+                    let results = [];
+                    messageParagraphs.forEach(p => {
+                        const text = p.innerText;
+                        if (regex.test(text)) {
+                            p.innerHTML = text.replace(regex, match => `<mark class="search-highlight">${match}</mark>`);
+                            results.push(...p.querySelectorAll('mark.search-highlight'));
+                        }
+                        regex.lastIndex = 0;
+                    });
+
+                    this.searchResults = results;
+
+                    if (this.searchResults.length > 0) {
+                        this.currentSearchResultIndex = 0;
+                        this.highlightCurrentResult();
+                    }
+                },
+
+                highlightCurrentResult() {
+                    // Remove 'active' from all highlights
+                    this.searchResults.forEach(mark => mark.classList.remove('active'));
+
+                    if (this.currentSearchResultIndex > -1 && this.searchResults[this.currentSearchResultIndex]) {
+                        const currentMark = this.searchResults[this.currentSearchResultIndex];
+                        currentMark.classList.add('active');
+
+                        // Scroll to the active highlight
+                        currentMark.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
+                    }
+                },
+
+                navigateSearch(direction) {
+                    if (this.searchResults.length === 0) return;
+
+                    if (direction === 'next') {
+                        this.currentSearchResultIndex++;
+                        if (this.currentSearchResultIndex >= this.searchResults.length) {
+                            this.currentSearchResultIndex = 0; // Wrap around to start
+                        }
+                    } else if (direction === 'prev') {
+                        this.currentSearchResultIndex--;
+                        if (this.currentSearchResultIndex < 0) {
+                            this.currentSearchResultIndex = this.searchResults.length - 1; // Wrap around to end
+                        }
+                    }
+                    this.highlightCurrentResult();
+                },
+
+                clearSearch() {
+                    this.clearHighlights();
+                    this.searchQuery = '';
+                    this.searchResults = [];
+                    this.currentSearchResultIndex = -1;
+                },
+                // --- END NEW SEARCH FUNCTIONS ---
+
                 openPortfolio() {
                     this.portfolioOpen = true;
                     this.portfolioMinimized = false;
                     this.portfolioTab = 'portfolio'; // Default to portfolio tab
                     this.loadPortfolio();
+                },
+
+                async loadInitialData() {
+                    await this.fetchChatList();
+                    if (this.chatList.length > 0) {
+                        this.loadChat(this.chatList[0].chatId, true);
+                    } else {
+                        this.startNewChat(true);
+                    }
+                    await this.checkZerodhaSyncStatus();
+
+                },
+
+                async checkZerodhaSyncStatus() {
+                    if (!this.currentUser) return;
+                    try {
+                        const userDocUrl = `${API_BASE_URL}/api/portfolio/${this.currentUser.uid}`;
+                        const response = await this.secureFetch(userDocUrl);
+
+                        if (response.ok) {
+                            const portfolioData = await response.json();
+                            let isSynced = portfolioData.zerodha_synced_once === true;
+
+                            // 2. Fallback check on the summary object (where P&L data is)
+                            if (!isSynced && portfolioData.summary && portfolioData.summary.zerodha_synced_once === true) {
+                                isSynced = true;
+                            }
+
+                            if (isSynced) {
+                                this.zerodhaSynced = true;
+                                this.zerodhaSyncMessage = '✅ Synced: Real holdings loaded. Click to Resync.';
+                            } else {
+                                this.zerodhaSynced = false;
+                                this.zerodhaSyncMessage = 'Not connected. Sync your Zerodha holdings.';
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Zerodha status check error:', error);
+                        this.zerodhaSynced = false;
+                        this.zerodhaSyncMessage = 'Error checking sync status.';
+                    }
                 },
 
                 async loadPortfolio() {
@@ -1840,7 +2550,8 @@
                     if (this.reloadIntervalId) clearInterval(this.reloadIntervalId);
 
                     try {
-                        const response = await fetch(`${API_BASE_URL}/api/portfolio/${this.currentUser.uid}`);
+                        // USE SECURE FETCH
+                        const response = await this.secureFetch(`${API_BASE_URL}/api/portfolio/${this.currentUser.uid}`);
                         if (response.ok) {
                             this.portfolio = await response.json();
                             this.portfolioLastUpdated = Date.now();
@@ -1874,7 +2585,8 @@
                     if (!this.currentUser) return;
                     this.portfolioLoading = true;
                     try {
-                        const response = await fetch(`${API_BASE_URL}/api/watchlist/${this.currentUser.uid}`);
+                        // USE SECURE FETCH
+                        const response = await this.secureFetch(`${API_BASE_URL}/api/watchlist/${this.currentUser.uid}`);
                         if (response.ok) {
                             this.watchlist = await response.json();
                         } else {
@@ -1891,7 +2603,8 @@
                     if (!this.currentUser) return;
                     this.portfolioLoading = true;
                     try {
-                        const response = await fetch(`${API_BASE_URL}/api/history/${this.currentUser.uid}`);
+                        // USE SECURE FETCH
+                        const response = await this.secureFetch(`${API_BASE_URL}/api/history/${this.currentUser.uid}`);
                         if (response.ok) {
                             this.tradeHistory = await response.json();
                         } else {
@@ -1909,21 +2622,17 @@
                 formatTradeTimestamp(isoString) {
                     if (!isoString) return 'N/A';
                     const date = new Date(isoString);
-                    const userTimezoneOffset = date.getTimezoneOffset() * 60000;
-                    const localDate = new Date(date.getTime() - userTimezoneOffset);
-
                     if (isoString.endsWith('Z')) {
-                        const utcDate = new Date(isoString);
-                        return utcDate.toLocaleString('en-IN', {
+                        return date.toLocaleString('en-IN', {
                             day: 'numeric', month: 'short', year: 'numeric',
                             hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Asia/Kolkata'
                         });
+                    } else {
+                        return date.toLocaleString('en-IN', {
+                            day: 'numeric', month: 'short', year: 'numeric',
+                            hour: 'numeric', minute: '2-digit', hour12: true
+                        });
                     }
-
-                    return date.toLocaleString('en-IN', {
-                        day: 'numeric', month: 'short', year: 'numeric',
-                        hour: 'numeric', minute: '2-digit', hour12: true
-                    });
                 },
 
                 openCashEditModal() {
@@ -1934,7 +2643,8 @@
                 async adjustCash() {
                     if (this.newCashAmount < 0 || this.newCashAmount > 1000000) return;
                     try {
-                        const response = await fetch(`${API_BASE_URL}/api/adjust-cash/${this.currentUser.uid}`, {
+                        // USE SECURE FETCH
+                        const response = await this.secureFetch(`${API_BASE_URL}/api/adjust-cash/${this.currentUser.uid}`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ cash: this.newCashAmount })
@@ -1956,7 +2666,6 @@
                     this.selectedStocks = [];
                     this.stockSearch = '';
                     this.filteredStocks = NIFTY_50_STOCKS_GLOBAL;
-                    this.filterStocks(); 
                 },
 
                 filterStocks() {
@@ -1971,12 +2680,9 @@
                 },
 
                 toggleStockSelection(stock) {
-                    // console.log('Stock selection attempt:', stock); // Debugging
                     if (this.stockPickerMode === 'trade') {
-                        // Single selection: if current stock is clicked, deselect; otherwise, select new stock
                         this.selectedStock = this.selectedStock === stock ? '' : stock;
                     } else {
-                        // Multi-selection: toggle inclusion in selectedStocks array
                         const index = this.selectedStocks.indexOf(stock);
                         if (index > -1) {
                             this.selectedStocks.splice(index, 1);
@@ -1984,8 +2690,6 @@
                             this.selectedStocks.push(stock);
                         }
                     }
-                    // Force Alpine update to ensure classes re-render
-                    this.$forceUpdate();
                 },
 
                 isStockSelected(stock) {
@@ -1998,12 +2702,13 @@
 
                 async proceedWithSelection() {
                     if (this.stockPickerMode === 'trade' && this.selectedStock) {
-                        this.openTradeModal('BUY', this.selectedStock, 1);
+                        this.openTradeModal('BUY', this.selectedStock, 1); // Default quantity to 1
                         this.stockPickerOpen = false;
                     } else if (this.stockPickerMode === 'watchlist' && this.selectedStocks.length > 0) {
-                        this.isLoading = true; // Use global loading indicator
+                        this.isLoading = true;
                         try {
-                            const response = await fetch(`${API_BASE_URL}/api/watchlist/${this.currentUser.uid}`, {
+                            // USE SECURE FETCH
+                            const response = await this.secureFetch(`${API_BASE_URL}/api/watchlist/${this.currentUser.uid}`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ tickers: this.selectedStocks })
@@ -2012,14 +2717,17 @@
                             if (response.ok) {
                                 this.selectedStocks = [];
                                 this.stockPickerOpen = false;
-                                await this.loadWatchlistPrices();
+                                await this.loadWatchlistPrices(); // Reload watchlist after adding
+                                this.portfolioTab = 'watchlist';
                             } else {
                                 const errorData = await response.json();
                                 this.appendMessage(`Error adding to watchlist: ${errorData.message || errorData.error}`, 'system');
                             }
                         } catch (error) {
                             console.error("Watchlist add error:", error);
-                            this.appendMessage('Network error while adding to watchlist.', 'system');
+                            if (error.message !== "Token rejected by server" && error.message !== "User not authenticated") {
+                                this.appendMessage('Network error while adding to watchlist.', 'system');
+                            }
                         } finally {
                             this.isLoading = false;
                         }
@@ -2028,10 +2736,15 @@
 
                 async removeFromWatchlist(ticker) {
                     try {
-                        await fetch(`${API_BASE_URL}/api/watchlist/${this.currentUser.uid}/${ticker}`, {
+                        // USE SECURE FETCH
+                        const response = await this.secureFetch(`${API_BASE_URL}/api/watchlist/${this.currentUser.uid}/${ticker}`, {
                             method: 'DELETE'
                         });
-                        await this.loadWatchlistPrices();
+                        if (response.ok) {
+                            await this.loadWatchlistPrices(); // Reload watchlist after removing
+                        } else {
+                            console.error("Failed to remove from watchlist");
+                        }
                     } catch (error) {
                         console.error("Watchlist remove error:", error);
                     }
@@ -2040,33 +2753,60 @@
                 async openTradeModal(action, ticker, quantity) {
                     this.tradeAction = action;
                     this.tradeTicker = ticker;
-                    this.tradeQuantity = quantity;
+                    this.tradeQuantity = quantity || 1;
                     this.tradeError = '';
                     this.loadingPrice = true;
                     this.tradeModalOpen = true;
+                    this.currentStockPrice = 0;
+                    this.totalTradeValue = 0;
 
                     try {
+                        // This is a public endpoint, so no secureFetch is needed
                         const response = await fetch(`${API_BASE_URL}/api/stock/price/${ticker}`);
+                        if (!response.ok) {
+                            const errData = await response.json();
+                            throw new Error(errData.error || `HTTP error! status: ${response.status}`);
+                        }
                         const data = await response.json();
-                        this.currentStockPrice = data.price;
-                        this.calculateTradeValue();
+
+                        if (data && data.current_price !== undefined) {
+                            this.currentStockPrice = data.current_price;
+                        } else if (data && data.error) {
+                            throw new Error(data.error);
+                        } else {
+                            throw new Error('Invalid price data received.');
+                        }
+
+                        this.calculateTradeValue(); // Calculate AFTER getting the price
                     } catch (error) {
-                        this.tradeError = 'Failed to fetch price';
+                        console.error("Error in openTradeModal:", error);
+                        this.tradeError = error.message || 'Failed to fetch price';
+                        this.currentStockPrice = 0; // Set to 0 on error
+                        this.calculateTradeValue(); // Recalculate (will be 0)
                     } finally {
                         this.loadingPrice = false;
                     }
                 },
 
                 calculateTradeValue() {
-                    this.totalTradeValue = Math.round(this.currentStockPrice * this.tradeQuantity);
+                    const quantity = (typeof this.tradeQuantity === 'number' && this.tradeQuantity > 0) ? this.tradeQuantity : 0;
+                    const price = (typeof this.currentStockPrice === 'number' && this.currentStockPrice >= 0) ? this.currentStockPrice : 0;
+                    this.totalTradeValue = Math.round(price * quantity * 100) / 100; // Round to 2 decimal places
                 },
+
 
                 async executeTrade() {
                     this.tradeLoading = true;
                     this.tradeError = '';
+                    if (!Number.isInteger(this.tradeQuantity) || this.tradeQuantity <= 0) {
+                        this.tradeError = "Quantity must be a positive whole number.";
+                        this.tradeLoading = false;
+                        return;
+                    }
 
                     try {
-                        const response = await fetch(`${API_BASE_URL}/api/trade/${this.currentUser.uid}`, {
+                        // USE SECURE FETCH
+                        const response = await this.secureFetch(`${API_BASE_URL}/api/trade/${this.currentUser.uid}`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -2078,19 +2818,22 @@
 
                         const data = await response.json();
 
-                        if (response.ok) {
+                        if (response.ok && data.success) { // Check for success flag from backend
                             this.tradeModalOpen = false;
-                            await this.loadPortfolio();
+                            await this.loadPortfolio(); // Reload portfolio data
                         } else {
-                            this.tradeError = data.error;
+                            this.tradeError = data.message || data.error || 'Trade failed. Please check details.';
                         }
                     } catch (error) {
-                        this.tradeError = 'Network error';
+                        console.error("Trade execution error:", error);
+                        if (error.message !== "Token rejected by server" && error.message !== "User not authenticated") {
+                            this.tradeError = 'Network error during trade execution.';
+                        }
                     } finally {
                         this.tradeLoading = false;
                     }
                 }
-            }
+            } 
         }
     </script>
 </body>
