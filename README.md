@@ -2,7 +2,7 @@
 
 # AI Stock Analyst Platform
 
-*Powered by Synance AI — Intelligent Trading for Indian Markets (NSE)*
+*Intelligent Trading for Indian Markets (NSE)*
 
 [![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-Visit_Platform-blue?style=for-the-badge)](https://stock-agent-774764824527.us-central1.run.app)
 [![Google Cloud](https://img.shields.io/badge/Google_Cloud-Run-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white)](https://cloud.google.com/run)
@@ -92,16 +92,16 @@ text
 ---
 
 ## 🔧 Configuration
+Change in config.py
 
-### Environment Variables
-
-export GOOGLE_APPLICATION_CREDENTIALS="/path/to/serviceAccountKey.json"
-export GENIE_API_KEY="your-gemini-api-key"
-export NEWSAPI_KEY="your-newsapi-key"
-export ZERODHA_API_KEY="your-zerodha-api-key"
-export ZERODHA_API_SECRET="your-zerodha-secret"
-
-text
+GENIE_API_KEY = "your-gemini-api-key"
+NEWSAPI_KEYS = [
+    "newsapi-key-1",
+    "newsapi-key-2",
+    "newsapi-key-3"
+]
+ZERODHA_API_KEY = "your-zerodha-api-key"
+ZERODHA_API_SECRET = "your-zerodha-secret"
 
 ### Firebase Setup
 
@@ -116,25 +116,19 @@ text
 ## 🧱 Project Structure
 
 ai-stock-analyst/
-├── app.py # Flask backend entry
-├── config.py # API keys & constants
-├── indices.py # NSE index data
-├── requirements.txt # Dependencies
-├── Dockerfile # Docker setup
+Backend/
 ├── templates/
-│ └── index.html # Frontend (Alpine.js)
-├── static/
-│ ├── css/ # Tailwind styles
-│ └── js/ # Chat logic & Firebase config
-├── utils/
-│ ├── portfolio_manager.py# AI-based optimization
-│ ├── trade_executor.py # Order simulation/execution
-│ ├── news_fetcher.py # Sentiment analyzer
-│ └── indicators.py # RSI, EMA, momentum tools
-└── credentials/
-└── serviceAccountKey.json # Firebase credentials
-
-text
+│   └── index.html
+├── .dockerignore
+├── .gitignore
+├── API_Server.py
+├── config.py
+├── Dockerfile
+├── indices.py
+├── requirements.txt
+frontend/
+└── index.html
+README.md
 
 ---
 
@@ -171,28 +165,27 @@ text
 ## ☁️ Deployment
 
 ### Docker Local
-
-docker build -t ai-stock-analyst .
-docker run -p 8080:8080
--v /path/to/serviceAccountKey.json:/app/credentials.json
--e GOOGLE_APPLICATION_CREDENTIALS=/app/credentials.json
-ai-stock-analyst
-
-text
+```
+   docker build -t ai-stock-analyst .
+   docker run -p 8080:8080 \
+   -v /path/to/serviceAccountKey.json:/app/credentials.json \
+   -e GOOGLE_APPLICATION_CREDENTIALS=/app/credentials.json \
+   ai-stock-analyst
+```
 
 ### Google Cloud Run
+```
+   gcloud auth login
+   gcloud config set project YOUR_PROJECT_ID
+   gcloud run deploy ai-stock-analyst
+   --source .
+   --platform managed
+   --region asia-south1
+   --allow-unauthenticated
+   --memory 2Gi
+   --timeout 300
 
-gcloud auth login
-gcloud config set project YOUR_PROJECT_ID
-gcloud run deploy ai-stock-analyst
---source .
---platform managed
---region asia-south1
---allow-unauthenticated
---memory 2Gi
---timeout 300
-
-text
+```
 
 ---
 
