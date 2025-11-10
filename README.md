@@ -39,6 +39,7 @@ AI Stock Analyst Platform is a full-stack, AI-powered trading and analytics plat
 ## 🌐 Live Platform
 
 **Web:** [https://stock-agent-774764824527.us-central1.run.app](https://stock-agent-774764824527.us-central1.run.app)
+Creat Your Free Account 
 
 **Try queries like:**
 - "Analyze Reliance for swing trading"
