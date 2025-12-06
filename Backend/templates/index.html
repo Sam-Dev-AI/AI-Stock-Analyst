@@ -890,6 +890,8 @@
                             <p class="text-base text-gray-400">Create your free account</p>
                         </div>
 
+
+
                         <div class="w-full space-y-4 max-w-sm">
                             <input type="email" x-model="email" required autocomplete="email"
                                 class="input-focus w-full bg-gray-700/50 text-white px-4 py-3.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 transition border border-gray-600"
@@ -1051,20 +1053,33 @@
                     </form>
                 </div>
 
-            </div>
-            <div class="overlay-panel overlay-right">
-                <div class="max-w-md">
-                    <h1 class="text-4xl font-bold mb-4">Already a Member?</h1>
-                    <p class="text-lg mb-8 text-green-50">Login to access your trading dashboard</p>
-                    <button type="button" @click="isLoginView = true; authError = ''"
-                        class="ghost-btn px-12 py-3 rounded-full font-semibold text-lg transition-all hover:scale-105">Login</button>
+
+                <!-- Overlay Container (Restored) -->
+                <div class="overlay-container">
+                    <div class="overlay">
+                        <div class="overlay-panel overlay-left">
+                            <h1 class="text-4xl font-bold mb-4">Welcome Back!</h1>
+                            <p class="text-lg mb-8 text-green-50">To keep connected with us please login with your
+                                personal info
+                            </p>
+                            <button
+                                class="ghost-btn px-12 py-3 rounded-full font-semibold text-lg transition-all hover:scale-105"
+                                @click="isLoginView = false; authError = ''">Sign Up</button>
+                        </div>
+                        <div class="overlay-panel overlay-right">
+                            <h1 class="text-4xl font-bold mb-4">Already a Member?</h1>
+                            <p class="text-lg mb-8 text-green-50">Login to access your trading dashboard</p>
+                            <button
+                                class="ghost-btn px-12 py-3 rounded-full font-semibold text-lg transition-all hover:scale-105"
+                                @click="isLoginView = true; authError = ''">Login</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    </div>
-    </div>
-    </div>
+
+    <!-- Forgot Password Modal -->
     <div x-show="showForgotPassword" x-cloak @click.self="showForgotPassword = false"
         class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div
@@ -1726,7 +1741,8 @@
                                         <!-- Left: Company + Quantity -->
                                         <div class="flex-1 min-w-0">
                                             <div class="flex items-center gap-2">
-                                                <h4 class="font-bold text-white text-sm" x-text="holding.ticker"></h4>
+                                                <h4 class="font-bold text-white text-sm" x-text="holding.ticker">
+                                                </h4>
                                                 <button @click.stop="openAnalysisModal(holding.ticker)"
                                                     title="View Analysis"
                                                     class="p-1 text-slate-500 hover:text-blue-400 hover:bg-slate-700 rounded transition">
@@ -1887,7 +1903,8 @@
                                 <div class="grid grid-cols-3 gap-3 text-sm">
                                     <div class="bg-slate-700/30 p-2 rounded-lg">
                                         <p class="text-xs text-slate-400 mb-1">Current Price</p>
-                                        <p class="font-bold text-white">₹<span x-text="stock.price || '-'"></span></p>
+                                        <p class="font-bold text-white">₹<span x-text="stock.price || '-'"></span>
+                                        </p>
                                     </div>
                                     <div class="bg-slate-700/30 p-2 rounded-lg">
                                         <p class="text-xs text-slate-400 mb-1">Today's Change</p>
@@ -2164,7 +2181,8 @@
                                     <p class="text-xl font-bold text-white">₹<span
                                             x-text="currentStockPrice.toFixed(2)"></span></p>
                                 </div>
-                                <div x-show="loadingPrice" class="h-7 w-24 bg-slate-700 animate-pulse rounded"></div>
+                                <div x-show="loadingPrice" class="h-7 w-24 bg-slate-700 animate-pulse rounded">
+                                </div>
                             </div>
                             <div>
                                 <p class="text-xs text-slate-400 mb-1">Your Balance</p>
@@ -2528,17 +2546,20 @@
                     <hr class="border-slate-700 my-6">
 
                     <div>
-                        <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3">Key Fundamentals</h4>
+                        <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3">Key Fundamentals
+                        </h4>
                         <div class="grid grid-cols-2 gap-3">
                             <div class="bg-slate-800/40 p-3.5 rounded-lg border border-slate-700/50">
                                 <span class="text-[10px] text-slate-400 block mb-1 font-medium uppercase">P/E
                                     Ratio</span>
-                                <p class="text-white font-bold text-base" x-text="analysisData.peRatio || 'N/A'"></p>
+                                <p class="text-white font-bold text-base" x-text="analysisData.peRatio || 'N/A'">
+                                </p>
                             </div>
                             <div class="bg-slate-800/40 p-3.5 rounded-lg border border-slate-700/50">
                                 <span class="text-[10px] text-slate-400 block mb-1 font-medium uppercase">P/B
                                     Ratio</span>
-                                <p class="text-white font-bold text-base" x-text="analysisData.pbRatio || 'N/A'"></p>
+                                <p class="text-white font-bold text-base" x-text="analysisData.pbRatio || 'N/A'">
+                                </p>
                             </div>
                             <div class="bg-slate-800/40 p-3.5 rounded-lg border border-slate-700/50">
                                 <span class="text-[10px] text-slate-400 block mb-1 font-medium uppercase">Dividend
@@ -2549,7 +2570,8 @@
                             <div class="bg-slate-800/40 p-3.5 rounded-lg border border-slate-700/50">
                                 <span class="text-[10px] text-slate-400 block mb-1 font-medium uppercase">Market
                                     Cap</span>
-                                <p class="text-white font-bold text-base" x-text="analysisData.marketCap || 'N/A'"></p>
+                                <p class="text-white font-bold text-base" x-text="analysisData.marketCap || 'N/A'">
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -2702,6 +2724,9 @@
                 if (!response.ok) throw new Error("Failed to fetch config");
                 const config = await response.json();
 
+                // Store globally for AlpineJS components
+                window.APP_CONFIG = config;
+
                 // === LOCAL MODE ===
                 if (config.dbMode === 'LOCAL') {
                     console.log("🔶 RUNNING IN LOCAL DATABASE MODE (Offline-Ready)");
@@ -2781,14 +2806,22 @@
         let API_BASE_URL = ""; // Will be set by loadConfig
 
         async function loadConfig() {
+            if (window.APP_CONFIG) {
+                API_BASE_URL = window.APP_CONFIG.apiBaseUrl;
+                return window.APP_CONFIG;
+            }
+            // Fallback if loadConfig is called before init logic (shouldn't happen often)
             try {
                 const response = await fetch('/api/config');
                 const config = await response.json();
+                window.APP_CONFIG = config;
                 API_BASE_URL = config.apiBaseUrl;
-                console.log('API Base URL loaded:', API_BASE_URL);
+                console.log('API Base URL loaded (Fallback):', API_BASE_URL);
+                return config;
             } catch (error) {
-                console.error('Failed to load API config, using fallback (relative path):', error);
-                API_BASE_URL = ""; // Fallback to relative path
+                console.error('Failed to load API config:', error);
+                API_BASE_URL = "";
+                return { dbMode: 'LOCAL' }; // Safe fallback
             }
         }
 
@@ -2946,24 +2979,28 @@
                 },
 
                 async init() {
-                    await loadConfig();
+                    // Check for global config first
+                    if (window.APP_CONFIG) {
+                        this.isLocalMode = (window.APP_CONFIG.dbMode === 'LOCAL');
+                    } else {
+                        const conf = await loadConfig(); // Fallback fetch
+                        if (conf) this.isLocalMode = (conf.dbMode === 'LOCAL');
+                    }
 
-                    // --- ADD THIS BLOCK ---
-                    try {
-                        const res = await fetch('/api/config');
-                        const conf = await res.json();
-                        if (conf.dbMode === 'LOCAL') {
-                            this.isLocalMode = true;
-                            console.log("🎨 UI switched to Local Mode");
+                    // Wait for Firebase Functions to be attached to window
+                    const checkFirebase = setInterval(() => {
+                        if (window.firebaseAuthFunctions) {
+                            clearInterval(checkFirebase);
+                            this.initFirebase();
                         }
-                    } catch (e) { console.error(e); }
-                    // ----------------------
+                    }, 50);
 
-                    await this.initFirebase();
                     if (window.location.search.includes('sync=success')) {
                         window.history.replaceState({}, document.title, window.location.pathname);
                     }
                 },
+
+
 
                 async initFirebase() {
                     await new Promise(resolve => {

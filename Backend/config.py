@@ -1,24 +1,17 @@
+import os
 
 # ============================================
 # GENERAL SETTINGS
 # ============================================
 DEBUG_MODE = True # Set to False in production
-DB_MODE = "LOCAL" # Options: 'local', 'firebase'
+DB_MODE = "Local" # Options: 'local', 'firebase'
 Local_API_URL = "http://127.0.0.1:8080"
-Production_API_URL = "Your API URL" # Get from Firebase Console
+Production_API_URL = "https://stock-agent-774764824527.us-central1.run.app" 
 
 # ============================================
 # Gemini API KEYS
 # ============================================
-GENIE_API_KEY = "Your API Key"
-
-
-# ============================================
-# Zerodha API
-# ============================================
-ZERODHA_API_KEY = "Your API Key"
-ZERODHA_API_SECRET = "Your API Key"
-ZERODHA_REDIRECT_URL = f"{Production_API_URL}/api/zerodha/callback"  if DEBUG_MODE == False else f"{Local_API_URL}/api/zerodha/callback"
+GENIE_API_KEY ="Your API key"
 
 
 # ============================================
@@ -27,7 +20,7 @@ ZERODHA_REDIRECT_URL = f"{Production_API_URL}/api/zerodha/callback"  if DEBUG_MO
 LOCAL_DB_FILE = 'local_database.json'
 
 FIREBASE_CONFIG = {
-    "apiKey": "Your API Key",
+    "apiKey": "Your API key",
     "authDomain": "gen-lang-client-0593733264.firebaseapp.com",
     "projectId": "gen-lang-client-0593733264",
     "storageBucket": "gen-lang-client-0593733264.appspot.com",
@@ -42,15 +35,22 @@ FIREBASE_CONFIG = {
 
 API_BASE_URL = Local_API_URL if DEBUG_MODE == True else Production_API_URL
 
+# ============================================
+# Zerodha API
+# ============================================
+ZERODHA_API_KEY = "Your API key"
+ZERODHA_API_SECRET = "Your API key"
+ZERODHA_REDIRECT_URL = f"{Production_API_URL}/api/zerodha/callback"  if DEBUG_MODE == False else f"{Local_API_URL}/api/zerodha/callback"
+
 
 # ============================================
 # News API KEYS
 # ============================================
 #get from https://newsapi.org/
 NEWSAPI_KEYS = [
-    "Your API Key",
-    "Your API Key",
-    "Your API Key"
+"Your API key",
+"Your API key",
+"Your API key"
 ]
 NEWS_API_MODE = 'sequential'
 
