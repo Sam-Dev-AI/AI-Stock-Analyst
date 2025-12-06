@@ -24,12 +24,23 @@ Whether you are a swing trader looking for opportunities or an investor balancin
 
 ---
 
+## 💡 What Problem Does It Solve?
+
+In the fast-paced world of stock trading, **time** and **confidence** are your biggest assets. This platform solves critical challenges for modern traders:
+
+1.  **Saves Massive Time**: Instead of spending hours manually analyzing charts, reading news, and calculating indicators, you can simply ask, *"Analyze Reliance"*. The agent instantly aggregates technical data, news sentiment, and fundamental metrics into a concise report.
+2.  **Risk-Free Strategy Testing**: With the **Zerodha Sync** feature, you can import your *real* portfolio and specific holdings but trade in **Paper Mode**. This allows you to backtest strategies on your actual portfolio data without risking a single rupee.
+3.  **Action-Oriented AI**: It's not just a chatbot; it's an agent. You don't just ask for advice—you command it. *"Buy 10 shares of Tata Motors"* executes the trade instantly (virtually or fast-tracked), bridging the gap between analysis and action.
+
+---
+
 ## ✨ Key Features
 
 ### 🤖 Intelligent AI Core
 - **Conversational Interface**: Chat naturally with the AI to get market insights, e.g., *"What is the support level for Tata Motors?"*.
 - **Deep Technical Analysis**: Automatically calculates RSI, MACD, Bollinger Bands, and Moving Averages (EMA/SMA) to generate specific Buy/Sell/Hold ratings.
 - **Smart Reasoning**: The AI explains *why* a stock is bullish or bearish, citing specific technical indicators.
+- **Agent Actions**: Execute trades directly through conversation. Just say *"Buy 50 shares of Zomato"* or *"Sell my ITC holdings"*, and the agent handles the execution seamlessly.
 
 ### 🔌 Seamless Integration
 - **Zerodha Kite Connect**: Sync your *real* live portfolio directly into the dashboard.
@@ -57,7 +68,7 @@ Follow these steps to set up the project locally on your machine.
 ### 2. Clone the Repository
 Open your terminal and run:
 ```bash
-git clone https://github.com/yourusername/ai-stock-analyst.git
+git clone https://github.com/Sam-Dev-AI/AI-Stock-Analyst.git
 cd ai-stock-analyst
 cd Backend
 ```
