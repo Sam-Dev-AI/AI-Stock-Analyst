@@ -12,3 +12,5 @@ ddgs
 gunicorn    
 google-cloud-secret-manager
 kiteconnect
+flask_session
+tinydb

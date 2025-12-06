@@ -10,6 +10,228 @@
         rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js" defer></script>
     <style>
+        .chat-message {
+            width: 100%;
+            max-width: 100%;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .animate-slide-in {
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .animate-pulse-soft {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        /* Smooth transitions */
+        .smooth-transition {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+
+        /* Loading skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s ease-in-out infinite;
+        }
+
+        @keyframes loading {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* Indicator badge */
+        .indicator-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #10b981;
+            transition: all 0.2s;
+        }
+
+        .indicator-badge:hover {
+            background: rgba(16, 185, 129, 0.15);
+            transform: translateY(-2px);
+        }
+
+        /* Checkbox custom styling */
+        .custom-checkbox {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #475569;
+            border-radius: 6px;
+            background: #1e293b;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .custom-checkbox:checked {
+            background: #10b981;
+            border-color: #10b981;
+        }
+
+        .custom-checkbox:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        /* Dropdown animation */
+        .dropdown-enter {
+            animation: slideDown 0.2s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            overflow-x: hidden;
+        }
+
+        .gauge-semi-circle {
+            width: 240px;
+            height: 240px;
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: linear-gradient(to right, #ef4444, #eab308, #84cc16, #22c55e, #10b981);
+        }
+
+        .gauge-mask {
+            width: 200px;
+            /* Smaller than semi-circle */
+            height: 200px;
+            border-radius: 50%;
+            position: absolute;
+            top: 20px;
+            /* (240 - 200) / 2 */
+            left: 20px;
+            background: #1e293b;
+            /* Matches modal background */
+            z-index: 1;
+        }
+
+        .gauge-pointer {
+            width: 2px;
+            height: 110px;
+            /* Slightly less than container height */
+            background: #ffffff;
+            position: absolute;
+            bottom: 10px;
+            /* Positioned slightly up from bottom center */
+            left: 50%;
+            transform-origin: bottom center;
+            transform: translateX(-50%) rotate(0deg);
+            transition: transform 0.5s ease-out;
+            z-index: 2;
+            border-radius: 2px;
+        }
+
+        .gauge-center-point {
+            width: 12px;
+            height: 12px;
+            background: #fff;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+        }
+
+        .gauge-labels {
+            width: 240px;
+            position: absolute;
+            top: 95px;
+            /* Aligns text below the mask */
+            left: 0;
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            font-weight: 600;
+            color: #94a3b8;
+            padding: 0 10px;
+        }
+
+
         * {
             margin: 0;
             padding: 0;
@@ -284,6 +506,63 @@
             }
         }
 
+        /* Mobile Auth Fixes */
+        @media (max-width: 767px) {
+            .auth-container {
+                min-height: 100vh;
+                border-radius: 0;
+            }
+
+            .auth-form {
+                padding: 2rem 1.5rem;
+                justify-content: center;
+                min-height: 100vh;
+            }
+
+            .form-container {
+                position: relative;
+                height: auto;
+            }
+
+            .sign-in-container,
+            .sign-up-container {
+                width: 100%;
+                position: absolute;
+                top: 0;
+                left: 0;
+                transition: transform 0.6s ease-in-out, opacity 0.6s ease-in-out;
+            }
+
+            /* Logic for switching on mobile */
+            .auth-container:not(.right-panel-active) .sign-in-container {
+                transform: translateX(0);
+                opacity: 1;
+                z-index: 5;
+            }
+
+            .auth-container:not(.right-panel-active) .sign-up-container {
+                transform: translateX(100%);
+                opacity: 0;
+                z-index: 1;
+                display: flex;
+                /* Override none */
+            }
+
+            .auth-container.right-panel-active .sign-in-container {
+                transform: translateX(-100%);
+                opacity: 0;
+                z-index: 1;
+                display: flex;
+                /* Override none */
+            }
+
+            .auth-container.right-panel-active .sign-up-container {
+                transform: translateX(0);
+                opacity: 1;
+                z-index: 5;
+            }
+        }
+
         .input-focus:focus {
             box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
         }
@@ -413,14 +692,39 @@
         @media (max-width: 768px) {
             .portfolio-window {
                 width: calc(100vw - 20px);
+                max-width: calc(100vw - 20px);
+                left: 10px;
                 right: 10px;
-                bottom: 10px;
+                bottom: 80px;
+                /* Above nav bar if present, or just give space */
+                height: 80vh;
+                max-height: 80vh;
             }
 
             .portfolio-window.maximized {
-                width: calc(100vw - 20px) !important;
-                height: 90vh !important;
+                width: 100vw !important;
+                height: 100vh !important;
+                left: 0 !important;
+                right: 0 !important;
+                bottom: 0 !important;
+                border-radius: 0;
             }
+        }
+
+        /* Search Highlight Styles */
+        mark.search-highlight {
+            background-color: rgba(234, 179, 8, 0.3);
+            /* Yellow-500 with opacity */
+            color: #fef08a;
+            /* Yellow-200 */
+            border-radius: 2px;
+            padding: 0 2px;
+        }
+
+        mark.search-highlight.active {
+            background-color: rgba(234, 179, 8, 0.8);
+            color: #000;
+            box-shadow: 0 0 0 2px rgba(234, 179, 8, 0.5);
         }
 
         .portfolio-tabs button.active {
@@ -599,7 +903,7 @@
                                 placeholder="Confirm Password">
 
                             <!-- Google Sign-In Separator -->
-                            <div class="relative my-4">
+                            <div class="relative my-4" x-show="!isLocalMode">
                                 <div class="absolute inset-0 flex items-center">
                                     <div class="w-full border-t border-gray-600"></div>
                                 </div>
@@ -608,8 +912,7 @@
                                 </div>
                             </div>
 
-                            <!-- Google Sign-In Button -->
-                            <button type="button" @click="signInWithGoogle" :disabled="isLoading"
+                            <button type="button" @click="signInWithGoogle" :disabled="isLoading" x-show="!isLocalMode"
                                 class="w-full bg-white hover:bg-gray-100 text-gray-900 font-bold py-3.5 rounded-xl transition-all duration-200 flex items-center justify-center gap-3 border border-gray-300 shadow-md">
                                 <svg class="w-5 h-5" viewBox="0 0 24 24">
                                     <path fill="#4285F4"
@@ -678,15 +981,15 @@
                                 placeholder="Password">
 
                             <!-- Forgot Password Link -->
-                            <div class="flex justify-end">
-                                <button type="button" @click="showForgotPassword = true"
+                            <div class="flex justify-end" x-show="!isLocalMode"> <button type="button"
+                                    @click="showForgotPassword = true"
                                     class="text-sm text-green-500 hover:text-green-400 font-semibold transition-colors">
                                     Forgot Password?
                                 </button>
                             </div>
 
                             <!-- Google Sign-In Separator -->
-                            <div class="relative my-4">
+                            <div class="relative my-4" x-show="!isLocalMode">
                                 <div class="absolute inset-0 flex items-center">
                                     <div class="w-full border-t border-gray-600"></div>
                                 </div>
@@ -696,7 +999,7 @@
                             </div>
 
                             <!-- Google Sign-In Button -->
-                            <button type="button" @click="signInWithGoogle" :disabled="isLoading"
+                            <button type="button" @click="signInWithGoogle" :disabled="isLoading" x-show="!isLocalMode"
                                 class="w-full bg-white hover:bg-gray-100 text-gray-900 font-bold py-3.5 rounded-xl transition-all duration-200 flex items-center justify-center gap-3 border border-gray-300 shadow-md">
                                 <svg class="w-5 h-5" viewBox="0 0 24 24">
                                     <path fill="#4285F4"
@@ -748,30 +1051,19 @@
                     </form>
                 </div>
 
-                <div class="overlay-container">
-                    <div class="overlay">
-                        <div class="overlay-panel overlay-left">
-                            <div class="max-w-md">
-                                <h1 class="text-4xl font-bold mb-4">New Here?</h1>
-                                <p class="text-lg mb-8 text-green-50">Join thousands of traders making smarter
-                                    decisions</p>
-                                <button type="button" @click="isLoginView = false; authError = ''"
-                                    class="ghost-btn px-12 py-3 rounded-full font-semibold text-lg transition-all hover:scale-105">Sign
-                                    Up</button>
-                            </div>
-                        </div>
-                        <div class="overlay-panel overlay-right">
-                            <div class="max-w-md">
-                                <h1 class="text-4xl font-bold mb-4">Already a Member?</h1>
-                                <p class="text-lg mb-8 text-green-50">Login to access your trading dashboard</p>
-                                <button type="button" @click="isLoginView = true; authError = ''"
-                                    class="ghost-btn px-12 py-3 rounded-full font-semibold text-lg transition-all hover:scale-105">Login</button>
-                            </div>
-                        </div>
-                    </div>
+            </div>
+            <div class="overlay-panel overlay-right">
+                <div class="max-w-md">
+                    <h1 class="text-4xl font-bold mb-4">Already a Member?</h1>
+                    <p class="text-lg mb-8 text-green-50">Login to access your trading dashboard</p>
+                    <button type="button" @click="isLoginView = true; authError = ''"
+                        class="ghost-btn px-12 py-3 rounded-full font-semibold text-lg transition-all hover:scale-105">Login</button>
                 </div>
             </div>
         </div>
+    </div>
+    </div>
+    </div>
     </div>
     <div x-show="showForgotPassword" x-cloak @click.self="showForgotPassword = false"
         class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -844,26 +1136,31 @@
         </div>
     </div>
 
-    <div x-show="isLoggedIn" x-cloak class="app-container">
-        <div x-show="mobileSidebarOpen" @click="mobileSidebarOpen = false"
-            class="fixed inset-0 bg-black bg-opacity-60 z-40 md:hidden"></div>
+    <div x-show="isLoggedIn" x-cloak class="app-container flex h-screen w-full overflow-hidden bg-slate-950">
 
-        <aside class="mobile-sidebar bg-slate-900 flex flex-col border-r border-slate-700 transition-all duration-300"
-            :class="{'open': mobileSidebarOpen, 'md:w-20': isSidebarMinimized, 'md:w-64': !isSidebarMinimized}">
-            <div class="p-4 border-b border-slate-700 flex items-center justify-between h-20">
-                <div class="flex items-center gap-2 min-w-0" x-show="!isSidebarMinimized">
-                    <svg class="w-6 h-6 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+        <aside
+            class="mobile-sidebar bg-slate-950 flex flex-col border-r border-slate-800/50 transition-all duration-300 z-40 shadow-xl"
+            :class="{'open': mobileSidebarOpen, 'md:w-20': isSidebarMinimized, 'md:w-72': !isSidebarMinimized}">
+
+            <div class="h-16 flex items-center justify-between px-4 border-b border-slate-800/50 flex-shrink-0">
+                <div class="flex items-center gap-3 min-w-0 overflow-hidden transition-opacity duration-200"
+                    x-show="!isSidebarMinimized">
+                    <div
+                        class="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-600 to-emerald-800 flex items-center justify-center shadow-lg ring-1 ring-white/10 flex-shrink-0">
+                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z" />
+                        </svg>
+                    </div>
+                    <span class="text-sm font-bold text-slate-200 tracking-wide whitespace-nowrap">History</span>
+                </div>
+
+                <div x-show="isSidebarMinimized" class="w-full flex justify-center">
+                    <svg class="w-6 h-6 text-emerald-500" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z" />
                     </svg>
-                    <span class="text-lg font-semibold truncate">Chats</span>
                 </div>
-                <div x-show="isSidebarMinimized" class="flex items-center justify-center w-full">
-                    <svg class="w-6 h-6 text-green-500" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z" />
-                    </svg>
-                </div>
-                <button @click="mobileSidebarOpen = false"
-                    class="md:hidden text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-800 transition">
+
+                <button @click="mobileSidebarOpen = false" class="md:hidden text-slate-400 hover:text-white p-2">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
                         </path>
@@ -873,46 +1170,50 @@
 
             <div class="p-3">
                 <button @click="startNewChat()"
-                    class="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold py-3 rounded-xl transition flex items-center justify-center gap-2 shadow-lg hover:shadow-green-500/30">
-                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                    class="w-full bg-slate-900 hover:bg-emerald-600 text-emerald-400 hover:text-white font-medium py-3 rounded-xl transition-all flex items-center justify-center gap-2 border border-slate-800 hover:border-emerald-500 group shadow-lg overflow-hidden">
+                    <svg class="w-5 h-5 flex-shrink-0 group-hover:rotate-90 transition-transform" viewBox="0 0 24 24"
+                        fill="currentColor">
                         <path d="M11 11V5H13V11H19V13H13V19H11V13H5V11H11Z"></path>
                     </svg>
-                    <span x-show="!isSidebarMinimized">New Chat</span>
+                    <span x-show="!isSidebarMinimized" class="text-sm font-bold whitespace-nowrap">New Chat</span>
                 </button>
             </div>
 
-            <nav class="flex-1 overflow-y-auto p-2 space-y-1">
+            <nav class="flex-1 overflow-y-auto p-2 space-y-1 scrollbar-hide">
                 <template x-for="chat in chatList" :key="chat.chatId">
-                    <div @click="loadChat(chat.chatId)"
-                        :class="{ 'active': currentChatId === chat.chatId, 'justify-center': isSidebarMinimized }"
-                        class="chat-item group flex items-center p-3 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 cursor-pointer transition-colors duration-200">
-                        <svg class="w-5 h-5 flex-shrink-0" :class="isSidebarMinimized ? '' : 'mr-3'" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z">
+                    <div @click="loadChat(chat.chatId)" :class="{ 
+                        'bg-emerald-500/10 text-emerald-400 border-l-2 border-emerald-500': currentChatId === chat.chatId, 
+                        'text-slate-500 hover:text-slate-300 hover:bg-white/5 border-l-2 border-transparent': currentChatId !== chat.chatId,
+                        'justify-center': isSidebarMinimized
+                    }"
+                        class="group flex items-center p-3 text-sm font-medium cursor-pointer transition-all duration-200 relative overflow-hidden rounded-r-lg">
+
+                        <svg class="w-5 h-5 flex-shrink-0 transition-colors" :class="isSidebarMinimized ? '' : 'mr-3'"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z">
                             </path>
                         </svg>
+
                         <span class="truncate flex-1" x-text="chat.title" x-show="!isSidebarMinimized"></span>
-                        <div class="flex items-center opacity-0 group-hover:opacity-100 transition-opacity"
+
+                        <div class="flex items-center opacity-0 group-hover:opacity-100 transition-opacity absolute right-1 bg-slate-950 shadow-xl rounded-md border border-slate-800"
                             x-show="!isSidebarMinimized">
                             <button @click.stop="openRenameModal(chat.chatId, chat.title)"
-                                class="p-1.5 text-slate-400 hover:text-white hover:bg-slate-700 rounded" title="Rename">
-                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                    <path
-                                        d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z">
+                                class="p-1.5 text-slate-400 hover:text-blue-400 transition border-r border-slate-800"
+                                title="Rename">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
                                     </path>
-                                    <path fill-rule="evenodd"
-                                        d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
-                                        clip-rule="evenodd"></path>
                                 </svg>
                             </button>
                             <button @click.stop="deleteChat(chat.chatId)"
-                                class="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-500/10 rounded"
-                                title="Delete">
-                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd"
-                                        d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                        clip-rule="evenodd"></path>
+                                class="p-1.5 text-slate-400 hover:text-rose-400 transition" title="Delete">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                    </path>
                                 </svg>
                             </button>
                         </div>
@@ -920,170 +1221,221 @@
                 </template>
             </nav>
 
-            <div class="p-3 border-t border-slate-700 hidden md:flex">
+            <div class="p-3 border-t border-slate-800 bg-slate-950 hidden md:flex">
                 <button @click="isSidebarMinimized = !isSidebarMinimized"
-                    class="w-full p-3 flex items-center text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition"
-                    :class="isSidebarMinimized ? 'justify-center' : ''"
-                    :title="isSidebarMinimized ? 'Expand' : 'Collapse'">
-                    <svg x-show="!isSidebarMinimized" class="w-5 h-5" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7">
-                        </path>
+                    class="w-full flex items-center justify-center text-slate-500 hover:text-white transition p-2 rounded-lg hover:bg-white/5">
+                    <svg class="w-5 h-5 transition-transform duration-300" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24" :class="isSidebarMinimized ? 'rotate-180' : ''">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path>
                     </svg>
-                    <svg x-show="isSidebarMinimized" class="w-5 h-5" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                    </svg>
-                    <span x-show="!isSidebarMinimized" class="ml-2 text-sm font-semibold">Collapse</span>
                 </button>
             </div>
         </aside>
 
-        <main class="flex-1 flex flex-col bg-slate-950 min-w-0 h-full overflow-hidden">
-            <header class="header-gradient px-4 sm:px-6 py-4 flex items-center justify-between h-20 flex-shrink-0">
-                <div class="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
-                    <button @click="mobileSidebarOpen = true"
-                        class="md:hidden text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <main class="flex-1 flex flex-col min-w-0 h-full relative bg-slate-950">
+
+            <header
+                class="h-16 border-b border-white/5 bg-gradient-to-r from-slate-950 to-slate-900 flex items-center justify-between px-4 flex-shrink-0 z-30"
+                x-data="{ searchVisible: false }">
+
+                <div class="flex items-center gap-4 flex-1 min-w-0" x-show="!searchVisible || window.innerWidth >= 768">
+                    <button @click="mobileSidebarOpen = true" class="md:hidden text-slate-400 hover:text-white"><svg
+                            class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
-                    </button>
-
-                    <div class="flex items-center gap-3 min-w-0 flex-1" x-show="!searchVisible"
-                        x-transition:enter="transition ease-out duration-100"
-                        x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
-                        x-transition:leave="transition ease-in duration-75"
-                        x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95">
+                        </svg></button>
+                    <div class="flex items-center gap-3">
                         <div
-                            class="w-11 h-11 rounded-xl bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center shadow-lg flex-shrink-0">
-                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            class="hidden sm:flex w-8 h-8 rounded-lg bg-emerald-600/20 items-center justify-center text-emerald-500">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z" />
                             </svg>
                         </div>
-                        <div class="min-w-0 flex-1">
-                            <h1 id="chat-title" class="text-lg font-bold truncate">New Chat</h1>
-                            <p class="text-xs text-slate-400">AI Stock Analyst</p>
-                        </div>
-                    </div>
-
-                    <div class="flex-1 min-w-0" x-show="searchVisible"
-                        x-transition:enter="transition ease-out duration-100"
-                        x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
-                        x-transition:leave="transition ease-in duration-75"
-                        x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95">
-                        <div
-                            class="flex items-center gap-2 bg-slate-800 border border-slate-700 rounded-xl px-3 py-1.5 w-full">
-                            <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                            </svg>
-                            <input type="text" x-ref="searchInput" x-model="searchQuery"
-                                @input.debounce.300ms="performSearch()" @keydown.enter.prevent="navigateSearch('next')"
-                                @keydown.arrow-down.prevent="navigateSearch('next')"
-                                @keydown.arrow-up.prevent="navigateSearch('prev')"
-                                @keydown.escape.prevent="toggleSearch()" placeholder="Search in chat..."
-                                class="w-full bg-transparent text-white placeholder-slate-400 focus:outline-none text-sm py-1">
-
-                            <span x-show="searchQuery.length > 1" class="text-xs text-slate-500 flex-shrink-0"
-                                x-text="searchResults.length > 0 ? `${currentSearchResultIndex + 1} of ${searchResults.length}` : '0 of 0'"></span>
-
-                            <button @click="navigateSearch('prev')" :disabled="searchResults.length === 0"
-                                class="p-1 text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 15l7-7 7 7"></path>
-                                </svg>
-                            </button>
-                            <button @click="navigateSearch('next')" :disabled="searchResults.length === 0"
-                                class="p-1 text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M19 9l-7 7-7-7"></path>
-                                </svg>
-                            </button>
-                            <button @click="toggleSearch()" class="p-1 text-slate-400 hover:text-white">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12"></path>
-                                </svg>
-                            </button>
+                        <div>
+                            <h1 id="chat-title" class="text-sm font-bold text-white truncate max-w-[200px]">New Chat
+                            </h1>
+                            <p class="text-[10px] text-slate-500 uppercase tracking-wider">AI Analyst</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2 sm:gap-3">
-                    <button @click="toggleSearch()" x-show="!searchVisible"
-                        class="p-2.5 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white transition"
-                        title="Search Chat">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="flex-1 max-w-md mx-4"
+                    :class="searchVisible ? 'absolute inset-0 z-50 bg-slate-950 px-2 flex items-center' : 'hidden md:block'">
+                    <div class="relative w-full">
+                        <input type="text" x-model="searchQuery" @input.debounce.300ms="performSearch()"
+                            placeholder="Search chat..."
+                            class="w-full bg-slate-900 border border-slate-800 text-sm text-white rounded-lg pl-9 pr-8 py-2 focus:outline-none focus:border-emerald-500/50 transition">
+                        <svg class="w-4 h-4 text-slate-500 absolute left-3 top-2.5" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
-                    </button>
+                        <button @click="searchVisible = false; clearSearch()"
+                            class="absolute right-2 top-2 text-slate-500 hover:text-white md:hidden"><svg
+                                class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"></path>
+                            </svg></button>
+                    </div>
+                </div>
 
+                <div class="flex items-center gap-3" x-show="!searchVisible || window.innerWidth >= 768">
+                    <button @click="searchVisible = true" class="md:hidden text-slate-400"><svg class="w-5 h-5"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg></button>
                     <button @click="openPortfolio()"
-                        class="flex items-center gap-2 px-3 sm:px-5 py-2.5 rounded-xl bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 transition shadow-lg hover:shadow-green-500/30">
-                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        class="flex items-center gap-2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded-lg text-xs font-bold text-white border border-slate-700 transition">
+                        <svg class="w-4 h-4 text-emerald-500" fill="currentColor" viewBox="0 0 24 24">
                             <path
                                 d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" />
                         </svg>
-                        <span class="font-bold text-white hidden sm:inline">Portfolio</span>
+                        <span class="hidden sm:inline">Portfolio</span>
                     </button>
 
-                    <button @click="handleLogout()"
-                        class="p-2.5 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white transition">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"
-                                clip-rule="evenodd" />
-                        </svg>
-                    </button>
+                    <div class="relative" x-data="{ menuOpen: false }">
+
+                        <button @click="menuOpen = !menuOpen; editName = currentUser?.displayName || ''"
+                            class="relative flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl transition-all duration-300 outline-none group"
+                            :class="menuOpen ? 'bg-slate-800 ring-2 ring-emerald-500/50 shadow-emerald-900/20' : 'bg-gradient-to-b from-slate-700 to-slate-800 border border-slate-600 hover:border-emerald-500/50 shadow-lg'">
+
+                            <span
+                                class="font-bold text-white text-xs sm:text-sm tracking-wide group-hover:scale-110 transition-transform duration-300"
+                                x-text="(currentUser?.displayName || currentUser?.email || 'U').charAt(0).toUpperCase()"></span>
+
+                            <span class="absolute -bottom-1 -right-1 flex h-2.5 w-2.5 sm:h-3 sm:w-3">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
+                                    :class="isLocalMode ? 'bg-amber-400' : 'bg-emerald-400'"></span>
+                                <span class="relative inline-flex rounded-full h-full w-full border-2 border-slate-950"
+                                    :class="isLocalMode ? 'bg-amber-500' : 'bg-emerald-500'"></span>
+                            </span>
+                        </button>
+
+                        <div x-show="menuOpen" @click.outside="menuOpen = false"
+                            x-transition:enter="transition ease-out duration-200"
+                            x-transition:enter-start="opacity-0 scale-95 translate-y-2"
+                            x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                            x-transition:leave="transition ease-in duration-150"
+                            x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                            x-transition:leave-end="opacity-0 scale-95 translate-y-2"
+                            class="absolute right-0 top-full mt-4 w-80 z-50 rounded-2xl border border-slate-700/80 bg-slate-900/95 backdrop-blur-2xl shadow-2xl ring-1 ring-white/5 overflow-hidden"
+                            style="display: none;">
+
+                            <div
+                                class="relative p-5 bg-gradient-to-b from-white/5 to-transparent border-b border-slate-700/50">
+                                <div class="flex gap-4 items-center">
+                                    <div class="relative h-12 w-12 shrink-0">
+                                        <div
+                                            class="h-full w-full rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center shadow-inner border border-white/10 text-lg font-bold text-white">
+                                            <span
+                                                x-text="(currentUser?.displayName || currentUser?.email || 'U').charAt(0).toUpperCase()"></span>
+                                        </div>
+                                        <div class="absolute -bottom-1 -right-1 bg-slate-900 rounded-full p-0.5">
+                                            <div class="w-3 h-3 rounded-full"
+                                                :class="isLocalMode ? 'bg-amber-500' : 'bg-emerald-500'"></div>
+                                        </div>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <h4 class="text-white font-bold text-base truncate leading-tight"
+                                            x-text="currentUser?.displayName || 'Trader'"></h4>
+                                        <p class="text-xs text-slate-400 font-mono truncate"
+                                            x-text="currentUser?.email"></p>
+                                        <div class="mt-1.5 flex items-center gap-1.5">
+                                            <span
+                                                class="text-[10px] font-bold px-1.5 py-0.5 rounded-md border uppercase tracking-wider"
+                                                :class="isLocalMode ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' : 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'">
+                                                <span x-text="isLocalMode ? 'LOCAL' : 'CLOUD'"></span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-5 pt-4">
+                                <label
+                                    class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Profile
+                                    Settings</label>
+                                <div class="relative group">
+                                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                        <svg class="w-4 h-4 text-slate-500 group-focus-within:text-emerald-400 transition-colors"
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z">
+                                            </path>
+                                        </svg>
+                                    </div>
+                                    <input type="text" x-model="editName"
+                                        class="block w-full pl-10 pr-16 py-3 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 transition-all"
+                                        placeholder="Display Name" @keydown.enter="updateProfile()">
+                                    <button @click="updateProfile()"
+                                        class="absolute right-1.5 top-1.5 bottom-1.5 px-3 bg-slate-800 hover:bg-emerald-600 text-slate-400 hover:text-white rounded-lg text-xs font-bold transition-all duration-200 border border-slate-700 hover:border-transparent"
+                                        title="Save Changes">
+                                        Save
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="px-5 pb-2" x-show="!isLocalMode">
+                                <button @click="pricingModalOpen = true"
+                                    class="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold py-2.5 rounded-xl shadow hover:shadow-orange-500/20 transition transform hover:scale-[1.02]">
+                                    🚀 Upgrade Plan
+                                </button>
+                            </div>
+
+                            <div class="p-2 border-t border-slate-700/50 bg-slate-950/30 mt-2">
+                                <button @click="handleLogout()"
+                                    class="group w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-red-400 hover:bg-red-500/5 transition-all duration-200">
+                                    <span class="flex items-center gap-2.5">
+                                        <svg class="w-4 h-4 text-slate-500 group-hover:text-red-400 transition-colors"
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                                            </path>
+                                        </svg>
+                                        Sign Out
+                                    </span>
+                                    <svg class="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 text-red-400"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </header>
 
-            <div id="chat-window"
-                class="flex-1 p-4 sm:p-6 overflow-y-auto bg-gradient-to-b from-slate-950 to-slate-900 relative">
-                <div x-show="chatLoading"
-                    class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center z-10"
-                    x-transition>
-                    <div class="flex flex-col items-center">
-                        <svg class="animate-spin h-10 w-10 text-green-500" xmlns="http://www.w3.org/2000/svg"
-                            fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
-                            </circle>
-                            <path class="opacity-75" fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                            </path>
-                        </svg>
-                        <p class="mt-4 text-lg text-slate-300 font-semibold">Loading Chat...</p>
-                    </div>
+            <div id="chat-window" class="flex-1 overflow-y-auto scroll-smooth bg-slate-950 relative">
+                <div id="message-container" class="w-full px-4 sm:px-8 pb-32 pt-6 space-y-6">
                 </div>
-
-                <div id="message-container" class="space-y-4 max-w-4xl mx-auto"></div>
             </div>
 
-            <footer class="bg-slate-900 p-4 shadow-inner border-t border-slate-800 flex-shrink-0">
-                <form id="chat-form" @submit.prevent="sendMessage()" class="max-w-4xl mx-auto">
-                    <div class="flex items-end gap-3">
+            <div class="absolute bottom-0 right-0 w-full z-20 pointer-events-none">
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/95 to-transparent h-32">
+                </div>
+                <div class="relative max-w-4xl mx-auto px-4 pb-6 pt-10 pointer-events-auto">
+                    <form id="chat-form" @submit.prevent="sendMessage()" class="relative group">
                         <div
-                            class="flex-1 bg-slate-800 rounded-2xl border border-slate-700 focus-within:border-green-500 transition">
+                            class="relative flex items-end gap-2 bg-slate-900 border border-slate-800 rounded-2xl p-2 shadow-2xl shadow-black/50 transition-colors focus-within:border-emerald-500/50">
                             <textarea id="message-input" rows="1" placeholder="Ask about stocks..."
-                                class="w-full bg-transparent text-white placeholder-slate-400 px-5 py-3 focus:outline-none resize-none max-h-32"
+                                class="w-full bg-transparent text-white placeholder-slate-500 px-4 py-3 focus:outline-none resize-none max-h-32 text-sm scrollbar-hide"
                                 autocomplete="off" @input="autoResize($event.target)"
                                 @keydown.enter.prevent="if (!$event.shiftKey) sendMessage()"></textarea>
+                            <button type="submit" id="send-button"
+                                class="mb-1 mr-1 p-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white transition-all shadow-lg flex-shrink-0 disabled:opacity-50"><svg
+                                    class="w-5 h-5 transform rotate-90" fill="currentColor" viewBox="0 0 20 20">
+                                    <path
+                                        d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z">
+                                    </path>
+                                </svg></button>
                         </div>
-                        <button type="submit" id="send-button"
-                            class="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white p-4 rounded-2xl shadow-lg hover:shadow-green-500/30">
-                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z" />
-                            </svg>
-                        </button>
-                    </div>
-                </form>
-            </footer>
+                    </form>
+                </div>
+            </div>
+
         </main>
     </div>
 
@@ -1367,76 +1719,107 @@
                             <!-- Holdings Loop -->
                             <template x-for="holding in portfolio.holdings" :key="holding.ticker">
                                 <div
-                                    class="bg-gradient-to-br from-slate-800 to-slate-900 p-4 rounded-xl border border-slate-700 shadow-lg hover:shadow-xl hover:border-slate-600 transition-all">
-                                    <div class="flex justify-between items-start mb-3">
-                                        <div class="flex-1">
-                                            <div class="flex items-center gap-2 mb-1">
-                                                <h4 class="font-bold text-white" x-text="holding.ticker"></h4>
-                                                <span class="px-2 py-0.5 bg-slate-700 rounded text-xs text-slate-300"
-                                                    x-text="holding.quantity + ' shares'"></span>
+                                    class="bg-gradient-to-br from-slate-800 to-slate-900 p-3 rounded-xl border border-slate-700 shadow-lg hover:shadow-xl hover:border-slate-600 transition-all">
+
+                                    <!-- HEADER ROW - Compact -->
+                                    <div class="flex justify-between items-start mb-2">
+                                        <!-- Left: Company + Quantity -->
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex items-center gap-2">
+                                                <h4 class="font-bold text-white text-sm" x-text="holding.ticker"></h4>
+                                                <button @click.stop="openAnalysisModal(holding.ticker)"
+                                                    title="View Analysis"
+                                                    class="p-1 text-slate-500 hover:text-blue-400 hover:bg-slate-700 rounded transition">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                                                        </path>
+                                                    </svg>
+                                                </button>
                                             </div>
-                                            <p class="text-xs text-slate-400">Avg: ₹<span
-                                                    x-text="holding.avg_price"></span>
-                                            </p>
+
+                                            <!-- Quantity Badge - Compact -->
+                                            <div
+                                                class="inline-flex items-center gap-1 mt-1 bg-blue-500/20 px-2 py-0.5 rounded border border-blue-500/30">
+                                                <svg class="w-3 h-3 text-blue-400" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z">
+                                                    </path>
+                                                </svg>
+                                                <span class="text-[10px] font-bold text-blue-300">
+                                                    <span x-text="holding.quantity"></span> shares
+                                                </span>
+                                            </div>
                                         </div>
+
+                                        <!-- Right: Current Price + P&L -->
                                         <div class="text-right">
-                                            <p class="font-bold text-lg text-white">₹<span
-                                                    x-text="holding.current_price"></span></p>
-                                            <!-- Total P&L % -->
+                                            <p class="font-bold text-lg text-white">
+                                                ₹<span
+                                                    x-text="parseFloat(holding.current_price || holding.currentprice || 0).toFixed(2)"></span>
+                                            </p>
+
+                                            <!-- Total P&L -->
                                             <div class="flex items-center gap-1 justify-end">
-                                                <svg class="w-4 h-4"
-                                                    :class="holding.pnl >= 0 ? 'text-green-500' : 'text-red-500'"
+                                                <svg class="w-3.5 h-3.5"
+                                                    :class="(holding.pnl || 0) >= 0 ? 'text-green-500' : 'text-red-500'"
                                                     fill="currentColor" viewBox="0 0 20 20">
                                                     <path fill-rule="evenodd"
-                                                        :d="holding.pnl >= 0 ? 'M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z' : 'M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z'"
+                                                        :d="(holding.pnl || 0) >= 0 ? 
+                                  'M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z' : 
+                                  'M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z'"
                                                         clip-rule="evenodd"></path>
                                                 </svg>
-                                                <p class="text-sm font-bold"
-                                                    :class="holding.pnl >= 0 ? 'text-green-500' : 'text-red-500'">
+                                                <p class="text-xs font-bold"
+                                                    :class="(holding.pnl || 0) >= 0 ? 'text-green-500' : 'text-red-500'">
                                                     <span
-                                                        x-text="(holding.pnl >= 0 ? '+' : '') + holding.pnl_percent.toFixed(2) + '%'"></span>
+                                                        x-text="((holding.pnl || 0) >= 0 ? '+' : '') + (holding.pnl_percent || holding.pnlpercent || 0).toFixed(2) + '%'"></span>
                                                 </p>
                                             </div>
-                                            <!-- Day's P&L % -->
-                                            <div class="flex items-center gap-1 justify-end text-xs"
-                                                :class="holding.approx_day_pnl >= 0 ? 'text-green-500' : 'text-red-500'">
-                                                <span>Day:</span>
-                                                <span
-                                                    x-text="(holding.approx_day_pnl >= 0 ? '+' : '') + holding.approx_day_pnl_pct.toFixed(2) + '%'"></span>
+
+                                            <!-- Day's P&L -->
+                                            <div class="text-[10px] font-semibold"
+                                                :class="(holding.approx_day_pnl || 0) >= 0 ? 'text-green-400' : 'text-red-400'">
+                                                Day <span
+                                                    x-text="((holding.approx_day_pnl || 0) >= 0 ? '+' : '') + (holding.approx_day_pnl_pct || 0).toFixed(2) + '%'"></span>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <!-- TOTAL VALUE / INVESTED / P&L GRID -->
+                                    <!-- Single Line Stats -->
                                     <div
-                                        class="grid grid-cols-2 gap-4 text-xs text-slate-400 mb-3 pb-3 border-b border-slate-700">
-
-                                        <div class="text-left flex gap-4">
-                                            <div>
-                                                <span>Invested</span>
-                                                <p class="font-semibold text-white">₹<span
-                                                        x-text="holding.invested_value.toLocaleString('en-IN')"></span>
-                                                </p>
-                                            </div>
-                                            <div>
-                                                <span>Current Value</span>
-                                                <p class="font-semibold text-white">₹<span
-                                                        x-text="holding.current_value.toLocaleString('en-IN')"></span>
-                                                </p>
-                                            </div>
+                                        class="flex items-center gap-4 text-[10px] text-slate-400 mb-2 pb-2 border-b border-slate-700">
+                                        <div>
+                                            Avg: <span class="text-slate-300 font-semibold">₹<span
+                                                    x-text="parseFloat(holding.avg_price || holding.avgprice || 0).toFixed(2)"></span></span>
                                         </div>
-
-                                        <div class="text-right">
-                                            <span>Total P&L</span>
-                                            <p class="font-semibold"
-                                                :class="holding.pnl >= 0 ? 'text-green-500' : 'text-red-500'">
-                                                <span
-                                                    x-text="(holding.pnl >= 0 ? '+' : '') + '₹' + (holding.pnl).toLocaleString('en-IN')"></span>
-                                            </p>
+                                        <div>
+                                            Invested: <span class="text-white font-semibold">₹<span
+                                                    x-text="(holding.invested_value || holding.investedvalue || 0).toLocaleString('en-IN')"></span></span>
+                                        </div>
+                                        <div>
+                                            Current: <span class="text-white font-semibold">₹<span
+                                                    x-text="(holding.current_value || holding.currentvalue || 0).toLocaleString('en-IN')"></span></span>
                                         </div>
                                     </div>
+
+                                    <!-- P&L Line -->
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-[10px] text-slate-400">Total P&L</span>
+                                        <p class="font-bold text-sm"
+                                            :class="(holding.pnl || 0) >= 0 ? 'text-green-500' : 'text-red-500'">
+                                            ₹<span
+                                                x-text="((holding.pnl || 0) >= 0 ? '+' : '') + (holding.pnl || 0).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})"></span>
+                                        </p>
+                                    </div>
+
+                                    <!-- SELL BUTTON - Compact -->
                                     <button @click="openTradeModal('SELL', holding.ticker, holding.quantity)"
-                                        class="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white text-sm font-bold py-2.5 rounded-lg transition transform hover:scale-[1.02]">
+                                        class="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white text-xs font-bold py-2 rounded-lg transition transform hover:scale-[1.02] active:scale-[0.98]">
                                         Sell All
                                     </button>
                                 </div>
@@ -1479,9 +1862,17 @@
                             <div
                                 class="bg-gradient-to-br from-slate-800 to-slate-900 p-4 rounded-xl border border-slate-700 hover:border-slate-600 transition-all shadow-lg">
                                 <div class="flex items-start justify-between mb-3">
-                                    <div class="flex-1">
-                                        <h4 class="font-bold text-white text-lg mb-1" x-text="stock.ticker"></h4>
-                                        <p class="text-xs text-slate-400" x-text="getCompanyName(stock.ticker)"></p>
+                                    <div class="flex items-center gap-2">
+                                        <h4 class="font-bold text-white text-lg" x-text="stock.ticker"></h4>
+                                        <button @click.stop="openAnalysisModal(stock.ticker)"
+                                            title="Show Analyst Rating"
+                                            class="p-1 text-slate-500 hover:text-blue-400 hover:bg-slate-700 rounded-full transition">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                                                </path>
+                                            </svg>
+                                        </button>
                                     </div>
                                     <button @click="removeFromWatchlist(stock.ticker)"
                                         class="text-red-400 hover:text-red-500 p-2 hover:bg-red-500/10 rounded-lg transition">
@@ -1583,6 +1974,7 @@
 
     <!-- START: Cash Edit Modal -->
     <div x-show="cashEditModalOpen" x-cloak @click.self="cashEditModalOpen = false"
+        @keydown.window.escape="cashEditModalOpen = false"
         class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[120] flex items-center justify-center p-4">
         <div
             class="bg-gradient-to-br from-slate-900 to-slate-950 rounded-3xl border-2 border-green-500/30 w-full max-w-md p-6 shadow-2xl">
@@ -1614,6 +2006,7 @@
 
     <!-- START: Stock Picker Modal -->
     <div x-show="stockPickerOpen" x-cloak @click.self="stockPickerOpen = false"
+        @keydown.window.escape="stockPickerOpen = false"
         class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[110] flex items-center justify-center p-4">
         <div
             class="bg-gradient-to-br from-slate-900 to-slate-950 rounded-3xl border-2 border-green-500/30 max-w-2xl w-full max-h-[85vh] flex flex-col shadow-2xl">
@@ -1700,6 +2093,8 @@
                 </div>
             </div>
 
+
+
             <div class="p-6 border-t border-slate-700 bg-slate-900/50 backdrop-blur-sm rounded-b-3xl space-y-3">
                 <button x-show="stockPickerMode === 'watchlist' && selectedStocks.length > 0"
                     @click="selectedStocks = []"
@@ -1725,6 +2120,7 @@
 
     <!-- START: Trade Modal -->
     <div x-show="tradeModalOpen" x-cloak @click.self="tradeModalOpen = false"
+        @keydown.window.escape="tradeModalOpen = false"
         class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[120] flex items-center justify-center p-4">
         <div
             class="bg-gradient-to-br from-slate-900 to-slate-950 rounded-3xl border-2 border-slate-700 w-full max-w-md max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
@@ -1880,46 +2276,521 @@
             </form>
         </div>
     </div>
+    <div x-show="analysisModalOpen" x-cloak @click.self="analysisModalOpen = false"
+        @keydown.window.escape="analysisModalOpen = false"
+        class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[200] flex items-center justify-center p-4"
+        x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+
+        <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl border-2 border-green-500/30 w-full max-w-2xl max-h-[90vh] shadow-2xl overflow-hidden flex flex-col"
+            @click.stop x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-95">
+
+            <div
+                class="bg-gradient-to-r from-green-600 via-green-700 to-emerald-600 p-5 flex items-center justify-between flex-shrink-0">
+                <div class="flex items-center gap-3 min-w-0 flex-1">
+                    <div
+                        class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm flex-shrink-0">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+                            </path>
+                        </svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <h3 class="text-white font-bold text-xl truncate"
+                            x-text="analysisData.companyName || 'Loading...'"></h3>
+                        <div class="flex items-center gap-3">
+                            <p class="text-green-100 text-sm" x-text="analysisData.ticker || ''"></p>
+                            <p class="text-white font-bold text-lg" x-text="analysisData.currentPrice || 'N/A'"></p>
+
+                            <select x-model="selectedTimeframe" @change="loadAnalysisData(analysisData.ticker)"
+                                class="bg-slate-800 text-white text-sm font-semibold px-4 py-2 rounded-lg border-2 border-white/30 focus:outline-none focus:ring-2 focus:ring-green-400 hover:bg-slate-700 transition-all cursor-pointer shadow-lg">
+                                <option value="1m" class="bg-slate-800 text-white">1 Min</option>
+                                <option value="5m" class="bg-slate-800 text-white">5 Min</option>
+                                <option value="15m" class="bg-slate-800 text-white">15 Min</option>
+                                <option value="30m" class="bg-slate-800 text-white">30 Min</option>
+                                <option value="1h" class="bg-slate-800 text-white">1 Hour</option>
+                                <option value="4h" class="bg-slate-800 text-white">4 Hours</option>
+                                <option value="1d" class="bg-slate-800 text-white">1 Day</option>
+                                <option value="1w" class="bg-slate-800 text-white">1 Week</option>
+                                <option value="1mo" class="bg-slate-800 text-white">1 Month</option>
+                                <option value="3m" class="bg-slate-800 text-white">3 Months</option>
+                                <option value="6m" class="bg-slate-800 text-white">6 Months</option>
+                                <option value="1y" class="bg-slate-800 text-white">1 Year</option>
+                            </select>
+
+                            <div x-data="{ indicatorsOpen: false }" class="relative ml-2">
+                                <button @click="indicatorsOpen = !indicatorsOpen"
+                                    class="bg-slate-800 text-white text-sm font-semibold px-4 py-2 rounded-lg border-2 border-white/30 hover:bg-slate-700 transition-all flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+                                        </path>
+                                    </svg>
+                                    <span x-text="selectedIndicators.length + ' Indicators'"></span>
+                                    <svg class="w-4 h-4 transition-transform"
+                                        :class="indicatorsOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </button>
+
+                                <div x-show="indicatorsOpen" @click.outside="indicatorsOpen = false"
+                                    x-transition:enter="transition ease-out duration-200"
+                                    x-transition:enter-start="opacity-0 transform scale-95"
+                                    x-transition:enter-end="opacity-100 transform scale-100"
+                                    class="absolute z-50 right-0 mt-2 w-72 bg-slate-800 border border-slate-700 rounded-xl shadow-2xl overflow-hidden">
+                                    <div class="p-2 max-h-96 overflow-y-auto space-y-1">
+                                        <template x-for="indicator in availableIndicators" :key="indicator.id">
+                                            <label
+                                                class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-700 cursor-pointer transition">
+                                                <input type="checkbox" :value="indicator.id"
+                                                    x-model="selectedIndicators"
+                                                    @change="updateDynamicTechnicalRating()"
+                                                    class="w-5 h-5 rounded border-2 border-slate-600 bg-slate-900 checked:bg-green-500 checked:border-green-500 cursor-pointer">
+                                                <div class="flex-1">
+                                                    <div class="font-semibold text-white text-sm"
+                                                        x-text="indicator.name"></div>
+                                                    <div class="text-xs text-slate-400" x-text="indicator.description">
+                                                    </div>
+                                                </div>
+                                            </label>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button @click="analysisModalOpen = false"
+                    class="p-2 hover:bg-white/20 rounded-lg transition flex-shrink-0">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="overflow-y-auto flex-1 relative">
+
+                <div x-show="analysisLoading"
+                    class="absolute inset-0 z-10 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-12"
+                    x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0"
+                    x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150"
+                    x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+                    <div class="flex flex-col items-center">
+                        <svg class="animate-spin h-12 w-12 text-green-500" xmlns="http://www.w3.org/2000/svg"
+                            fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                            </circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                            </path>
+                        </svg>
+                        <p class="mt-4 text-slate-300 font-semibold">Fetching Analysis...</p>
+                    </div>
+                </div>
+
+                <div class="p-6 space-y-6">
+
+                    <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
+                        <h4 class="text-xs font-bold text-slate-300 text-center uppercase tracking-wider mb-1">
+                            Technical Rating</h4>
+
+                        <div class="flex flex-col items-center">
+                            <div class="relative w-full max-w-xs">
+                                <svg class="w-full" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+                                    <defs>
+                                        <linearGradient id="techGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                            <stop offset="0%" style="stop-color:#ef4444;stop-opacity:1" />
+                                            <stop offset="25%" style="stop-color:#f97316;stop-opacity:1" />
+                                            <stop offset="50%" style="stop-color:#eab308;stop-opacity:1" />
+                                            <stop offset="75%" style="stop-color:#84cc16;stop-opacity:1" />
+                                            <stop offset="100%" style="stop-color:#22c55e;stop-opacity:1" />
+                                        </linearGradient>
+                                    </defs>
+                                    <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#techGradient)"
+                                        stroke-width="14" stroke-linecap="round" />
+                                    <g
+                                        :style="`transform: rotate(${getTechnicalAngle(analysisData.technicalRating)}deg); transform-origin: 100px 100px; transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);`">
+                                        <line x1="100" y1="100" x2="100" y2="30" stroke="white" stroke-width="3"
+                                            stroke-linecap="round"
+                                            style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7))" />
+                                        <circle cx="100" cy="100" r="5" fill="white" />
+                                    </g>
+                                </svg>
+                            </div>
+
+                            <div class="flex justify-between w-full max-w-xs px-4 -mt-2 mb-4">
+                                <span class="text-[10px] font-bold text-red-400">Strong<br />Sell</span>
+                                <span class="text-[10px] font-bold text-yellow-400">Neutral</span>
+                                <span class="text-[10px] font-bold text-green-400 text-right">Strong<br />Buy</span>
+                            </div>
+
+                            <p class="text-2xl font-bold mb-1" :class="{
+                                'text-red-500': analysisData.technicalRating && analysisData.technicalRating.toLowerCase().includes('strong sell'),
+                                'text-orange-500': analysisData.technicalRating && analysisData.technicalRating.toLowerCase() === 'sell',
+                                'text-yellow-500': analysisData.technicalRating && (analysisData.technicalRating.toLowerCase().includes('neutral') || analysisData.technicalRating.toLowerCase().includes('hold')),
+                                'text-lime-500': analysisData.technicalRating && analysisData.technicalRating.toLowerCase() === 'buy',
+                                'text-green-500': analysisData.technicalRating && analysisData.technicalRating.toLowerCase().includes('strong buy'),
+                                'text-slate-400': !analysisData.technicalRating
+                            }" x-text="analysisData.technicalRating || 'N/A'">
+                            </p>
+                            <p class="text-[10px] text-slate-500"
+                                x-text="selectedIndicators.length > 0 ? selectedIndicators.map(s => getIndicatorName(s)).join(' • ') : 'No Indicators Selected'">
+                            </p>
+                        </div>
+                    </div>
+
+                    <hr class="border-slate-700 my-6" />
+
+                    <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
+                        <h4 class="text-xs font-bold text-slate-300 text-center uppercase tracking-wider mb-1">
+                            Long-Term Fundamental Rating</h4>
+
+                        <div class="flex flex-col items-center">
+                            <div class="relative w-full max-w-xs">
+                                <svg class="w-full" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+                                    <defs>
+                                        <linearGradient id="analystGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                            <stop offset="0%" style="stop-color:#ef4444;stop-opacity:1" />
+                                            <stop offset="25%" style="stop-color:#f97316;stop-opacity:1" />
+                                            <stop offset="50%" style="stop-color:#eab308;stop-opacity:1" />
+                                            <stop offset="75%" style="stop-color:#84cc16;stop-opacity:1" />
+                                            <stop offset="100%" style="stop-color:#22c55e;stop-opacity:1" />
+                                        </linearGradient>
+                                    </defs>
+                                    <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#analystGradient)"
+                                        stroke-width="14" stroke-linecap="round" />
+                                    <g
+                                        :style="`transform: rotate(${getAnalystAngle(analysisData.recommendation)}deg); transform-origin: 100px 100px; transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);`">
+                                        <line x1="100" y1="100" x2="100" y2="30" stroke="white" stroke-width="3"
+                                            stroke-linecap="round"
+                                            style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7))" />
+                                        <circle cx="100" cy="100" r="5" fill="white" />
+                                    </g>
+                                </svg>
+                            </div>
+
+                            <div class="flex justify-between w-full max-w-xs px-4 -mt-2 mb-4">
+                                <span class="text-[10px] font-bold text-red-400">Sell</span>
+                                <span class="text-[10px] font-bold text-yellow-400">Hold</span>
+                                <span class="text-[10px] font-bold text-green-400">Buy</span>
+                            </div>
+
+                            <p class="text-2xl font-bold mb-1" :class="{
+                                'text-red-500': analysisData.recommendation && (analysisData.recommendation.toLowerCase().includes('strong sell') || analysisData.recommendation.toLowerCase() === 'sell'),
+                                'text-yellow-500': analysisData.recommendation && analysisData.recommendation.toLowerCase().includes('hold'),
+                                'text-lime-500': analysisData.recommendation && analysisData.recommendation.toLowerCase() === 'buy',
+                                'text-green-500': analysisData.recommendation && analysisData.recommendation.toLowerCase().includes('strong buy'),
+                                'text-slate-400': !analysisData.recommendation
+                            }" x-text="analysisData.recommendation || 'N/A'">
+                            </p>
+                            <p class="text-[10px] text-slate-500">Fundamentals • Valuation • Growth • Quality</p>
+                        </div>
+                    </div>
+
+                    <div x-show="selectedIndicators.length > 0" class="mb-6">
+                        <h4
+                            class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
+                            <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path
+                                    d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z">
+                                </path>
+                            </svg>
+                            Selected Indicators
+                        </h4>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                            <template x-for="indicatorId in selectedIndicators" :key="indicatorId">
+                                <div
+                                    class="bg-gradient-to-br from-green-500/10 to-emerald-500/10 p-4 rounded-xl border border-green-500/30 hover:border-green-500/50 transition-all">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                        <span class="text-xs font-bold text-green-400 uppercase tracking-wider"
+                                            x-text="getIndicatorName(indicatorId)"></span>
+                                    </div>
+                                    <div x-show="analysisLoading"
+                                        class="absolute inset-0 z-10 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-12"
+                                        x-transition:enter="transition ease-out duration-200"
+                                        x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                                        x-transition:leave="transition ease-in duration-150"
+                                        x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+                                        <div class="overflow-y-auto flex-1 relative">
+                            </template>
+                        </div>
+                    </div>
+
+                    <hr class="border-slate-700 my-6">
+
+                    <div>
+                        <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3">Key Fundamentals</h4>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="bg-slate-800/40 p-3.5 rounded-lg border border-slate-700/50">
+                                <span class="text-[10px] text-slate-400 block mb-1 font-medium uppercase">P/E
+                                    Ratio</span>
+                                <p class="text-white font-bold text-base" x-text="analysisData.peRatio || 'N/A'"></p>
+                            </div>
+                            <div class="bg-slate-800/40 p-3.5 rounded-lg border border-slate-700/50">
+                                <span class="text-[10px] text-slate-400 block mb-1 font-medium uppercase">P/B
+                                    Ratio</span>
+                                <p class="text-white font-bold text-base" x-text="analysisData.pbRatio || 'N/A'"></p>
+                            </div>
+                            <div class="bg-slate-800/40 p-3.5 rounded-lg border border-slate-700/50">
+                                <span class="text-[10px] text-slate-400 block mb-1 font-medium uppercase">Dividend
+                                    Yield</span>
+                                <p class="text-white font-bold text-base" x-text="analysisData.dividendYield || 'N/A'">
+                                </p>
+                            </div>
+                            <div class="bg-slate-800/40 p-3.5 rounded-lg border border-slate-700/50">
+                                <span class="text-[10px] text-slate-400 block mb-1 font-medium uppercase">Market
+                                    Cap</span>
+                                <p class="text-white font-bold text-base" x-text="analysisData.marketCap || 'N/A'"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
+        // 1. Define MockAuth globally first (No external dependencies needed)
+        const MockAuth = {
+            currentUser: null,
+            listeners: [],
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyD-HqkasonUQ5VMgmbUa7MLa0nGEeZYUP0",
-            authDomain: "gen-lang-client-0593733264.firebaseapp.com",
-            projectId: "gen-lang-client-0593733264",
-            storageBucket: "gen-lang-client-0593733264.appspot.com",
-            messagingSenderId: "774764824527",
-            appId: "1:774764824527:web:ae76ef456f79c9845734ba",
-            measurementId: "G-YM7GK1DBMC"
+            // Helper to access the "Fake Cloud" in browser storage
+            _getUsersDB: () => JSON.parse(localStorage.getItem('local_users_db') || '{}'),
+            _saveUsersDB: (db) => localStorage.setItem('local_users_db', JSON.stringify(db)),
+
+            // 1. LOGIN (Strict Check)
+            signInWithEmailAndPassword: async (auth, email, password) => {
+                console.log(`🔌 LOCAL MODE: Attempting login for ${email}`);
+
+                // Simulate network delay for realism
+                await new Promise(r => setTimeout(r, 500));
+
+                const db = MockAuth._getUsersDB();
+                const userRecord = db[email];
+
+                if (!userRecord) {
+                    const error = new Error("Firebase: Error (auth/user-not-found).");
+                    error.code = "auth/user-not-found";
+                    throw error;
+                }
+
+                if (userRecord.password !== password) {
+                    const error = new Error("Firebase: Error (auth/wrong-password).");
+                    error.code = "auth/wrong-password";
+                    throw error;
+                }
+
+                // Login Successful
+                const user = {
+                    uid: userRecord.uid,
+                    email: userRecord.email,
+                    displayName: email.split('@')[0],
+                    getIdToken: async () => userRecord.uid // Token is the UID
+                };
+
+                MockAuth._setCurrentUser(user);
+                return { user };
+            },
+
+            // 2. SIGN UP (Create New)
+            createUserWithEmailAndPassword: async (auth, email, password) => {
+                console.log(`🔌 LOCAL MODE: Creating account for ${email}`);
+
+                await new Promise(r => setTimeout(r, 500));
+
+                const db = MockAuth._getUsersDB();
+
+                if (db[email]) {
+                    const error = new Error("Firebase: Error (auth/email-already-in-use).");
+                    error.code = "auth/email-already-in-use";
+                    throw error;
+                }
+
+                // Generate a unique ID based on email
+                const newUid = "local_" + email.split('@')[0].replace(/[^a-z0-9]/gi, '') + "_" + Date.now().toString().slice(-4);
+
+                // Save to "Browser Database"
+                db[email] = {
+                    uid: newUid,
+                    email: email,
+                    password: password // Stored locally for mock auth check
+                };
+                MockAuth._saveUsersDB(db);
+
+                // Auto-login after signup
+                const user = {
+                    uid: newUid,
+                    email: email,
+                    displayName: email.split('@')[0],
+                    getIdToken: async () => newUid
+                };
+
+                MockAuth._setCurrentUser(user);
+                return { user };
+            },
+
+            // 3. GOOGLE LOGIN (Simulated - always logs in as specific demo user)
+            signInWithPopup: async (auth, provider) => {
+                console.log("🔌 LOCAL MODE: Simulating Google Login");
+                const email = "demo_google@local.com";
+                const db = MockAuth._getUsersDB();
+
+                // Auto-create if not exists (Google usually behaves this way)
+                if (!db[email]) {
+                    await MockAuth.createUserWithEmailAndPassword(null, email, "google-pass");
+                }
+                return MockAuth.signInWithEmailAndPassword(null, email, "google-pass");
+            },
+
+            // 4. LOGOUT
+            signOut: async (auth) => {
+                console.log("🔌 LOCAL MODE: Signing out");
+                localStorage.removeItem('local_current_session');
+                MockAuth.currentUser = null;
+                MockAuth.triggerAuth(null);
+            },
+
+            // 5. STATE OBSERVER
+            onAuthStateChanged: (auth, callback) => {
+                MockAuth.listeners.push(callback);
+
+                // Check if a user was logged in previously
+                const storedSession = localStorage.getItem('local_current_session');
+                if (storedSession) {
+                    try {
+                        const user = JSON.parse(storedSession);
+                        user.getIdToken = async () => user.uid; // Re-attach function
+                        MockAuth.currentUser = user;
+                        callback(user);
+                    } catch (e) {
+                        callback(null);
+                    }
+                } else {
+                    callback(null);
+                }
+            },
+
+            // Internal Helpers
+            _setCurrentUser: (user) => {
+                MockAuth.currentUser = user;
+                // Save session
+                localStorage.setItem('local_current_session', JSON.stringify(user));
+                MockAuth.triggerAuth(user);
+            },
+
+            triggerAuth: (user) => {
+                MockAuth.listeners.forEach(cb => cb(user));
+            }
         };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const analytics = getAnalytics(app);
+        // 2. Main Initialization Function
+        async function initializeAppLogic() {
+            try {
+                // Fetch Config
+                const response = await fetch('/api/config');
+                if (!response.ok) throw new Error("Failed to fetch config");
+                const config = await response.json();
 
-        window.firebaseAuth = auth;
-        window.firebaseAnalytics = analytics;
-        window.firebaseAuthFunctions = {
-            createUserWithEmailAndPassword,
-            signInWithEmailAndPassword,
-            onAuthStateChanged,
-            signOut,
-            setPersistence,
-            browserLocalPersistence,
-            GoogleAuthProvider,
-            signInWithPopup,
-            sendPasswordResetEmail
-        };
-        window.logAnalyticsEvent = (eventName, params) => logEvent(analytics, eventName, params);
+                // === LOCAL MODE ===
+                if (config.dbMode === 'LOCAL') {
+                    console.log("🔶 RUNNING IN LOCAL DATABASE MODE (Offline-Ready)");
+
+                    // Define Global Objects for AlpineJS
+                    window.firebaseAuth = {};
+                    window.firebaseAnalytics = {};
+
+                    // Map Mock functions to the global window object
+                    window.firebaseAuthFunctions = {
+                        createUserWithEmailAndPassword: MockAuth.createUserWithEmailAndPassword,
+                        signInWithEmailAndPassword: MockAuth.signInWithEmailAndPassword,
+                        onAuthStateChanged: MockAuth.onAuthStateChanged,
+                        signOut: MockAuth.signOut,
+                        setPersistence: async () => { },
+                        browserLocalPersistence: "local",
+                        GoogleAuthProvider: class { },
+                        signInWithPopup: MockAuth.signInWithPopup,
+                        sendPasswordResetEmail: async () => alert("Local Mode: Password reset simulated.")
+                    };
+
+                    // Logging wrapper
+                    window.logAnalyticsEvent = (name, params) => console.log(`[Analytics] ${name}`, params);
+
+                    // Trigger initial auth check
+                    MockAuth.onAuthStateChanged(null, (user) => {
+                        console.log("Local Auth State Checked:", user ? "Logged In" : "Logged Out");
+                    });
+
+                }
+                // === CLOUD MODE ===
+                else {
+                    console.log("☁️ RUNNING IN FIREBASE CLOUD MODE - Loading SDKs...");
+
+                    // DYNAMIC IMPORTS: Only load these if we are in Cloud Mode
+                    const firebaseApp = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js");
+                    const firebaseAuth = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js");
+                    const firebaseAnalytics = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js");
+
+                    const app = firebaseApp.initializeApp(config.firebaseConfig);
+                    const auth = firebaseAuth.getAuth(app);
+                    const analytics = firebaseAnalytics.getAnalytics(app);
+
+                    // Expose to window
+                    window.firebaseAuth = auth;
+                    window.firebaseAnalytics = analytics;
+
+                    // Map Real Firebase functions to window
+                    window.firebaseAuthFunctions = {
+                        createUserWithEmailAndPassword: firebaseAuth.createUserWithEmailAndPassword,
+                        signInWithEmailAndPassword: firebaseAuth.signInWithEmailAndPassword,
+                        onAuthStateChanged: firebaseAuth.onAuthStateChanged,
+                        signOut: firebaseAuth.signOut,
+                        setPersistence: firebaseAuth.setPersistence,
+                        browserLocalPersistence: firebaseAuth.browserLocalPersistence,
+                        GoogleAuthProvider: firebaseAuth.GoogleAuthProvider,
+                        signInWithPopup: firebaseAuth.signInWithPopup,
+                        sendPasswordResetEmail: firebaseAuth.sendPasswordResetEmail
+                    };
+
+                    window.logAnalyticsEvent = (eventName, params) => firebaseAnalytics.logEvent(analytics, eventName, params);
+
+                    console.log("✅ Firebase Cloud SDK Loaded");
+                }
+
+            } catch (error) {
+                console.error('❌ Critical Initialization Error:', error);
+                alert("Failed to initialize application. Check console.");
+            }
+        }
+
+        // Start the app
+        initializeAppLogic();
     </script>
 
     <script>
+        let API_BASE_URL = ""; // Will be set by loadConfig
 
-        const API_BASE_URL = "http://127.0.0.1:8080";
+        async function loadConfig() {
+            try {
+                const response = await fetch('/api/config');
+                const config = await response.json();
+                API_BASE_URL = config.apiBaseUrl;
+                console.log('API Base URL loaded:', API_BASE_URL);
+            } catch (error) {
+                console.error('Failed to load API config, using fallback (relative path):', error);
+                API_BASE_URL = ""; // Fallback to relative path
+            }
+        }
 
         // --- Static Data (Defined globally for scope access) ---
         const NIFTY_50_STOCKS_GLOBAL = ['RELIANCE.NS', 'TCS.NS', 'HDFCBANK.NS', 'ICICIBANK.NS', 'INFY.NS', 'HINDUNILVR.NS', 'BHARTIARTL.NS', 'ITC.NS', 'SBIN.NS', 'LICI.NS', 'HCLTECH.NS', 'KOTAKBANK.NS', 'LT.NS', 'BAJFINANCE.NS', 'AXISBANK.NS', 'ASIANPAINT.NS', 'MARUTI.NS', 'SUNPHARMA.NS', 'TITAN.NS', 'WIPRO.NS', 'ULTRACEMCO.NS', 'ADANIENT.NS', 'ONGC.NS', 'NTPC.NS', 'JSWSTEEL.NS', 'TATAMOTORS.NS', 'POWERGRID.NS', 'BAJAJFINSV.NS', 'TATASTEEL.NS', 'COALINDIA.NS', 'INDUSINDBK.NS', 'HINDALCO.NS', 'TECHM.NS', 'GRASIM.NS', 'ADANIPORTS.NS', 'BRITANNIA.NS', 'CIPLA.NS', 'EICHERMOT.NS', 'DRREDDY.NS', 'NESTLEIND.NS', 'HEROMOTOCO.NS', 'BAJAJ-AUTO.NS', 'BPCL.NS', 'SHREECEM.NS', 'TATACONSUM.NS', 'UPL.NS', 'APOLLOHOSP.NS', 'DIVISLAB.NS'];
@@ -1928,11 +2799,20 @@
             'RELIANCE.NS': 'Reliance Industries', 'TCS.NS': 'Tata Consultancy Services', 'HDFCBANK.NS': 'HDFC Bank', 'ICICIBANK.NS': 'ICICI Bank', 'INFY.NS': 'Infosys', 'HINDUNILVR.NS': 'Hindustan Unilever', 'BHARTIARTL.NS': 'Bharti Airtel', 'ITC.NS': 'ITC Limited', 'SBIN.NS': 'State Bank of India', 'LICI.NS': 'Life Insurance Corp', 'HCLTECH.NS': 'HCL Technologies', 'KOTAKBANK.NS': 'Kotak Mahindra Bank', 'LT.NS': 'Larsen & Toubro', 'BAJFINANCE.NS': 'Bajaj Finance', 'AXISBANK.NS': 'Axis Bank', 'ASIANPAINT.NS': 'Asian Paints', 'MARUTI.NS': 'Maruti Suzuki', 'SUNPHARMA.NS': 'Sun Pharma', 'TITAN.NS': 'Titan Company', 'WIPRO.NS': 'Wipro', 'ULTRACEMCO.NS': 'UltraTech Cement', 'ADANIENT.NS': 'Adani Enterprises', 'ONGC.NS': 'Oil & Natural Gas', 'NTPC.NS': 'NTPC Limited', 'JSWSTEEL.NS': 'JSW Steel', 'TATAMOTORS.NS': 'Tata Motors', 'POWERGRID.NS': 'Power Grid Corp', 'BAJAJFINSV.NS': 'Bajaj Finserv', 'TATASTEEL.NS': 'Tata Steel', 'COALINDIA.NS': 'Coal India', 'INDUSINDBK.NS': 'IndusInd Bank', 'HINDALCO.NS': 'Hindalco Industries', 'TECHM.NS': 'Tech Mahindra', 'GRASIM.NS': 'Grasim Industries', 'ADANIPORTS.NS': 'Adani Ports', 'BRITANNIA.NS': 'Britannia Industries', 'CIPLA.NS': 'Cipla', 'EICHERMOT.NS': 'Eicher Motors', 'DRREDDY.NS': 'Dr. Reddys Labs', 'NESTLEIND.NS': 'Nestle India', 'HEROMOTOCO.NS': 'Hero MotoCorp', 'BAJAJ-AUTO.NS': 'Bajaj Auto', 'BPCL.NS': 'Bharat Petroleum', 'SHREECEM.NS': 'Shree Cement', 'TATACONSUM.NS': 'Tata Consumer', 'UPL.NS': 'UPL Limited', 'APOLLOHOSP.NS': 'Apollo Hospitals', 'DIVISLAB.NS': 'Divis Laboratories'
         };
 
-
-
         function chatApp() {
             // --- Component State ---
             return {
+                selectedIndicators: ['rsi', 'ema', 'volume', 'macd', 'sma', 'bollinger'], // Default selected
+                availableIndicators: [
+                    { id: 'rsi', name: 'RSI', description: 'Relative Strength Index (14)' },
+                    { id: 'ema', name: 'EMA', description: 'Exponential Moving Average (20)' },
+                    { id: 'sma', name: 'SMA', description: 'Simple Moving Average (50)' },
+                    { id: 'macd', name: 'MACD', description: 'Moving Average Convergence' },
+                    { id: 'volume', name: 'Volume', description: 'Trading Volume' },
+                    { id: 'bollinger', name: 'Bollinger', description: 'Bollinger Bands' },
+                    { id: 'adx', name: 'ADX', description: 'Average Directional Index' },
+                    { id: 'stochastic', name: 'Stochastic', description: 'Stochastic Oscillator' }
+                ],
                 isLoggedIn: false,
                 isLoginView: false,
                 isLoading: false,
@@ -1947,7 +2827,7 @@
                 resetError: '',
 
                 mobileSidebarOpen: false,
-                isSidebarMinimized: false,
+                isSidebarMinimized: true,
                 currentChatId: null,
                 chatList: [],
                 chatLoading: false,
@@ -1957,6 +2837,7 @@
                 searchQuery: '',
                 searchResults: [], // Will store the highlighted <mark> elements
                 currentSearchResultIndex: -1,
+                isLocalMode: false,
 
                 portfolioOpen: false,
                 portfolioMinimized: false,
@@ -1969,7 +2850,6 @@
                 portfolioLastUpdated: null,
                 lastUpdatedText: 'never',
                 reloadIntervalId: null,
-
 
                 cashEditModalOpen: false,
                 newCashAmount: 0,
@@ -1991,9 +2871,16 @@
                 tradeQuantity: 1,
                 tradeError: '',
                 tradeLoading: false,
+                selectedTimeframe: '1D',
                 currentStockPrice: 0,
                 totalTradeValue: 0,
                 loadingPrice: false,
+                sessionTokens: { input: 0, output: 0, total: 0 },
+                editName: '',
+
+                analysisModalOpen: false,
+                analysisLoading: false,
+                analysisData: { indicators: {} }, // IMPORTANT: Initialize indicators object
 
                 // New Zerodha Sync State
                 zerodhaSynced: false,
@@ -2009,23 +2896,17 @@
                     }
 
                     try {
-                        // 1. Get a fresh, valid ID token (forces refresh if expired)
                         const token = await this.currentUser.getIdToken(true);
-
-                        // 2. Prepare headers
                         const headers = new Headers(options.headers || {});
                         headers.set('Authorization', `Bearer ${token}`);
 
-                        // 3. Merge new options
                         const secureOptions = {
                             ...options,
                             headers: headers
                         };
 
-                        // 4. Make the call
                         const response = await fetch(url, secureOptions);
 
-                        // 5. Handle unauthorized responses from the server
                         if (response.status === 401 || response.status === 403) {
                             console.error("Auth Error: Server rejected token.");
                             this.authError = "Your session has expired. Please log in again.";
@@ -2033,43 +2914,56 @@
                             return Promise.reject(new Error("Token rejected by server"));
                         }
 
-                        return response; // Return the response for the original function to handle
+                        return response;
 
                     } catch (error) {
                         console.error("Error in secureFetch:", error);
-                        // This is likely a Firebase token error
                         this.authError = "Could not verify your session. Please log in again.";
                         this.handleLogout();
                         return Promise.reject(error);
                     }
                 },
-                // ============================================
-                // END OF SECURE FETCH HELPER
-                // ============================================
+
+                async updateProfile() {
+                    if (!this.editName.trim()) return;
+
+                    if (this.currentUser) {
+                        this.currentUser.displayName = this.editName;
+                    }
+                    if (this.isLocalMode) {
+                        const stored = JSON.parse(localStorage.getItem('local_user') || '{}');
+                        stored.displayName = this.editName;
+                        localStorage.setItem('local_user', JSON.stringify(stored));
+                        const db = JSON.parse(localStorage.getItem('local_users_db') || '{}');
+                        if (this.currentUser.email && db[this.currentUser.email]) {
+                            db[this.currentUser.email].displayName = this.editName;
+                            localStorage.setItem('local_users_db', JSON.stringify(db));
+                        }
+                        alert("Name updated successfully!");
+                    } else {
+                        alert("Name updated for this session.");
+                    }
+                },
 
                 async init() {
+                    await loadConfig();
+
+                    // --- ADD THIS BLOCK ---
+                    try {
+                        const res = await fetch('/api/config');
+                        const conf = await res.json();
+                        if (conf.dbMode === 'LOCAL') {
+                            this.isLocalMode = true;
+                            console.log("🎨 UI switched to Local Mode");
+                        }
+                    } catch (e) { console.error(e); }
+                    // ----------------------
+
                     await this.initFirebase();
                     if (window.location.search.includes('sync=success')) {
                         window.history.replaceState({}, document.title, window.location.pathname);
                     }
                 },
-
-                startZerodhaConnect() {
-                    if (!this.currentUser) return;
-
-                    // Set UI state to loading/connecting
-                    this.zerodhaSyncLoading = true;
-                    this.zerodhaSynced = false;
-                    this.zerodhaSyncMessage = 'Redirecting to Zerodha...';
-                    const connectUrl = `${API_BASE_URL}/api/zerodha/connect/${this.currentUser.uid}`;
-                    window.open(connectUrl, '_blank');
-                    setTimeout(() => {
-                        this.zerodhaSyncLoading = false;
-                        // The checkZerodhaSyncStatus function will be called on the next portfolio reload.
-                        this.zerodhaSyncMessage = 'Check portfolio/reload after connecting on Zerodha site.';
-                    }, 5000);
-                },
-
 
                 async initFirebase() {
                     await new Promise(resolve => {
@@ -2100,12 +2994,14 @@
 
                 async loadInitialData() {
                     await this.fetchChatList();
+
                     if (this.chatList.length > 0) {
                         this.loadChat(this.chatList[0].chatId, true);
                     } else {
                         this.startNewChat(true);
                     }
-                    await this.checkZerodhaSyncStatus();
+                    await this.loadPortfolio();
+
                 },
 
                 async getProactiveAlert() {
@@ -2128,6 +3024,7 @@
                         this.isLoading = false;
                     }
                 },
+
                 async signInWithGoogle() {
                     this.isLoading = true;
                     this.authError = '';
@@ -2181,7 +3078,6 @@
                 async fetchChatList() {
                     if (!this.currentUser) return;
                     try {
-                        // USE SECURE FETCH
                         const response = await this.secureFetch(`${API_BASE_URL}/api/chats/${this.currentUser.uid}`);
                         if (response.ok) this.chatList = await response.json();
                     } catch (error) {
@@ -2192,10 +3088,9 @@
                 async loadChat(chatId, showAlert = false) {
                     this.currentChatId = chatId
                     this.chatLoading = true
-                    this.clearSearch() // Clear search when loading a new chat
-                    this.searchVisible = false // Hide search bar when loading new chat
+                    this.clearSearch()
+                    this.searchVisible = false
 
-                    // Find and update chat title
                     const chat = this.chatList.find(c => c.chatId === chatId)
                     document.getElementById('chat-title').textContent = chat ? chat.title : 'Chat'
 
@@ -2205,7 +3100,6 @@
                     if (showAlert) await this.getProactiveAlert()
 
                     try {
-                        // USE SECURE FETCH
                         const response = await this.secureFetch(`${API_BASE_URL}/api/chat/${this.currentUser.uid}/${chatId}`)
                         if (response.ok) {
                             const messages = await response.json()
@@ -2223,8 +3117,9 @@
 
                 async startNewChat(showAlert = false) {
                     this.currentChatId = null;
-                    this.clearSearch(); // Clear search for new chat
-                    this.searchVisible = false; // Hide search bar for new chat
+                    this.clearSearch();
+                    this.searchVisible = false;
+                    this.mobileSidebarOpen = false;
                     document.getElementById('chat-title').textContent = "New Chat";
                     document.getElementById('message-container').innerHTML = '';
 
@@ -2236,7 +3131,6 @@
 
                 async deleteChat(chatId) {
                     try {
-                        // USE SECURE FETCH
                         const response = await this.secureFetch(`${API_BASE_URL}/api/chat/${this.currentUser.uid}/${chatId}`, { method: 'DELETE' });
                         if (response.ok) {
                             await this.fetchChatList();
@@ -2265,7 +3159,6 @@
                     if (!this.newChatTitle || !this.chatToRename.id || this.newChatTitle.trim() === '') return;
 
                     try {
-                        // USE SECURE FETCH
                         const response = await this.secureFetch(`${API_BASE_URL}/api/chat/${this.currentUser.uid}/${this.chatToRename.id}`, {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },
@@ -2284,6 +3177,221 @@
                     }
                 },
 
+                // --- START: ANALYSIS MODAL LOGIC ---
+
+                async openAnalysisModal(ticker) {
+                    this.analysisModalOpen = true;
+                    this.selectedTimeframe = '1D'; // Reset to default
+                    this.analysisData = { ticker: ticker, companyName: 'Loading...', indicators: {} };
+                    await this.loadAnalysisData(ticker); // Call the correct function
+                },
+
+                async loadAnalysisData(ticker) {
+                    // Show loading state
+                    this.analysisLoading = true;
+
+                    console.log(`Loading analysis for ${ticker} with timeframe ${this.selectedTimeframe}`);
+
+                    try {
+                        const indicatorsParam = this.selectedIndicators.join(',');
+                        const url = `${API_BASE_URL}/api/stock/analysis/${this.currentUser.uid}/${ticker}?timeframe=${this.selectedTimeframe}&indicators=${indicatorsParam}`;
+                        console.log("Fetching from URL:", url);
+
+                        const response = await this.secureFetch(url);
+                        if (!response.ok) {
+                            const err = await response.json();
+                            throw new Error(err.error || 'Failed to fetch data');
+                        }
+
+                        const data = await response.json();
+                        console.log("Analysis data received:", data);
+
+                        // Update data smoothly without hiding the modal
+                        this.analysisData = data;
+
+                    } catch (error) {
+                        console.error("Analysis modal error:", error);
+                        this.analysisData = {
+                            companyName: 'Error',
+                            ticker: ticker,
+                            currentPrice: 'N/A',
+                            recommendation: 'N/A',
+                            technicalRating: 'N/A',
+                            targetPrice: 'N/A',
+                            peRatio: 'N/A',
+                            pbRatio: 'N/A',
+                            dividendYield: 'N/A',
+                            marketCap: 'N/A',
+                            indicators: {}
+                        };
+                    } finally {
+                        this.analysisLoading = false;
+                        this.updateDynamicTechnicalRating();
+                    }
+                },
+
+                parseMarkdown(text) {
+                    if (!text) return '';
+
+                    // 1. Handle Lists (Replace * or - with •)
+                    let formatted = text.replace(/^[\*\-] (.*)/gm, '• $1');
+
+                    // 2. Handle Bold (**text**) -> RESTORED TO GREEN HERE
+                    formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<span class="font-bold text-green-400">$1</span>');
+
+                    // 3. Handle Headers (### text)
+                    formatted = formatted.replace(/^### (.*)/gm, '<h3 class="text-sm font-bold text-green-400 mt-3 mb-1 uppercase tracking-wide">$1</h3>');
+
+                    // 4. Handle Links [Text](Url)
+                    formatted = formatted.replace(/\[([^\]]+)\]\((http[s]?:\/\/[^\)]+)\)/g, '<a href="$2" target="_blank" class="text-emerald-400 hover:text-emerald-500 hover:underline transition-colors">$1</a>');
+
+                    // 5. Handle Line Breaks
+                    return formatted.split('\n').map(line => {
+                        if (line.trim() === '') return '<br>';
+                        return `<div class="min-h-[20px]">${line}</div>`;
+                    }).join('');
+                },
+
+                updateDynamicTechnicalRating() {
+                    if (!this.analysisData.indicators) {
+                        this.analysisData.technicalRating = "N/A";
+                        return;
+                    }
+
+                    if (this.selectedIndicators.length === 0) {
+                        this.analysisData.technicalRating = "Neutral"; // As you wanted
+                        return;
+                    }
+
+                    let score = 0;
+                    let maxScore = 0;
+                    const raw = this.analysisData.indicators;
+
+                    this.selectedIndicators.forEach(id => {
+                        let value = raw[id];
+                        if (value === 'N/A' || value === undefined || value === null) return;
+
+                        try {
+                            if (id === 'rsi') {
+                                maxScore += 10;
+                                if (value < 30) score += 10;      // Strong Buy
+                                else if (value < 45) score += 7;  // Buy
+                                else if (value > 75) score += 0;  // Strong Sell
+                                else if (value > 60) score += 3;  // Sell
+                                else score += 5;                  // Neutral
+                            }
+                            else if (id === 'macd') {
+                                let macd_diff = raw['macd_diff'];
+                                if (macd_diff === 'N/A' || macd_diff === undefined) return;
+                                maxScore += 10;
+                                if (macd_diff > 0.1) score += 10; // Strong Buy
+                                else if (macd_diff > 0) score += 7; // Buy
+                                else if (macd_diff < -0.1) score += 0; // Strong Sell
+                                else if (macd_diff < 0) score += 3; // Sell
+                            }
+                            else if (id === 'ema' || id === 'sma') {
+                                let price = parseFloat(this.analysisData.currentPrice.replace('₹', ''));
+                                if (isNaN(price)) return;
+                                maxScore += 10;
+                                if (price > value) score += 9; // Buy
+                                else if (price < value) score += 1; // Sell
+                            }
+                            else if (id === 'stochastic') {
+                                maxScore += 10;
+                                if (value < 20) score += 10; // Buy
+                                else if (value > 80) score += 0; // Sell
+                                else if (value < 50) score += 7; // Leaning Buy
+                                else if (value > 50) score += 3; // Leaning Sell
+                            }
+                            else if (id === 'bollinger') {
+                                let bb_pos = raw['bb_pos'];
+                                if (bb_pos === 'N/A' || bb_pos === undefined) return;
+                                maxScore += 10;
+                                if (bb_pos < 0.1) score += 10; // Buy
+                                else if (bb_pos > 0.9) score += 0; // Sell
+                                else if (bb_pos < 0.5) score += 7; // Leaning Buy
+                                else if (bb_pos > 0.5) score += 3; // Leaning Sell
+                            }
+                        } catch (e) {
+                            console.error(`Error scoring ${id}:`, e);
+                        }
+                    });
+
+                    if (maxScore === 0) {
+                        this.analysisData.technicalRating = (this.selectedIndicators.length > 0) ? "N/A" : "Neutral";
+                        return;
+                    }
+
+                    const finalPercentage = (score / maxScore) * 100;
+
+                    if (finalPercentage >= 75) this.analysisData.technicalRating = "Strong Buy";
+                    else if (finalPercentage >= 60) this.analysisData.technicalRating = "Buy";
+                    else if (finalPercentage >= 40) this.analysisData.technicalRating = "Neutral";
+                    else if (finalPercentage >= 25) this.analysisData.technicalRating = "Sell";
+                    else this.analysisData.technicalRating = "Strong Sell";
+
+                    console.log(`Dynamic Rating: ${this.analysisData.technicalRating} (Score: ${finalPercentage.toFixed(1)}%) based on:`, this.selectedIndicators);
+                },
+
+                getIndicatorName(id) {
+                    const indicator = this.availableIndicators.find(ind => ind.id === id);
+                    return indicator ? indicator.name : id.toUpperCase();
+                },
+
+                // THIS IS THE FIX for empty boxes
+                getIndicatorValue(id) {
+                    if (!this.analysisData.indicators || this.analysisData.indicators[id] === undefined || this.analysisData.indicators[id] === null) {
+                        return 'N/A';
+                    }
+
+                    let value = this.analysisData.indicators[id];
+                    if (value === 'N/A') return 'N/A';
+
+                    try {
+                        if (id === 'volume') {
+                            if (value > 1000000) return (value / 1000000).toFixed(2) + 'M';
+                            if (value > 1000) return (value / 1000).toFixed(2) + 'K';
+                            return value.toString();
+                        }
+                        if (id === 'bollinger') {
+                            return value.toString();
+                        }
+                        if (typeof value === 'number') {
+                            return value.toFixed(2);
+                        }
+                        return value.toString();
+
+                    } catch (e) {
+                        console.error(`Error formatting ${id}:`, e);
+                        return 'N/A';
+                    }
+                },
+
+                getTechnicalAngle(rating) {
+                    if (!rating || rating === 'N/A') return 0; // Center position
+                    const r = rating.toLowerCase();
+
+                    if (r.includes('strong') && r.includes('sell')) return -80;
+                    if (r.includes('sell')) return -40;
+                    if (r.includes('neutral') || r.includes('hold')) return 0;
+                    if (r.includes('buy') && !r.includes('strong')) return 40;
+                    if (r.includes('strong') && r.includes('buy')) return 80;
+                    return 0;
+                },
+
+                getAnalystAngle(recommendation) {
+                    if (!recommendation || recommendation === 'N/A') return 0;
+                    const rec = recommendation.toLowerCase();
+
+                    if (rec.includes('strong') && rec.includes('sell')) return -80;
+                    if (rec.includes('sell') && !rec.includes('strong')) return -40;
+                    if (rec.includes('hold') || rec.includes('neutral')) return 0;
+                    if (rec.includes('buy') && !rec.includes('strong')) return 40;
+                    if (rec.includes('strong') && rec.includes('buy')) return 80;
+                    return 0;
+                },
+
+                // --- END: ANALYSIS MODAL LOGIC ---
 
                 async sendMessage() {
                     const input = document.getElementById('message-input');
@@ -2302,7 +3410,6 @@
                     if (input) input.disabled = true;
 
                     try {
-                        // USE SECURE FETCH
                         const response = await this.secureFetch(`${API_BASE_URL}/api/chat`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -2317,7 +3424,23 @@
                         document.getElementById(`typing-${typingId}`)?.remove();
 
                         if (response.ok) {
-                            this.appendMessage(data.reply, 'agent');
+                            // 1. Show Message
+                            this.appendMessage(data.reply, 'agent', true, data);
+
+                            // 2. LIVE UPDATE TOKEN STATS
+                            if (data.tokenUsage) {
+                                // Ensure object exists
+                                if (!this.sessionTokens) this.sessionTokens = { input: 0, output: 0, total: 0 };
+
+                                // Add the new cost to the existing Total
+                                this.sessionTokens.input += (data.tokenUsage.inputTokens || 0);
+                                this.sessionTokens.output += (data.tokenUsage.outputTokens || 0);
+                                this.sessionTokens.total += (data.tokenUsage.totalTokens || 0);
+
+                                // Optional: Log to console to verify
+                                console.log("💰 Tokens updated. New Total:", this.sessionTokens.total);
+                            }
+
                             if (!this.currentChatId && data.chatId) {
                                 this.currentChatId = data.chatId;
                                 await this.fetchChatList();
@@ -2329,7 +3452,6 @@
                         }
                     } catch (error) {
                         document.getElementById(`typing-${typingId}`)?.remove();
-                        // secureFetch already handles auth errors, so this is likely a network error
                         if (error.message !== "Token rejected by server" && error.message !== "User not authenticated") {
                             this.appendMessage('Network error. Please try again.', 'system');
                         }
@@ -2342,26 +3464,78 @@
                     }
                 },
 
-                appendMessage(text, sender, animate = true) {
+                appendMessage(text, sender, animate = true, metadata = null) {
                     const container = document.getElementById('message-container');
                     const div = document.createElement('div');
+                    const welcome = document.getElementById('welcome-screen');
+                    if (welcome) welcome.style.display = 'none';
 
-                    let senderClass = 'message-agent';
-                    if (sender === 'user') senderClass = 'message-user';
-                    if (sender === 'system') senderClass = 'message-system';
+                    const isUser = sender === 'user';
+                    const isSystem = sender === 'system';
 
-                    div.className = `${animate ? 'message' : ''} flex ${sender === 'user' ? 'justify-end' : 'justify-start'}`;
+                    // Layout
+                    div.className = `flex w-full ${isUser ? 'justify-end' : 'justify-start'} ${animate ? 'animate-slide-in' : ''}`;
 
-                    let content = `<p class="text-sm whitespace-pre-wrap">${text}</p>`;
+                    if (isUser) {
+                        div.innerHTML = `
+                            <div class="message-user max-w-[85%] sm:max-w-[70%] bg-emerald-600 text-white px-5 py-3.5 rounded-2xl rounded-tr-none shadow-lg shadow-emerald-900/20 border border-white/10">
+                                <p class="text-sm leading-relaxed whitespace-pre-wrap font-medium">${text}</p>
+                            </div>
+                        `;
+                    } else if (!isSystem) {
+                        let formattedText = this.parseMarkdown(text);
 
-                    if (sender === 'system') {
-                        content = `<div class="flex items-start gap-3">
-                     <div class="flex-shrink-0"><svg class="w-5 h-5 text-amber-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg></div>
-                     <p class="text-sm whitespace-pre-wrap">${text}</p>
-                   </div>`;
+                        // --- SIMPLE LINK FIX ---
+                        // Just a clean blue/green link. No buttons, no boxes.
+                        formattedText = formattedText.replace(
+                            /<a href="(https:\/\/www\.tradingview\.com\/chart.*?)"(.*?)>.*?<\/a>/g,
+                            `<a href="$1" $2 target="_blank" class="inline-flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 hover:underline font-medium mt-1 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                View Chart
+                             </a>`
+                        );
+
+                        // Thinking Process (Kept functionality, minimal style)
+                        let thoughtProcessHtml = '';
+                        if (metadata && (metadata.toolsUsed?.length > 0 || metadata.tokenUsage)) {
+                            const totalTokens = metadata.tokenUsage?.totalTokens || 0;
+
+                            thoughtProcessHtml = `
+                            <div x-data="{ expanded: false }" class="mb-2">
+                                <button @click="expanded = !expanded" class="flex items-center gap-2 text-[10px] font-bold text-slate-500 hover:text-slate-300 transition-colors uppercase tracking-wider">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-slate-600"></div>
+                                    <span>Process</span>
+                                    <svg class="w-3 h-3 transition-transform duration-200" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </button>
+                                
+                                <div x-show="expanded" x-collapse class="mt-1 pl-2 border-l-2 border-slate-800 space-y-1 text-xs text-slate-400">
+                                    ${metadata.toolsUsed?.length ? `<div class="font-mono text-[10px]">Tools: ${metadata.toolsUsed.join(', ')}</div>` : ''}
+                                    ${metadata.tokenUsage ? `<div class="font-mono text-[10px]">Tokens: ${metadata.tokenUsage.totalTokens}</div>` : ''}
+                                </div>
+                            </div>`;
+                        }
+
+                        div.innerHTML = `
+                            <div class="agent-msg-container flex gap-3 w-full max-w-4xl group">
+                                <div class="w-8 h-8 rounded-lg bg-slate-800 flex-shrink-0 flex items-center justify-center border border-slate-700 mt-1">
+                                    <svg class="w-5 h-5 text-emerald-500" fill="currentColor" viewBox="0 0 24 24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z" /></svg>
+                                </div>
+                                
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <p class="text-[10px] font-bold text-slate-500 uppercase">AI Analyst</p>
+                                    </div>
+                                    
+                                    ${thoughtProcessHtml}
+                                    
+                                    <div class="text-slate-200 text-sm leading-7 tracking-wide break-words whitespace-pre-wrap">${formattedText}</div>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        // System Message
+                        div.innerHTML = `<div class="mx-auto my-4 px-4 py-1.5 bg-slate-800/50 border border-slate-700 rounded-full text-[11px] text-slate-400 font-medium text-center">${text}</div>`;
                     }
-
-                    div.innerHTML = `<div class="${senderClass} px-4 py-3 max-w-[85%] sm:max-w-[80%] shadow-lg">${content}</div>`;
 
                     container.appendChild(div);
                     this.scrollToBottom();
@@ -2373,14 +3547,14 @@
                     div.id = `typing-${id}`;
                     div.className = 'message flex justify-start';
                     div.innerHTML = `
-              <div class="message-agent px-4 py-3 shadow-lg">
-                  <div class="flex gap-1">
-                      <div class="w-2 h-2 bg-slate-500 rounded-full typing-dot"></div>
-                      <div class="w-2 h-2 bg-slate-500 rounded-full typing-dot"></div>
-                      <div class="w-2 h-2 bg-slate-500 rounded-full typing-dot"></div>
-                  </div>
-              </div>
-            `;
+                      <div class="message-agent px-4 py-3 shadow-lg">
+                          <div class="flex gap-1">
+                              <div class="w-2 h-2 bg-slate-500 rounded-full typing-dot"></div>
+                              <div class="w-2 h-2 bg-slate-500 rounded-full typing-dot"></div>
+                              <div class="w-2 h-2 bg-slate-500 rounded-full typing-dot"></div>
+                          </div>
+                      </div>
+                    `;
                     container.appendChild(div);
                     this.scrollToBottom();
                 },
@@ -2403,23 +3577,20 @@
                 toggleSearch() {
                     this.searchVisible = !this.searchVisible;
                     if (this.searchVisible) {
-                        // Focus the input when search bar opens
                         this.$nextTick(() => this.$refs.searchInput.focus());
                     } else {
-                        this.clearSearch(); // Clear search when closing
+                        this.clearSearch();
                     }
                 },
 
                 clearHighlights() {
-                    // Find all message paragraphs and reset their content to plain text
-                    document.querySelectorAll('#message-container p').forEach(p => {
-                        // Check if the parent div has one of the message classes before resetting
-                        const parentDiv = p.closest('div[class*="message-"]');
-                        if (parentDiv && (parentDiv.classList.contains('message-agent') ||
-                            parentDiv.classList.contains('message-user') ||
-                            parentDiv.classList.contains('message-system'))) {
-                            p.innerHTML = p.innerText;
+                    document.querySelectorAll('.agent-msg-container .text-slate-200, .message-user p').forEach(p => {
+                        if (p.hasAttribute('data-original-html')) {
+                            p.innerHTML = p.getAttribute('data-original-html');
+                            p.removeAttribute('data-original-html');
                         }
+                        // Fallback cleanup if needed (though the above should cover it)
+                        // p.innerHTML = p.innerHTML.replace(/<mark class="search-highlight[^"]*">(.*?)<\/mark>/g, '$1');
                     });
                 },
 
@@ -2433,14 +3604,27 @@
                     }
 
                     const query = this.searchQuery.toLowerCase();
-                    const messageParagraphs = document.querySelectorAll('.message-agent p, .message-user p');
-                    const regex = new RegExp(`\\b${this.searchQuery.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}\\b`, 'gi');
+                    // Target specific content divs/p tags
+                    const messageParagraphs = document.querySelectorAll('.agent-msg-container .text-slate-200, .message-user p');
+                    // Remove \\b to allow partial matching
+                    const regex = new RegExp(`${this.searchQuery.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}`, 'gi');
 
                     let results = [];
                     messageParagraphs.forEach(p => {
-                        const text = p.innerText;
+                        const text = p.innerText; // We search in plain text
+                        // Check match BEFORE modifying
                         if (regex.test(text)) {
+                            // 1. Save Original HTML if not already saved
+                            if (!p.hasAttribute('data-original-html')) {
+                                p.setAttribute('data-original-html', p.innerHTML);
+                            }
+
+                            // 2. Perform replacement. 
+                            // NOTE: This naive replacement destroys inner HTML structure (bold, links) for the duration of the search.
+                            // However, we restore it perfectly on clearHighlights() using data-original-html.
+                            // This trade-off allows search to work reliably.
                             p.innerHTML = text.replace(regex, match => `<mark class="search-highlight">${match}</mark>`);
+
                             results.push(...p.querySelectorAll('mark.search-highlight'));
                         }
                         regex.lastIndex = 0;
@@ -2455,14 +3639,11 @@
                 },
 
                 highlightCurrentResult() {
-                    // Remove 'active' from all highlights
                     this.searchResults.forEach(mark => mark.classList.remove('active'));
 
                     if (this.currentSearchResultIndex > -1 && this.searchResults[this.currentSearchResultIndex]) {
                         const currentMark = this.searchResults[this.currentSearchResultIndex];
                         currentMark.classList.add('active');
-
-                        // Scroll to the active highlight
                         currentMark.scrollIntoView({
                             behavior: 'smooth',
                             block: 'center'
@@ -2476,12 +3657,12 @@
                     if (direction === 'next') {
                         this.currentSearchResultIndex++;
                         if (this.currentSearchResultIndex >= this.searchResults.length) {
-                            this.currentSearchResultIndex = 0; // Wrap around to start
+                            this.currentSearchResultIndex = 0;
                         }
                     } else if (direction === 'prev') {
                         this.currentSearchResultIndex--;
                         if (this.currentSearchResultIndex < 0) {
-                            this.currentSearchResultIndex = this.searchResults.length - 1; // Wrap around to end
+                            this.currentSearchResultIndex = this.searchResults.length - 1;
                         }
                     }
                     this.highlightCurrentResult();
@@ -2498,19 +3679,8 @@
                 openPortfolio() {
                     this.portfolioOpen = true;
                     this.portfolioMinimized = false;
-                    this.portfolioTab = 'portfolio'; // Default to portfolio tab
+                    this.portfolioTab = 'portfolio';
                     this.loadPortfolio();
-                },
-
-                async loadInitialData() {
-                    await this.fetchChatList();
-                    if (this.chatList.length > 0) {
-                        this.loadChat(this.chatList[0].chatId, true);
-                    } else {
-                        this.startNewChat(true);
-                    }
-                    await this.checkZerodhaSyncStatus();
-
                 },
 
                 async checkZerodhaSyncStatus() {
@@ -2523,7 +3693,6 @@
                             const portfolioData = await response.json();
                             let isSynced = portfolioData.zerodha_synced_once === true;
 
-                            // 2. Fallback check on the summary object (where P&L data is)
                             if (!isSynced && portfolioData.summary && portfolioData.summary.zerodha_synced_once === true) {
                                 isSynced = true;
                             }
@@ -2543,6 +3712,58 @@
                     }
                 },
 
+                startZerodhaConnect() {
+                    if (!this.currentUser) return;
+
+                    this.zerodhaSyncLoading = true;
+                    this.zerodhaSynced = false;
+                    this.zerodhaSyncMessage = 'Waiting for Zerodha login...';
+
+                    const connectUrl = `${API_BASE_URL}/api/zerodha/connect/${this.currentUser.uid}`;
+                    const width = 600;
+                    const height = 700;
+                    const left = (screen.width / 2) - (width / 2);
+                    const top = (screen.height / 2) - (height / 2);
+
+                    const zerodhaWindow = window.open(
+                        connectUrl,
+                        'ZerodhaConnect',
+                        `width=${width},height=${height},top=${top},left=${left},scrollbars=yes,resizable=yes`
+                    );
+                    const messageHandler = async (event) => {
+                        if (event.data && event.data.type === 'ZERODHA_SUCCESS') {
+                            console.log("✅ Received Success Signal from Popup!");
+
+                            this.zerodhaSyncMessage = 'Login success! Syncing portfolio...';
+
+                            if (zerodhaWindow && !zerodhaWindow.closed) zerodhaWindow.close();
+
+                            await this.loadPortfolio();
+                            await this.checkZerodhaSyncStatus();
+
+                            this.zerodhaSyncLoading = false;
+
+                            window.removeEventListener('message', messageHandler);
+                        }
+                    };
+
+                    window.addEventListener('message', messageHandler);
+
+                    const pollTimer = setInterval(() => {
+                        if (zerodhaWindow.closed) {
+                            clearInterval(pollTimer);
+                            window.removeEventListener('message', messageHandler);
+
+                            if (this.zerodhaSyncLoading) {
+                                console.log('Zerodha window closed manually.');
+                                this.zerodhaSyncLoading = false;
+                                this.zerodhaSyncMessage = 'Connection cancelled or finished.';
+                                this.loadPortfolio();
+                            }
+                        }
+                    }, 1000);
+                },
+
                 async loadPortfolio() {
                     if (!this.currentUser) return;
 
@@ -2550,13 +3771,31 @@
                     if (this.reloadIntervalId) clearInterval(this.reloadIntervalId);
 
                     try {
-                        // USE SECURE FETCH
                         const response = await this.secureFetch(`${API_BASE_URL}/api/portfolio/${this.currentUser.uid}`);
                         if (response.ok) {
                             this.portfolio = await response.json();
+
+                            // ============================================================
+                            // 🛑 THIS WAS MISSING! ADD THIS BLOCK TO LOAD SAVED TOKENS
+                            // ============================================================
+                            if (this.portfolio.summary && this.portfolio.summary.token_usage) {
+                                console.log("Loading saved tokens:", this.portfolio.summary.token_usage);
+                                this.sessionTokens = this.portfolio.summary.token_usage;
+                            }
+                            // ============================================================
+
                             this.portfolioLastUpdated = Date.now();
-                            this.updateLastUpdatedText(); // Initial update
+                            this.updateLastUpdatedText();
                             this.reloadIntervalId = setInterval(() => this.updateLastUpdatedText(), 1000);
+
+                            // Sync Status Check
+                            if (this.portfolio.summary && this.portfolio.summary.zerodha_synced_once === true) {
+                                this.zerodhaSynced = true;
+                                this.zerodhaSyncMessage = '✅ Synced. Click to Resync.';
+                            } else {
+                                this.zerodhaSynced = false;
+                                this.zerodhaSyncMessage = 'Not connected. Click to Sync.';
+                            }
                         }
                     } catch (error) {
                         console.error('❌ Portfolio error:', error);
@@ -2585,7 +3824,6 @@
                     if (!this.currentUser) return;
                     this.portfolioLoading = true;
                     try {
-                        // USE SECURE FETCH
                         const response = await this.secureFetch(`${API_BASE_URL}/api/watchlist/${this.currentUser.uid}`);
                         if (response.ok) {
                             this.watchlist = await response.json();
@@ -2603,7 +3841,6 @@
                     if (!this.currentUser) return;
                     this.portfolioLoading = true;
                     try {
-                        // USE SECURE FETCH
                         const response = await this.secureFetch(`${API_BASE_URL}/api/history/${this.currentUser.uid}`);
                         if (response.ok) {
                             this.tradeHistory = await response.json();
@@ -2622,12 +3859,14 @@
                 formatTradeTimestamp(isoString) {
                     if (!isoString) return 'N/A';
                     const date = new Date(isoString);
-                    if (isoString.endsWith('Z')) {
+                    // Check if it's a UTC string from Firestore
+                    if (isoString.endsWith('Z') || isoString.includes('T')) {
                         return date.toLocaleString('en-IN', {
                             day: 'numeric', month: 'short', year: 'numeric',
                             hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Asia/Kolkata'
                         });
                     } else {
+                        // Fallback for potentially local-time strings
                         return date.toLocaleString('en-IN', {
                             day: 'numeric', month: 'short', year: 'numeric',
                             hour: 'numeric', minute: '2-digit', hour12: true
@@ -2643,7 +3882,6 @@
                 async adjustCash() {
                     if (this.newCashAmount < 0 || this.newCashAmount > 1000000) return;
                     try {
-                        // USE SECURE FETCH
                         const response = await this.secureFetch(`${API_BASE_URL}/api/adjust-cash/${this.currentUser.uid}`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -2702,12 +3940,11 @@
 
                 async proceedWithSelection() {
                     if (this.stockPickerMode === 'trade' && this.selectedStock) {
-                        this.openTradeModal('BUY', this.selectedStock, 1); // Default quantity to 1
+                        this.openTradeModal('BUY', this.selectedStock, 1);
                         this.stockPickerOpen = false;
                     } else if (this.stockPickerMode === 'watchlist' && this.selectedStocks.length > 0) {
                         this.isLoading = true;
                         try {
-                            // USE SECURE FETCH
                             const response = await this.secureFetch(`${API_BASE_URL}/api/watchlist/${this.currentUser.uid}`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
@@ -2717,7 +3954,7 @@
                             if (response.ok) {
                                 this.selectedStocks = [];
                                 this.stockPickerOpen = false;
-                                await this.loadWatchlistPrices(); // Reload watchlist after adding
+                                await this.loadWatchlistPrices();
                                 this.portfolioTab = 'watchlist';
                             } else {
                                 const errorData = await response.json();
@@ -2736,12 +3973,11 @@
 
                 async removeFromWatchlist(ticker) {
                     try {
-                        // USE SECURE FETCH
                         const response = await this.secureFetch(`${API_BASE_URL}/api/watchlist/${this.currentUser.uid}/${ticker}`, {
                             method: 'DELETE'
                         });
                         if (response.ok) {
-                            await this.loadWatchlistPrices(); // Reload watchlist after removing
+                            await this.loadWatchlistPrices();
                         } else {
                             console.error("Failed to remove from watchlist");
                         }
@@ -2761,7 +3997,6 @@
                     this.totalTradeValue = 0;
 
                     try {
-                        // This is a public endpoint, so no secureFetch is needed
                         const response = await fetch(`${API_BASE_URL}/api/stock/price/${ticker}`);
                         if (!response.ok) {
                             const errData = await response.json();
@@ -2777,12 +4012,12 @@
                             throw new Error('Invalid price data received.');
                         }
 
-                        this.calculateTradeValue(); // Calculate AFTER getting the price
+                        this.calculateTradeValue();
                     } catch (error) {
                         console.error("Error in openTradeModal:", error);
                         this.tradeError = error.message || 'Failed to fetch price';
-                        this.currentStockPrice = 0; // Set to 0 on error
-                        this.calculateTradeValue(); // Recalculate (will be 0)
+                        this.currentStockPrice = 0;
+                        this.calculateTradeValue();
                     } finally {
                         this.loadingPrice = false;
                     }
@@ -2791,9 +4026,8 @@
                 calculateTradeValue() {
                     const quantity = (typeof this.tradeQuantity === 'number' && this.tradeQuantity > 0) ? this.tradeQuantity : 0;
                     const price = (typeof this.currentStockPrice === 'number' && this.currentStockPrice >= 0) ? this.currentStockPrice : 0;
-                    this.totalTradeValue = Math.round(price * quantity * 100) / 100; // Round to 2 decimal places
+                    this.totalTradeValue = Math.round(price * quantity * 100) / 100;
                 },
-
 
                 async executeTrade() {
                     this.tradeLoading = true;
@@ -2805,7 +4039,6 @@
                     }
 
                     try {
-                        // USE SECURE FETCH
                         const response = await this.secureFetch(`${API_BASE_URL}/api/trade/${this.currentUser.uid}`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -2818,9 +4051,9 @@
 
                         const data = await response.json();
 
-                        if (response.ok && data.success) { // Check for success flag from backend
+                        if (response.ok && data.success) {
                             this.tradeModalOpen = false;
-                            await this.loadPortfolio(); // Reload portfolio data
+                            await this.loadPortfolio();
                         } else {
                             this.tradeError = data.message || data.error || 'Trade failed. Please check details.';
                         }

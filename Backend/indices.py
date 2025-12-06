@@ -138,3 +138,6 @@ STATIC_INDICES = {
     "NIFTY 200": NIFTY_BROAD_PROXY,
     "NIFTY 500": NIFTY_BROAD_PROXY, 
 }
+
+# Reverse mapping: Company Name -> Symbol
+NAME_TO_SYMBOL = {v: k for k, v in COMPANY_NAMES.items()}

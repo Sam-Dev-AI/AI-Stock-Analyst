@@ -1,15 +1,16 @@
 <div align="center">
 
-# AI Stock Analyst Platform
+# 🚀 AI Stock Analyst Platform (Agent v6.1)
 
-[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-Visit_Platform-blue?style=for-the-badge)](https://stock-agent-774764824527.us-central1.run.app)
+[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-Visit_Platform-blue?style=for-the-badge&logo=google-chrome&logoColor=white)](https://stock-agent-774764824527.us-central1.run.app)
   
-*Intelligent Trading Platform for Indian Markets (NSE)*
+*An Advanced, AI-Powered Trading Assistant for Indian Markets (NSE)*
 
 [![Google Cloud](https://img.shields.io/badge/Google_Cloud-Run-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white)](https://cloud.google.com/run)
 [![Zerodha API](https://img.shields.io/badge/Zerodha-Kite_API-00BFA5?style=for-the-badge&logo=zerodha&logoColor=white)](https://kite.trade/)
-[![Python](https://img.shields.io/badge/Python-3.9+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![Gemini AI](https://img.shields.io/badge/Gemini_2.5-Flash-8E75B2?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 
 </div>
 
@@ -17,200 +18,154 @@
 
 ## 🧠 Overview
 
-AI Stock Analyst Platform is a full-stack, AI-powered trading and analytics platform for Indian Stock Markets (NSE). It leverages Synance AI for technical analysis, portfolio optimization, and market news sentiment within a streamlined modern interface.
+**AI Stock Analyst** is a cutting-edge financial analytics platform designed to democratize professional-grade trading insights. By fusing **Generative AI (Gemini 2.5)** with hard **Technical Analysis (TA-Lib)**, it offers real-time, actionable advice for the Indian Stock Market.
+
+Whether you are a swing trader looking for opportunities or an investor balancing a portfolio, the AI Analyst acts as your 24/7 financial companion.
 
 ---
 
-## 🚀 Features
+## ✨ Key Features
 
-| Feature | Description |
-|:---|:---|
-| 🧠 Synance AI Engine | Proprietary AI that fuses RSI, EMA, and news sentiment for actionable trading insights |
-| ⚙️ Zerodha Integration | Live-trading using Kite API, authentication, portfolio sync, and order execution |
-| 💬 Conversational Trading | Use natural language for trades and analytics |
-| 📊 Intelligent Screening | Multi-index analysis (Nifty, Bank, IT, Auto, etc.), RSI & EMA screening |
-| 📰 News Sentiment | Aggregates and scores news sentiment using NewsAPI and DuckDuckGo |
-| 💼 Portfolio Optimization | AI-driven rebalancing and risk assessment |
-| 💻 Real-Time UI | Tailwind CSS + Alpine.js, dark mode, streaming updates |
-| ☁️ Cloud Native | Dockerized, Google Cloud Run and Firestore backend |
+### 🤖 Intelligent AI Core
+- **Conversational Interface**: Chat naturally with the AI to get market insights, e.g., *"What is the support level for Tata Motors?"*.
+- **Deep Technical Analysis**: Automatically calculates RSI, MACD, Bollinger Bands, and Moving Averages (EMA/SMA) to generate specific Buy/Sell/Hold ratings.
+- **Smart Reasoning**: The AI explains *why* a stock is bullish or bearish, citing specific technical indicators.
+
+### 🔌 Seamless Integration
+- **Zerodha Kite Connect**: Sync your *real* live portfolio directly into the dashboard.
+- **Live & Paper Trading**: Switch between practicing with virtual money (Paper Mode) or executing real orders via Zerodha.
+- **News Sentiment**: Aggregates real-time news from across the web (NewsAPI + DuckDuckGo) to gauge market sentiment.
+
+### 💻 Modern & Flexible Architecture
+- **Dual Database Mode**: 
+    - **Local Mode**: Runs entirely offline using a local JSON database—perfect for testing and development.
+    - **Cloud Mode**: Scales effortlessly using Firebase Firestore/Auth for production.
+- **Responsive UI**: A sleek, dark-themed interface built with **TailwindCSS** and **Alpine.js**, optimized for both Desktop and Mobile.
+- **Interactive Charts**: Professional-grade Lightweight Charts for visual technical analysis.
 
 ---
 
-## 🌐 Live Platform
+## 🛠️ Installation & Setup Guide
 
-**Web:** [https://stock-agent-774764824527.us-central1.run.app](https://stock-agent-774764824527.us-central1.run.app)
+Follow these steps to set up the project locally on your machine.
 
-**Try queries like:**
-- "Analyze Reliance for swing trading"
-- "Buy 10 shares of TCS"
-- "Show my portfolio performance"
-- "Find top 3 bullish IT stocks"
+### 1. Prerequisites
+- Python 3.9 or higher installed.
+- Git installed.
+- A code editor (VS Code recommended).
+
+### 2. Clone the Repository
+Open your terminal and run:
+```bash
+git clone https://github.com/yourusername/ai-stock-analyst.git
+cd ai-stock-analyst
+cd Backend
+```
+
+### 3. Install Dependencies
+Install all required Python packages:
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Configuration (`config.py`)
+Open the `config.py` file in the `Backend` directory. You **must** configure the following settings for the app to work:
+
+**A. Enable Local Development Mode:**
+Make sure these two variables are set exactly as shown to avoid needing Firebase credentials immediately.
+```python
+DEBUG_MODE = True       # Enables detailed logs and local dev features
+DB_MODE = "LOCAL"       # Uses local_database.json instead of Firebase
+```
+
+**B. Add Your API Keys:**
+Replace the placeholder strings with your actual keys.
+```python
+# get a free key from https://ai.google.dev/
+GENIE_API_KEY = "your_actual_gemini_api_key_here"
+
+# (Optional) For Live Trading & Portfolio Sync
+ZERODHA_API_KEY = "your_kite_connect_api_key"
+ZERODHA_API_SECRET = "your_kite_connect_secret"
+
+# (Optional) For News Sentiment
+NEWSAPI_KEYS = ["your_newsapi_key_here"]
+```
+
+
+### 5. Zerodha Integration Setup (Optional)
+To enable live portfolio sync and trading, you need a Zerodha Kite Connect account.
+
+1.  **Sign Up for Kite Connect**:
+    *   Go to [developers.kite.trade](https://developers.kite.trade/) and sign up.
+    *   *Note: Zerodha charges ~₹2000 credits for API access.*
+
+2.  **Create an App**:
+    *   Click on "Create New App".
+    *   **App Name**: `AI Stock Analyst` (or any name).
+    *   **Zerodha Client ID**: Your actual Zerodha trading ID (e.g., `AB1234`).
+    *   **Redirect URL**: `http://127.0.0.1:8080/api/zerodha/callback` (Important for Local Mode).
+    *   **Postback URL**: You can leave this blank or use a placeholder.
+    *   Click "Create".
+
+3.  **Get Credentials**:
+    *   Once created, you will see your **API Key** and **API Secret**.
+    *   Copy these values.
+
+4.  **Update Config**:
+    *   Paste them into your `config.py`:
+        ```python
+        ZERODHA_API_KEY = "your_copied_api_key"
+        ZERODHA_API_SECRET = "your_copied_api_secret"
+        ```
+
+### 6. Run the Application
+Start the backend server:
+```bash
+python API_Server.py
+```
+*The server will start on `http://127.0.0.1:8080`.*
+
+### 7. Access the App
+Open your web browser and go to:
+> **http://127.0.0.1:8080**
 
 ---
 
 ## 🧩 Technology Stack
 
-| Layer       | Tools                                    |
-|-------------|------------------------------------------|
-| Frontend    | Alpine.js, Tailwind CSS, Firebase Auth   |
-| Backend     | Flask, Gemini 2.5 Flash, yfinance, pandas, TA-Lib |
-| AI Engine   | Synance AI Core (custom financial logic) |
-| Database    | Firebase Firestore                       |
-| Infra       | Docker, Google Cloud Run                 |
-| Integration | Zerodha Kite Connect API                 |
+| Component | Technology Used |
+| :--- | :--- |
+| **Frontend** | HTML5, Tailwind CSS, Alpine.js, Lightweight Charts |
+| **Backend** | Python, Flask, Gunicorn |
+| **AI Model** | Google Gemini 2.5 Flash |
+| **Database** | TinyDB (Local) / Firebase Firestore (Cloud) |
+| **Financial Data** | yfinance, NSEpy, Zerodha Kite Connect |
+| **Search** | DuckDuckGo Search (DDGS), NewsAPI |
 
 ---
 
-## ⚙️ Installation & Setup
+## ⚡ Quick Start Queries
 
-### Backend
+Once the app is running, try asking the AI:
 
-git clone https://github.com/yourusername/ai-stock-analyst.git
-cd ai-stock-analyst
-pip install -r requirements.txt
-
-text
-
-**Main dependencies:**
-- flask>=2.3.0
-- flask-cors>=4.0.0
-- google-generativeai>=0.3.0
-- yfinance>=0.2.28
-- firebase-admin>=6.2.0
-- pandas>=2.0.0
-- ta>=0.11.0
-- duckduckgo-search>=3.9.0
-- requests>=2.31.0
-- gunicorn>=21.2.0
-- cachetools>=5.3.3
-
-### Frontend
-- Alpine.js 3.x
-- Tailwind CSS 3.x
-- Firebase JS SDK v10+
-- Inter Font (Google Fonts)
+- *"Analyze Reliance Industries on a 1-day timeframe."*
+- *"Show me my portfolio summary."*
+- *"Find top bullish stocks in the IT sector."*
+- *"What is the RSI of HDFC Bank?"*
+- *"Buy 50 shares of Zomato at market price."* (Paper Mode)
 
 ---
 
-## 🔧 Configuration
-Change in config.py
-```
-GENIE_API_KEY = "your-gemini-api-key"
-NEWSAPI_KEYS = [
-    "newsapi-key-1",
-    "newsapi-key-2",
-    "newsapi-key-3"
-]
-ZERODHA_API_KEY = "your-zerodha-api-key"
-ZERODHA_API_SECRET = "your-zerodha-secret"
-```
+## ⚠️ Disclaimer
 
-### Firebase Setup
-
-1. Create Firebase project
-2. Enable Auth (Email/Password)
-3. Create Firestore DB
-4. Download `serviceAccountKey.json`
-5. Add firebaseConfig to `index.html`
-
----
-
-## 🧱 Project Structure
-
-ai-stock-analyst/
-Backend/
-├── templates/
-│   └── index.html
-├── .dockerignore
-├── .gitignore
-├── API_Server.py
-├── config.py
-├── Dockerfile
-├── indices.py
-├── requirements.txt
-frontend/
-└── index.html
-README.md
-
----
-
-## 🧩 Key Functionality (Sample)
-
-- Normalize ticker symbols
-    ```
-    def normalize_ticker(ticker_input: str) -> Optional[str]:
-        """Converts 'Reliance' or 'reliance.ns' → 'RELIANCE.NS'"""
-    ```
-- Screen top stocks via RSI & EMA
-    ```
-    def screen_static_index(index_name="NIFTY 50", num_stocks=5):
-        """Screens top performing stocks using RSI & EMA indicators"""
-    ```
-- Portfolio analytics
-    ```
-    def analyze_portfolio(holdings: list):
-        """Calculates P&L, diversification, and sector-wise allocation"""
-    ```
-- Trade execution (paper/live)
-    ```
-    def execute_trade(ticker: str, qty: int, action: str, user_id: str):
-        """Performs BUY/SELL operation (paper or live via Zerodha)"""
-    ```
-- News sentiment
-    ```
-    def get_news_sentiment(stock: str):
-        """Fetches & classifies news as bullish/bearish/neutral"""
-    ```
-
----
-
-## ☁️ Deployment
-
-### Docker Local
-```
-   docker build -t ai-stock-analyst .
-   docker run -p 8080:8080 \
-   -v /path/to/serviceAccountKey.json:/app/credentials.json \
-   -e GOOGLE_APPLICATION_CREDENTIALS=/app/credentials.json \
-   ai-stock-analyst
-```
-
-### Google Cloud Run
-```
-   gcloud auth login
-   gcloud config set project YOUR_PROJECT_ID
-   gcloud run deploy ai-stock-analyst
-   --source .
-   --platform managed
-   --region asia-south1
-   --allow-unauthenticated
-   --memory 2Gi
-   --timeout 300
-```
-
----
-
-## 🔮 Future Roadmap
-
-- Real-time WebSocket streaming
-- Strategy backtesting & trade replay
-- Options & derivatives analytics
-- Hindi & regional language support
-- Mobile App (Flutter)
-- Social/copy trading
-- Full Zerodha live trading in production
-
----
-
-## 👨‍💻 Author & Contact
-
-**Samir Lade**  
-Email: [ladesamir10@gmail.com](mailto:ladesamir10@gmail.com)  
-Live Platform: [stock-agent-774764824527.us-central1.run.app](https://stock-agent-774764824527.us-central1.run.app)
+This project is for **educational and research purposes only**. The analysis provided by the AI is based on technical indicators and should not be considered as financial advice. Always do your own research (DYOR) before trading with real money.
 
 ---
 
 <div align="center">
-⭐ Star this repository if you like it!  
-Built with ❤️ by Samir — Empowering Indian Traders through AI  
+
+**Built with ❤️ for Indian Traders**  
+*Samir Lade*
+
 </div>
