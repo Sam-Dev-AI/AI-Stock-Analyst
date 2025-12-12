@@ -3,864 +3,16 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI Stock Analyst - Professional Trading Platform</title>
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Claroz Agent</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22><path fill=%22%2310b981%22 d=%22M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z%22/></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
         rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js" defer></script>
-    <style>
-        .chat-message {
-            width: 100%;
-            max-width: 100%;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
-        }
-
-        @keyframes pulse {
-
-            0%,
-            100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.5;
-            }
-        }
-
-        .animate-slide-in {
-            animation: slideInRight 0.3s ease-out;
-        }
-
-        .animate-fade-in {
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        .animate-pulse-soft {
-            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-
-        /* Smooth transitions */
-        .smooth-transition {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #1e293b;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #475569;
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #64748b;
-        }
-
-        /* Loading skeleton */
-        .skeleton {
-            background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s ease-in-out infinite;
-        }
-
-        @keyframes loading {
-            0% {
-                background-position: 200% 0;
-            }
-
-            100% {
-                background-position: -200% 0;
-            }
-        }
-
-        /* Indicator badge */
-        .indicator-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            border-radius: 12px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: #10b981;
-            transition: all 0.2s;
-        }
-
-        .indicator-badge:hover {
-            background: rgba(16, 185, 129, 0.15);
-            transform: translateY(-2px);
-        }
-
-        /* Checkbox custom styling */
-        .custom-checkbox {
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #475569;
-            border-radius: 6px;
-            background: #1e293b;
-            cursor: pointer;
-            position: relative;
-            transition: all 0.2s;
-        }
-
-        .custom-checkbox:checked {
-            background: #10b981;
-            border-color: #10b981;
-        }
-
-        .custom-checkbox:checked::after {
-            content: '✓';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        /* Dropdown animation */
-        .dropdown-enter {
-            animation: slideDown 0.2s ease-out;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .chat-container {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            overflow-x: hidden;
-        }
-
-        .gauge-semi-circle {
-            width: 240px;
-            height: 240px;
-            border-radius: 50%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            background: linear-gradient(to right, #ef4444, #eab308, #84cc16, #22c55e, #10b981);
-        }
-
-        .gauge-mask {
-            width: 200px;
-            /* Smaller than semi-circle */
-            height: 200px;
-            border-radius: 50%;
-            position: absolute;
-            top: 20px;
-            /* (240 - 200) / 2 */
-            left: 20px;
-            background: #1e293b;
-            /* Matches modal background */
-            z-index: 1;
-        }
-
-        .gauge-pointer {
-            width: 2px;
-            height: 110px;
-            /* Slightly less than container height */
-            background: #ffffff;
-            position: absolute;
-            bottom: 10px;
-            /* Positioned slightly up from bottom center */
-            left: 50%;
-            transform-origin: bottom center;
-            transform: translateX(-50%) rotate(0deg);
-            transition: transform 0.5s ease-out;
-            z-index: 2;
-            border-radius: 2px;
-        }
-
-        .gauge-center-point {
-            width: 12px;
-            height: 12px;
-            background: #fff;
-            border-radius: 50%;
-            position: absolute;
-            bottom: 4px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 3;
-        }
-
-        .gauge-labels {
-            width: 240px;
-            position: absolute;
-            top: 95px;
-            /* Aligns text below the mask */
-            left: 0;
-            display: flex;
-            justify-content: space-between;
-            font-size: 10px;
-            font-weight: 600;
-            color: #94a3b8;
-            padding: 0 10px;
-        }
-
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html,
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #0f172a;
-            overflow-x: hidden;
-            height: 100%;
-            width: 100%;
-            position: fixed;
-        }
-
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #1e293b;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #475569;
-            border-radius: 3px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #64748b;
-        }
-
-        .chat-item.active {
-            background-color: #1e293b;
-            border-left: 3px solid #10b981;
-        }
-
-        [x-cloak] {
-            display: none !important;
-        }
-
-        .message-user {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            border-radius: 18px 18px 4px 18px;
-        }
-
-        .message-agent {
-            background: #1e293b;
-            border-radius: 18px 18px 18px 4px;
-            border: 1px solid #334155;
-        }
-
-        .message-chart {
-            background: #1e293b;
-            border-radius: 18px;
-            border: 1px solid #334155;
-            padding: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .message-chart:hover {
-            border-color: #10b981;
-            transform: scale(1.02);
-        }
-
-        .message-chart img {
-            border-radius: 12px;
-            max-width: 100%;
-            height: auto;
-        }
-
-        .message-system {
-            background: #292504;
-            border: 1px solid #a16207;
-            color: #fefce8;
-            border-radius: 18px;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .message {
-            animation: slideIn 0.3s ease-out;
-        }
-
-        body.auth-loading {
-            visibility: hidden;
-        }
-
-        .auth-wrapper {
-            width: 100%;
-            height: 100%;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .auth-container {
-            position: relative;
-            width: 100%;
-            min-height: 100vh;
-            background: #1f2937;
-            overflow: hidden;
-        }
-
-        @media (min-width: 768px) {
-            .auth-wrapper {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 2rem;
-            }
-
-            .auth-container {
-                max-width: 900px;
-                min-height: 550px;
-                border-radius: 24px;
-                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            }
-        }
-
-        .form-container {
-            width: 100%;
-            min-height: 100vh;
-            transition: all 0.6s ease-in-out;
-        }
-
-        @media (min-width: 768px) {
-            .form-container {
-                position: absolute;
-                top: 0;
-                height: 100%;
-                min-height: auto;
-                width: 50%;
-            }
-
-            .sign-in-container {
-                left: 0;
-                z-index: 2;
-            }
-
-            .sign-up-container {
-                left: 0;
-                opacity: 0;
-                z-index: 1;
-            }
-
-            .auth-container.right-panel-active .sign-in-container {
-                transform: translateX(100%);
-            }
-
-            .auth-container.right-panel-active .sign-up-container {
-                transform: translateX(100%);
-                opacity: 1;
-                z-index: 5;
-            }
-        }
-
-        @media (max-width: 767px) {
-            .sign-in-container {
-                display: block;
-            }
-
-            .sign-up-container {
-                display: none;
-            }
-
-            .auth-container.right-panel-active .sign-in-container {
-                display: none;
-            }
-
-            .auth-container.right-panel-active .sign-up-container {
-                display: block;
-            }
-        }
-
-        .overlay-container {
-            display: none;
-        }
-
-        @media (min-width: 768px) {
-            .overlay-container {
-                display: block;
-                position: absolute;
-                top: 0;
-                left: 50%;
-                width: 50%;
-                height: 100%;
-                overflow: hidden;
-                transition: transform 0.6s ease-in-out;
-                z-index: 100;
-            }
-
-            .auth-container.right-panel-active .overlay-container {
-                transform: translateX(-100%);
-            }
-
-            .overlay {
-                background: linear-gradient(135deg, #10b981, #059669, #047857);
-                position: relative;
-                left: -100%;
-                height: 100%;
-                width: 200%;
-                transform: translateX(0);
-                transition: transform 0.6s ease-in-out;
-                color: #fff;
-            }
-
-            .auth-container.right-panel-active .overlay {
-                transform: translateX(50%);
-            }
-
-            .overlay-panel {
-                position: absolute;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex-direction: column;
-                padding: 0 40px;
-                text-align: center;
-                top: 0;
-                height: 100%;
-                width: 50%;
-                transition: transform 0.6s ease-in-out;
-            }
-
-            .overlay-left {
-                transform: translateX(-20%);
-            }
-
-            .auth-container.right-panel-active .overlay-left {
-                transform: translateX(0);
-            }
-
-            .overlay-right {
-                right: 0;
-                transform: translateX(0);
-            }
-
-            .auth-container.right-panel-active .overlay-right {
-                transform: translateX(20%);
-            }
-        }
-
-        .auth-form {
-            background: #1f2937;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            padding: 2rem 1.5rem;
-            min-height: 100vh;
-            text-align: center;
-        }
-
-        @media (min-width: 768px) {
-            .auth-form {
-                padding: 0 50px;
-                height: 100%;
-                min-height: auto;
-            }
-        }
-
-        /* Mobile Auth Fixes */
-        @media (max-width: 767px) {
-            .auth-container {
-                min-height: 100vh;
-                border-radius: 0;
-            }
-
-            .auth-form {
-                padding: 2rem 1.5rem;
-                justify-content: center;
-                min-height: 100vh;
-            }
-
-            .form-container {
-                position: relative;
-                height: auto;
-            }
-
-            .sign-in-container,
-            .sign-up-container {
-                width: 100%;
-                position: absolute;
-                top: 0;
-                left: 0;
-                transition: transform 0.6s ease-in-out, opacity 0.6s ease-in-out;
-            }
-
-            /* Logic for switching on mobile */
-            .auth-container:not(.right-panel-active) .sign-in-container {
-                transform: translateX(0);
-                opacity: 1;
-                z-index: 5;
-            }
-
-            .auth-container:not(.right-panel-active) .sign-up-container {
-                transform: translateX(100%);
-                opacity: 0;
-                z-index: 1;
-                display: flex;
-                /* Override none */
-            }
-
-            .auth-container.right-panel-active .sign-in-container {
-                transform: translateX(-100%);
-                opacity: 0;
-                z-index: 1;
-                display: flex;
-                /* Override none */
-            }
-
-            .auth-container.right-panel-active .sign-up-container {
-                transform: translateX(0);
-                opacity: 1;
-                z-index: 5;
-            }
-        }
-
-        .input-focus:focus {
-            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-        }
-
-        .ghost-btn {
-            border: 2px solid white;
-            background: transparent;
-            color: white;
-        }
-
-        .ghost-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .header-gradient {
-            background: linear-gradient(to right, #0f172a, #1e293b);
-            border-bottom: 1px solid #334155;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-        }
-
-        @keyframes typing {
-
-            0%,
-            60%,
-            100% {
-                transform: translateY(0);
-            }
-
-            30% {
-                transform: translateY(-10px);
-            }
-        }
-
-        .typing-dot {
-            animation: typing 1.4s infinite;
-        }
-
-        .typing-dot:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .typing-dot:nth-child(3) {
-            animation-delay: 0.4s;
-        }
-
-        .app-container {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
-            position: relative;
-        }
-
-        @media (min-width: 768px) {
-            .app-container {
-                flex-direction: row;
-            }
-        }
-
-        .mobile-sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            width: 280px;
-            max-width: 85vw;
-            transform: translateX(-100%);
-            transition: transform 0.3s ease;
-            z-index: 50;
-        }
-
-        .mobile-sidebar.open {
-            transform: translateX(0);
-        }
-
-        @media (min-width: 768px) {
-            .mobile-sidebar {
-                position: relative;
-                transform: translateX(0) !important;
-                max-width: none;
-            }
-        }
-
-        .portfolio-window {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 640px;
-            max-width: calc(100vw - 40px);
-            height: 85vh;
-            max-height: 85vh;
-            background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
-            border-radius: 20px;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(16, 185, 129, 0.3);
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(20px);
-        }
-
-        .portfolio-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .portfolio-window.minimized {
-            height: 68px !important;
-            max-height: 68px !important;
-        }
-
-        .portfolio-window.minimized .portfolio-content {
-            display: none !important;
-        }
-
-        .portfolio-window.maximized {
-            width: 95vw !important;
-            max-width: 1200px !important;
-            height: 92vh !important;
-            max-height: 92vh !important;
-        }
-
-        @media (max-width: 768px) {
-            .portfolio-window {
-                width: calc(100vw - 20px);
-                max-width: calc(100vw - 20px);
-                left: 10px;
-                right: 10px;
-                bottom: 80px;
-                /* Above nav bar if present, or just give space */
-                height: 80vh;
-                max-height: 80vh;
-            }
-
-            .portfolio-window.maximized {
-                width: 100vw !important;
-                height: 100vh !important;
-                left: 0 !important;
-                right: 0 !important;
-                bottom: 0 !important;
-                border-radius: 0;
-            }
-        }
-
-        /* Search Highlight Styles */
-        mark.search-highlight {
-            background-color: rgba(234, 179, 8, 0.3);
-            /* Yellow-500 with opacity */
-            color: #fef08a;
-            /* Yellow-200 */
-            border-radius: 2px;
-            padding: 0 2px;
-        }
-
-        mark.search-highlight.active {
-            background-color: rgba(234, 179, 8, 0.8);
-            color: #000;
-            box-shadow: 0 0 0 2px rgba(234, 179, 8, 0.5);
-        }
-
-        .portfolio-tabs button.active {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
-        }
-
-        .stock-item {
-            transition: all 0.2s;
-        }
-
-        .stock-item:hover {
-            background: rgba(16, 185, 129, 0.1);
-            transform: translateX(4px);
-        }
-
-        .stock-item.selected {
-            background: rgba(16, 185, 129, 0.2);
-            border-color: #10b981;
-        }
-
-        .pulse-green {
-            animation: pulse-green 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-
-        @keyframes pulse-green {
-
-            0%,
-            100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.5;
-            }
-        }
-
-        /* NEW: Mobile-specific responsive improvements */
-        @media (max-width: 640px) {
-
-            .message-user,
-            .message-agent {
-                max-width: 95%;
-                padding: 12px 16px;
-                font-size: 14px;
-            }
-
-            .portfolio-tabs {
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-            }
-
-            .portfolio-tabs button {
-                white-space: nowrap;
-                flex-shrink: 0;
-                min-width: 100px;
-            }
-
-            /* Responsive grid adjustments */
-            .grid.grid-cols-3 {
-                grid-template-columns: repeat(1, 1fr) !important;
-            }
-
-            /* Text size adjustments for small screens */
-            h1,
-            h2,
-            h3 {
-                font-size: clamp(1.25rem, 5vw, 2rem);
-            }
-
-            /* Stack flex items on mobile */
-            .flex.gap-4,
-            .flex.gap-3 {
-                flex-wrap: wrap;
-            }
-
-            /* Better touch targets */
-            button,
-            a {
-                min-height: 44px;
-                min-width: 44px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .text-3xl {
-                font-size: 1.5rem;
-            }
-
-            .text-2xl {
-                font-size: 1.25rem;
-            }
-
-            .text-xl {
-                font-size: 1.125rem;
-            }
-
-            /* Reduce padding on very small screens */
-            .p-6 {
-                padding: 1rem;
-            }
-
-            .p-4 {
-                padding: 0.75rem;
-            }
-
-            /* Adjust modal sizes */
-            .max-w-md {
-                max-width: calc(100vw - 32px);
-            }
-        }
-
-        /* Landscape orientation adjustments */
-        @media (max-height: 500px) and (orientation: landscape) {
-            .portfolio-window {
-                height: 95vh !important;
-            }
-
-            .auth-form {
-                padding: 1rem;
-            }
-        }
-
-        /* Search highlight styles */
-        mark.search-highlight {
-            background-color: yellow;
-            color: black;
-            padding: 2px 4px;
-            border-radius: 3px;
-        }
-
-        mark.search-highlight.active {
-            background-color: orange;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
 </head>
 
@@ -1151,6 +303,34 @@
         </div>
     </div>
 
+    <!-- Verification Sent Modal -->
+    <div x-show="verificationModalOpen" x-cloak
+        class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div
+            class="bg-gradient-to-br from-slate-900 to-slate-950 rounded-3xl border-2 border-green-500/30 w-full max-w-sm p-8 shadow-2xl text-center">
+
+            <div
+                class="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
+                <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                    </path>
+                </svg>
+            </div>
+
+            <h3 class="text-2xl font-bold text-white mb-2">Verification Sent</h3>
+            <p class="text-slate-400 text-sm mb-8 leading-relaxed">
+                We've sent an email to <span x-text="email" class="text-white font-semibold"></span>.<br>
+                Please verify your email address to activate your account.
+            </p>
+
+            <button @click="verificationModalOpen = false; isLoginView = true"
+                class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg hover:shadow-blue-500/30">
+                Back to Login
+            </button>
+        </div>
+    </div>
+
     <div x-show="isLoggedIn" x-cloak class="app-container flex h-screen w-full overflow-hidden bg-slate-950">
 
         <aside
@@ -1250,6 +430,24 @@
 
         <main class="flex-1 flex flex-col min-w-0 h-full relative bg-slate-950">
 
+            <!-- Chat Loading Overlay -->
+            <div x-show="isChatsLoading" x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+                class="absolute inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center"
+                style="display: none;"> <!-- Hidden by default to prevent flash -->
+                <div class="flex flex-col items-center gap-3">
+                    <div class="relative w-16 h-16">
+                        <div class="absolute inset-0 border-4 border-slate-700/50 rounded-full"></div>
+                        <div
+                            class="absolute inset-0 border-4 border-emerald-500 rounded-full border-t-transparent animate-spin">
+                        </div>
+                    </div>
+                    <span class="text-emerald-500 font-bold tracking-wider text-sm animate-pulse">LOADING CHAT...</span>
+                </div>
+            </div>
+
             <header
                 class="h-16 border-b border-white/5 bg-gradient-to-r from-slate-950 to-slate-900 flex items-center justify-between px-4 flex-shrink-0 z-30"
                 x-data="{ searchVisible: false }">
@@ -1270,7 +468,7 @@
                         <div>
                             <h1 id="chat-title" class="text-sm font-bold text-white truncate max-w-[200px]">New Chat
                             </h1>
-                            <p class="text-[10px] text-slate-500 uppercase tracking-wider">AI Analyst</p>
+                            <p class="text-[10px] text-slate-500 uppercase tracking-wider">Claroz Agent</p>
                         </div>
                     </div>
                 </div>
@@ -1392,11 +590,50 @@
                                 </div>
                             </div>
 
-                            <div class="px-5 pb-2" x-show="!isLocalMode">
-                                <button @click="pricingModalOpen = true"
-                                    class="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold py-2.5 rounded-xl shadow hover:shadow-orange-500/20 transition transform hover:scale-[1.02]">
-                                    🚀 Upgrade Plan
-                                </button>
+                            <!-- Token Usage Stats -->
+                            <div class="px-5 pb-2">
+                                <div class="bg-slate-800/50 rounded-xl p-3 border border-slate-700/50 space-y-2">
+                                    <!-- Plan Info -->
+                                    <div
+                                        class="flex justify-between items-center text-xs pb-2 border-b border-slate-700/50 mb-1">
+                                        <span class="text-slate-400">Current Plan</span>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-white font-bold" x-text="currentPlan">Free</span>
+                                            <!-- Upgrade Button (Firebase Only) -->
+                                            <template x-if="!isLocalMode">
+                                                <button
+                                                    class="text-[10px] bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 px-1.5 py-0.5 rounded border border-emerald-500/20 transition-colors uppercase font-bold">
+                                                    Upgrade
+                                                </button>
+                                            </template>
+                                        </div>
+                                    </div>
+                                    <h5
+                                        class="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex justify-between">
+                                        Token Usage
+                                        <span class="text-[10px] text-emerald-500"
+                                            x-text="isLocalMode ? 'LOCAL' : 'CLOUD'"></span>
+                                    </h5>
+
+                                    <div class="space-y-1">
+                                        <div class="flex justify-between items-center text-xs">
+                                            <span class="text-slate-400">Tokens Left</span>
+                                            <span class="text-emerald-400 font-mono font-bold"
+                                                x-text="formatNumber(tokensLeft)">0</span>
+                                        </div>
+                                        <div class="flex justify-between items-center text-xs">
+                                            <span class="text-slate-400">Total Tokens</span>
+                                            <span class="text-white font-mono"
+                                                x-text="formatNumber(tokenUsage.total)">0</span>
+                                        </div>
+                                        <div class="flex justify-between items-center text-xs">
+                                            <span class="text-slate-400">Est. Cost</span>
+                                            <span class="text-emerald-400 font-mono font-bold"
+                                                x-text="'₹' + formatCost(tokenUsage.input, tokenUsage.output)">₹0.00</span>
+                                        </div>
+                                    </div>
+                                    <!-- Removed Input/Output detailed breakdown as requested -->
+                                </div>
                             </div>
 
                             <div class="p-2 border-t border-slate-700/50 bg-slate-950/30 mt-2">
@@ -1431,7 +668,8 @@
             <div class="absolute bottom-0 right-0 w-full z-20 pointer-events-none">
                 <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/95 to-transparent h-32">
                 </div>
-                <div class="relative max-w-4xl mx-auto px-4 pb-6 pt-10 pointer-events-auto">
+                <div class="relative max-w-4xl mx-auto px-4 pb-8 pt-10 pointer-events-auto"
+                    style="padding-bottom: calc(2rem + env(safe-area-inset-bottom));">
                     <form id="chat-form" @submit.prevent="sendMessage()" class="relative group">
                         <div
                             class="relative flex items-end gap-2 bg-slate-900 border border-slate-800 rounded-2xl p-2 shadow-2xl shadow-black/50 transition-colors focus-within:border-emerald-500/50">
@@ -1600,7 +838,7 @@
                             <div
                                 class="bg-gradient-to-br from-blue-800 to-blue-900 p-4 rounded-xl border border-blue-700 shadow-lg">
 
-                                <div class="grid grid-cols-2 gap-4">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                                     <div>
                                         <div class="flex items-center gap-2 mb-2">
@@ -2301,7 +1539,7 @@
         x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150"
         x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
 
-        <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl border-2 border-green-500/30 w-full max-w-2xl max-h-[90vh] shadow-2xl overflow-hidden flex flex-col"
+        <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl border-2 border-green-500/30 w-full max-w-5xl max-h-[90vh] shadow-2xl overflow-hidden flex flex-col"
             @click.stop x-transition:enter="transition ease-out duration-200"
             x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
             x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 scale-100"
@@ -2416,100 +1654,102 @@
 
                 <div class="p-6 space-y-6">
 
-                    <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
-                        <h4 class="text-xs font-bold text-slate-300 text-center uppercase tracking-wider mb-1">
-                            Technical Rating</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
+                            <h4 class="text-xs font-bold text-slate-300 text-center uppercase tracking-wider mb-1">
+                                Technical Rating</h4>
 
-                        <div class="flex flex-col items-center">
-                            <div class="relative w-full max-w-xs">
-                                <svg class="w-full" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
-                                    <defs>
-                                        <linearGradient id="techGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                            <stop offset="0%" style="stop-color:#ef4444;stop-opacity:1" />
-                                            <stop offset="25%" style="stop-color:#f97316;stop-opacity:1" />
-                                            <stop offset="50%" style="stop-color:#eab308;stop-opacity:1" />
-                                            <stop offset="75%" style="stop-color:#84cc16;stop-opacity:1" />
-                                            <stop offset="100%" style="stop-color:#22c55e;stop-opacity:1" />
-                                        </linearGradient>
-                                    </defs>
-                                    <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#techGradient)"
-                                        stroke-width="14" stroke-linecap="round" />
-                                    <g
-                                        :style="`transform: rotate(${getTechnicalAngle(analysisData.technicalRating)}deg); transform-origin: 100px 100px; transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);`">
-                                        <line x1="100" y1="100" x2="100" y2="30" stroke="white" stroke-width="3"
-                                            stroke-linecap="round"
-                                            style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7))" />
-                                        <circle cx="100" cy="100" r="5" fill="white" />
-                                    </g>
-                                </svg>
+                            <div class="flex flex-col items-center">
+                                <div class="relative w-full max-w-xs">
+                                    <svg class="w-full" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+                                        <defs>
+                                            <linearGradient id="techGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                                <stop offset="0%" style="stop-color:#ef4444;stop-opacity:1" />
+                                                <stop offset="25%" style="stop-color:#f97316;stop-opacity:1" />
+                                                <stop offset="50%" style="stop-color:#eab308;stop-opacity:1" />
+                                                <stop offset="75%" style="stop-color:#84cc16;stop-opacity:1" />
+                                                <stop offset="100%" style="stop-color:#22c55e;stop-opacity:1" />
+                                            </linearGradient>
+                                        </defs>
+                                        <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#techGradient)"
+                                            stroke-width="14" stroke-linecap="round" />
+                                        <g
+                                            :style="`transform: rotate(${getTechnicalAngle(analysisData.technicalRating)}deg); transform-origin: 100px 100px; transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);`">
+                                            <line x1="100" y1="100" x2="100" y2="30" stroke="white" stroke-width="3"
+                                                stroke-linecap="round"
+                                                style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7))" />
+                                            <circle cx="100" cy="100" r="5" fill="white" />
+                                        </g>
+                                    </svg>
+                                </div>
+
+                                <div class="flex justify-between w-full max-w-xs px-4 -mt-2 mb-4">
+                                    <span class="text-[10px] font-bold text-red-400">Strong<br />Sell</span>
+                                    <span class="text-[10px] font-bold text-yellow-400">Neutral</span>
+                                    <span class="text-[10px] font-bold text-green-400 text-right">Strong<br />Buy</span>
+                                </div>
+
+                                <p class="text-2xl font-bold mb-1" :class="{
+                                    'text-red-500': analysisData.technicalRating && analysisData.technicalRating.toLowerCase().includes('strong sell'),
+                                    'text-orange-500': analysisData.technicalRating && analysisData.technicalRating.toLowerCase() === 'sell',
+                                    'text-yellow-500': analysisData.technicalRating && (analysisData.technicalRating.toLowerCase().includes('neutral') || analysisData.technicalRating.toLowerCase().includes('hold')),
+                                    'text-lime-500': analysisData.technicalRating && analysisData.technicalRating.toLowerCase() === 'buy',
+                                    'text-green-500': analysisData.technicalRating && analysisData.technicalRating.toLowerCase().includes('strong buy'),
+                                    'text-slate-400': !analysisData.technicalRating
+                                }" x-text="analysisData.technicalRating || 'N/A'">
+                                </p>
+                                <p class="text-[10px] text-slate-500"
+                                    x-text="selectedIndicators.length > 0 ? selectedIndicators.map(s => getIndicatorName(s)).join(' • ') : 'No Indicators Selected'">
+                                </p>
                             </div>
-
-                            <div class="flex justify-between w-full max-w-xs px-4 -mt-2 mb-4">
-                                <span class="text-[10px] font-bold text-red-400">Strong<br />Sell</span>
-                                <span class="text-[10px] font-bold text-yellow-400">Neutral</span>
-                                <span class="text-[10px] font-bold text-green-400 text-right">Strong<br />Buy</span>
-                            </div>
-
-                            <p class="text-2xl font-bold mb-1" :class="{
-                                'text-red-500': analysisData.technicalRating && analysisData.technicalRating.toLowerCase().includes('strong sell'),
-                                'text-orange-500': analysisData.technicalRating && analysisData.technicalRating.toLowerCase() === 'sell',
-                                'text-yellow-500': analysisData.technicalRating && (analysisData.technicalRating.toLowerCase().includes('neutral') || analysisData.technicalRating.toLowerCase().includes('hold')),
-                                'text-lime-500': analysisData.technicalRating && analysisData.technicalRating.toLowerCase() === 'buy',
-                                'text-green-500': analysisData.technicalRating && analysisData.technicalRating.toLowerCase().includes('strong buy'),
-                                'text-slate-400': !analysisData.technicalRating
-                            }" x-text="analysisData.technicalRating || 'N/A'">
-                            </p>
-                            <p class="text-[10px] text-slate-500"
-                                x-text="selectedIndicators.length > 0 ? selectedIndicators.map(s => getIndicatorName(s)).join(' • ') : 'No Indicators Selected'">
-                            </p>
                         </div>
-                    </div>
 
-                    <hr class="border-slate-700 my-6" />
+                        <!-- Omitted HR here -->
 
-                    <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
-                        <h4 class="text-xs font-bold text-slate-300 text-center uppercase tracking-wider mb-1">
-                            Long-Term Fundamental Rating</h4>
+                        <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
+                            <h4 class="text-xs font-bold text-slate-300 text-center uppercase tracking-wider mb-1">
+                                Long-Term Fundamental Rating</h4>
 
-                        <div class="flex flex-col items-center">
-                            <div class="relative w-full max-w-xs">
-                                <svg class="w-full" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
-                                    <defs>
-                                        <linearGradient id="analystGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                            <stop offset="0%" style="stop-color:#ef4444;stop-opacity:1" />
-                                            <stop offset="25%" style="stop-color:#f97316;stop-opacity:1" />
-                                            <stop offset="50%" style="stop-color:#eab308;stop-opacity:1" />
-                                            <stop offset="75%" style="stop-color:#84cc16;stop-opacity:1" />
-                                            <stop offset="100%" style="stop-color:#22c55e;stop-opacity:1" />
-                                        </linearGradient>
-                                    </defs>
-                                    <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#analystGradient)"
-                                        stroke-width="14" stroke-linecap="round" />
-                                    <g
-                                        :style="`transform: rotate(${getAnalystAngle(analysisData.recommendation)}deg); transform-origin: 100px 100px; transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);`">
-                                        <line x1="100" y1="100" x2="100" y2="30" stroke="white" stroke-width="3"
-                                            stroke-linecap="round"
-                                            style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7))" />
-                                        <circle cx="100" cy="100" r="5" fill="white" />
-                                    </g>
-                                </svg>
+                            <div class="flex flex-col items-center">
+                                <div class="relative w-full max-w-xs">
+                                    <svg class="w-full" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+                                        <defs>
+                                            <linearGradient id="analystGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                                <stop offset="0%" style="stop-color:#ef4444;stop-opacity:1" />
+                                                <stop offset="25%" style="stop-color:#f97316;stop-opacity:1" />
+                                                <stop offset="50%" style="stop-color:#eab308;stop-opacity:1" />
+                                                <stop offset="75%" style="stop-color:#84cc16;stop-opacity:1" />
+                                                <stop offset="100%" style="stop-color:#22c55e;stop-opacity:1" />
+                                            </linearGradient>
+                                        </defs>
+                                        <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none"
+                                            stroke="url(#analystGradient)" stroke-width="14" stroke-linecap="round" />
+                                        <g
+                                            :style="`transform: rotate(${getAnalystAngle(analysisData.recommendation)}deg); transform-origin: 100px 100px; transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);`">
+                                            <line x1="100" y1="100" x2="100" y2="30" stroke="white" stroke-width="3"
+                                                stroke-linecap="round"
+                                                style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7))" />
+                                            <circle cx="100" cy="100" r="5" fill="white" />
+                                        </g>
+                                    </svg>
+                                </div>
+
+                                <div class="flex justify-between w-full max-w-xs px-4 -mt-2 mb-4">
+                                    <span class="text-[10px] font-bold text-red-400">Sell</span>
+                                    <span class="text-[10px] font-bold text-yellow-400">Hold</span>
+                                    <span class="text-[10px] font-bold text-green-400">Buy</span>
+                                </div>
+
+                                <p class="text-2xl font-bold mb-1" :class="{
+                                    'text-red-500': analysisData.recommendation && (analysisData.recommendation.toLowerCase().includes('strong sell') || analysisData.recommendation.toLowerCase() === 'sell'),
+                                    'text-yellow-500': analysisData.recommendation && analysisData.recommendation.toLowerCase().includes('hold'),
+                                    'text-lime-500': analysisData.recommendation && analysisData.recommendation.toLowerCase() === 'buy',
+                                    'text-green-500': analysisData.recommendation && analysisData.recommendation.toLowerCase().includes('strong buy'),
+                                    'text-slate-400': !analysisData.recommendation
+                                }" x-text="analysisData.recommendation || 'N/A'">
+                                </p>
+                                <p class="text-[10px] text-slate-500">Fundamentals • Valuation • Growth • Quality</p>
                             </div>
-
-                            <div class="flex justify-between w-full max-w-xs px-4 -mt-2 mb-4">
-                                <span class="text-[10px] font-bold text-red-400">Sell</span>
-                                <span class="text-[10px] font-bold text-yellow-400">Hold</span>
-                                <span class="text-[10px] font-bold text-green-400">Buy</span>
-                            </div>
-
-                            <p class="text-2xl font-bold mb-1" :class="{
-                                'text-red-500': analysisData.recommendation && (analysisData.recommendation.toLowerCase().includes('strong sell') || analysisData.recommendation.toLowerCase() === 'sell'),
-                                'text-yellow-500': analysisData.recommendation && analysisData.recommendation.toLowerCase().includes('hold'),
-                                'text-lime-500': analysisData.recommendation && analysisData.recommendation.toLowerCase() === 'buy',
-                                'text-green-500': analysisData.recommendation && analysisData.recommendation.toLowerCase().includes('strong buy'),
-                                'text-slate-400': !analysisData.recommendation
-                            }" x-text="analysisData.recommendation || 'N/A'">
-                            </p>
-                            <p class="text-[10px] text-slate-500">Fundamentals • Valuation • Growth • Quality</p>
                         </div>
                     </div>
 
@@ -2581,1531 +1821,10 @@
     </div>
 
 
-    <script type="module">
-        // 1. Define MockAuth globally first (No external dependencies needed)
-        const MockAuth = {
-            currentUser: null,
-            listeners: [],
 
-            // Helper to access the "Fake Cloud" in browser storage
-            _getUsersDB: () => JSON.parse(localStorage.getItem('local_users_db') || '{}'),
-            _saveUsersDB: (db) => localStorage.setItem('local_users_db', JSON.stringify(db)),
 
-            // 1. LOGIN (Strict Check)
-            signInWithEmailAndPassword: async (auth, email, password) => {
-                console.log(`🔌 LOCAL MODE: Attempting login for ${email}`);
 
-                // Simulate network delay for realism
-                await new Promise(r => setTimeout(r, 500));
-
-                const db = MockAuth._getUsersDB();
-                const userRecord = db[email];
-
-                if (!userRecord) {
-                    const error = new Error("Firebase: Error (auth/user-not-found).");
-                    error.code = "auth/user-not-found";
-                    throw error;
-                }
-
-                if (userRecord.password !== password) {
-                    const error = new Error("Firebase: Error (auth/wrong-password).");
-                    error.code = "auth/wrong-password";
-                    throw error;
-                }
-
-                // Login Successful
-                const user = {
-                    uid: userRecord.uid,
-                    email: userRecord.email,
-                    displayName: email.split('@')[0],
-                    getIdToken: async () => userRecord.uid // Token is the UID
-                };
-
-                MockAuth._setCurrentUser(user);
-                return { user };
-            },
-
-            // 2. SIGN UP (Create New)
-            createUserWithEmailAndPassword: async (auth, email, password) => {
-                console.log(`🔌 LOCAL MODE: Creating account for ${email}`);
-
-                await new Promise(r => setTimeout(r, 500));
-
-                const db = MockAuth._getUsersDB();
-
-                if (db[email]) {
-                    const error = new Error("Firebase: Error (auth/email-already-in-use).");
-                    error.code = "auth/email-already-in-use";
-                    throw error;
-                }
-
-                // Generate a unique ID based on email
-                const newUid = "local_" + email.split('@')[0].replace(/[^a-z0-9]/gi, '') + "_" + Date.now().toString().slice(-4);
-
-                // Save to "Browser Database"
-                db[email] = {
-                    uid: newUid,
-                    email: email,
-                    password: password // Stored locally for mock auth check
-                };
-                MockAuth._saveUsersDB(db);
-
-                // Auto-login after signup
-                const user = {
-                    uid: newUid,
-                    email: email,
-                    displayName: email.split('@')[0],
-                    getIdToken: async () => newUid
-                };
-
-                MockAuth._setCurrentUser(user);
-                return { user };
-            },
-
-            // 3. GOOGLE LOGIN (Simulated - always logs in as specific demo user)
-            signInWithPopup: async (auth, provider) => {
-                console.log("🔌 LOCAL MODE: Simulating Google Login");
-                const email = "demo_google@local.com";
-                const db = MockAuth._getUsersDB();
-
-                // Auto-create if not exists (Google usually behaves this way)
-                if (!db[email]) {
-                    await MockAuth.createUserWithEmailAndPassword(null, email, "google-pass");
-                }
-                return MockAuth.signInWithEmailAndPassword(null, email, "google-pass");
-            },
-
-            // 4. LOGOUT
-            signOut: async (auth) => {
-                console.log("🔌 LOCAL MODE: Signing out");
-                localStorage.removeItem('local_current_session');
-                MockAuth.currentUser = null;
-                MockAuth.triggerAuth(null);
-            },
-
-            // 5. STATE OBSERVER
-            onAuthStateChanged: (auth, callback) => {
-                MockAuth.listeners.push(callback);
-
-                // Check if a user was logged in previously
-                const storedSession = localStorage.getItem('local_current_session');
-                if (storedSession) {
-                    try {
-                        const user = JSON.parse(storedSession);
-                        user.getIdToken = async () => user.uid; // Re-attach function
-                        MockAuth.currentUser = user;
-                        callback(user);
-                    } catch (e) {
-                        callback(null);
-                    }
-                } else {
-                    callback(null);
-                }
-            },
-
-            // Internal Helpers
-            _setCurrentUser: (user) => {
-                MockAuth.currentUser = user;
-                // Save session
-                localStorage.setItem('local_current_session', JSON.stringify(user));
-                MockAuth.triggerAuth(user);
-            },
-
-            triggerAuth: (user) => {
-                MockAuth.listeners.forEach(cb => cb(user));
-            }
-        };
-
-        // 2. Main Initialization Function
-        async function initializeAppLogic() {
-            try {
-                // Fetch Config
-                const response = await fetch('/api/config');
-                if (!response.ok) throw new Error("Failed to fetch config");
-                const config = await response.json();
-
-                // Store globally for AlpineJS components
-                window.APP_CONFIG = config;
-
-                // === LOCAL MODE ===
-                if (config.dbMode === 'LOCAL') {
-                    console.log("🔶 RUNNING IN LOCAL DATABASE MODE (Offline-Ready)");
-
-                    // Define Global Objects for AlpineJS
-                    window.firebaseAuth = {};
-                    window.firebaseAnalytics = {};
-
-                    // Map Mock functions to the global window object
-                    window.firebaseAuthFunctions = {
-                        createUserWithEmailAndPassword: MockAuth.createUserWithEmailAndPassword,
-                        signInWithEmailAndPassword: MockAuth.signInWithEmailAndPassword,
-                        onAuthStateChanged: MockAuth.onAuthStateChanged,
-                        signOut: MockAuth.signOut,
-                        setPersistence: async () => { },
-                        browserLocalPersistence: "local",
-                        GoogleAuthProvider: class { },
-                        signInWithPopup: MockAuth.signInWithPopup,
-                        sendPasswordResetEmail: async () => alert("Local Mode: Password reset simulated.")
-                    };
-
-                    // Logging wrapper
-                    window.logAnalyticsEvent = (name, params) => console.log(`[Analytics] ${name}`, params);
-
-                    // Trigger initial auth check
-                    MockAuth.onAuthStateChanged(null, (user) => {
-                        console.log("Local Auth State Checked:", user ? "Logged In" : "Logged Out");
-                    });
-
-                }
-                // === CLOUD MODE ===
-                else {
-                    console.log("☁️ RUNNING IN FIREBASE CLOUD MODE - Loading SDKs...");
-
-                    // DYNAMIC IMPORTS: Only load these if we are in Cloud Mode
-                    const firebaseApp = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js");
-                    const firebaseAuth = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js");
-                    const firebaseAnalytics = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js");
-
-                    const app = firebaseApp.initializeApp(config.firebaseConfig);
-                    const auth = firebaseAuth.getAuth(app);
-                    const analytics = firebaseAnalytics.getAnalytics(app);
-
-                    // Expose to window
-                    window.firebaseAuth = auth;
-                    window.firebaseAnalytics = analytics;
-
-                    // Map Real Firebase functions to window
-                    window.firebaseAuthFunctions = {
-                        createUserWithEmailAndPassword: firebaseAuth.createUserWithEmailAndPassword,
-                        signInWithEmailAndPassword: firebaseAuth.signInWithEmailAndPassword,
-                        onAuthStateChanged: firebaseAuth.onAuthStateChanged,
-                        signOut: firebaseAuth.signOut,
-                        setPersistence: firebaseAuth.setPersistence,
-                        browserLocalPersistence: firebaseAuth.browserLocalPersistence,
-                        GoogleAuthProvider: firebaseAuth.GoogleAuthProvider,
-                        signInWithPopup: firebaseAuth.signInWithPopup,
-                        sendPasswordResetEmail: firebaseAuth.sendPasswordResetEmail
-                    };
-
-                    window.logAnalyticsEvent = (eventName, params) => firebaseAnalytics.logEvent(analytics, eventName, params);
-
-                    console.log("✅ Firebase Cloud SDK Loaded");
-                }
-
-            } catch (error) {
-                console.error('❌ Critical Initialization Error:', error);
-                alert("Failed to initialize application. Check console.");
-            }
-        }
-
-        // Start the app
-        initializeAppLogic();
-    </script>
-
-    <script>
-        let API_BASE_URL = ""; // Will be set by loadConfig
-
-        async function loadConfig() {
-            if (window.APP_CONFIG) {
-                API_BASE_URL = window.APP_CONFIG.apiBaseUrl;
-                return window.APP_CONFIG;
-            }
-            // Fallback if loadConfig is called before init logic (shouldn't happen often)
-            try {
-                const response = await fetch('/api/config');
-                const config = await response.json();
-                window.APP_CONFIG = config;
-                API_BASE_URL = config.apiBaseUrl;
-                console.log('API Base URL loaded (Fallback):', API_BASE_URL);
-                return config;
-            } catch (error) {
-                console.error('Failed to load API config:', error);
-                API_BASE_URL = "";
-                return { dbMode: 'LOCAL' }; // Safe fallback
-            }
-        }
-
-        // --- Static Data (Defined globally for scope access) ---
-        const NIFTY_50_STOCKS_GLOBAL = ['RELIANCE.NS', 'TCS.NS', 'HDFCBANK.NS', 'ICICIBANK.NS', 'INFY.NS', 'HINDUNILVR.NS', 'BHARTIARTL.NS', 'ITC.NS', 'SBIN.NS', 'LICI.NS', 'HCLTECH.NS', 'KOTAKBANK.NS', 'LT.NS', 'BAJFINANCE.NS', 'AXISBANK.NS', 'ASIANPAINT.NS', 'MARUTI.NS', 'SUNPHARMA.NS', 'TITAN.NS', 'WIPRO.NS', 'ULTRACEMCO.NS', 'ADANIENT.NS', 'ONGC.NS', 'NTPC.NS', 'JSWSTEEL.NS', 'TATAMOTORS.NS', 'POWERGRID.NS', 'BAJAJFINSV.NS', 'TATASTEEL.NS', 'COALINDIA.NS', 'INDUSINDBK.NS', 'HINDALCO.NS', 'TECHM.NS', 'GRASIM.NS', 'ADANIPORTS.NS', 'BRITANNIA.NS', 'CIPLA.NS', 'EICHERMOT.NS', 'DRREDDY.NS', 'NESTLEIND.NS', 'HEROMOTOCO.NS', 'BAJAJ-AUTO.NS', 'BPCL.NS', 'SHREECEM.NS', 'TATACONSUM.NS', 'UPL.NS', 'APOLLOHOSP.NS', 'DIVISLAB.NS'];
-
-        const COMPANY_NAMES_GLOBAL = {
-            'RELIANCE.NS': 'Reliance Industries', 'TCS.NS': 'Tata Consultancy Services', 'HDFCBANK.NS': 'HDFC Bank', 'ICICIBANK.NS': 'ICICI Bank', 'INFY.NS': 'Infosys', 'HINDUNILVR.NS': 'Hindustan Unilever', 'BHARTIARTL.NS': 'Bharti Airtel', 'ITC.NS': 'ITC Limited', 'SBIN.NS': 'State Bank of India', 'LICI.NS': 'Life Insurance Corp', 'HCLTECH.NS': 'HCL Technologies', 'KOTAKBANK.NS': 'Kotak Mahindra Bank', 'LT.NS': 'Larsen & Toubro', 'BAJFINANCE.NS': 'Bajaj Finance', 'AXISBANK.NS': 'Axis Bank', 'ASIANPAINT.NS': 'Asian Paints', 'MARUTI.NS': 'Maruti Suzuki', 'SUNPHARMA.NS': 'Sun Pharma', 'TITAN.NS': 'Titan Company', 'WIPRO.NS': 'Wipro', 'ULTRACEMCO.NS': 'UltraTech Cement', 'ADANIENT.NS': 'Adani Enterprises', 'ONGC.NS': 'Oil & Natural Gas', 'NTPC.NS': 'NTPC Limited', 'JSWSTEEL.NS': 'JSW Steel', 'TATAMOTORS.NS': 'Tata Motors', 'POWERGRID.NS': 'Power Grid Corp', 'BAJAJFINSV.NS': 'Bajaj Finserv', 'TATASTEEL.NS': 'Tata Steel', 'COALINDIA.NS': 'Coal India', 'INDUSINDBK.NS': 'IndusInd Bank', 'HINDALCO.NS': 'Hindalco Industries', 'TECHM.NS': 'Tech Mahindra', 'GRASIM.NS': 'Grasim Industries', 'ADANIPORTS.NS': 'Adani Ports', 'BRITANNIA.NS': 'Britannia Industries', 'CIPLA.NS': 'Cipla', 'EICHERMOT.NS': 'Eicher Motors', 'DRREDDY.NS': 'Dr. Reddys Labs', 'NESTLEIND.NS': 'Nestle India', 'HEROMOTOCO.NS': 'Hero MotoCorp', 'BAJAJ-AUTO.NS': 'Bajaj Auto', 'BPCL.NS': 'Bharat Petroleum', 'SHREECEM.NS': 'Shree Cement', 'TATACONSUM.NS': 'Tata Consumer', 'UPL.NS': 'UPL Limited', 'APOLLOHOSP.NS': 'Apollo Hospitals', 'DIVISLAB.NS': 'Divis Laboratories'
-        };
-
-        function chatApp() {
-            // --- Component State ---
-            return {
-                selectedIndicators: ['rsi', 'ema', 'volume', 'macd', 'sma', 'bollinger'], // Default selected
-                availableIndicators: [
-                    { id: 'rsi', name: 'RSI', description: 'Relative Strength Index (14)' },
-                    { id: 'ema', name: 'EMA', description: 'Exponential Moving Average (20)' },
-                    { id: 'sma', name: 'SMA', description: 'Simple Moving Average (50)' },
-                    { id: 'macd', name: 'MACD', description: 'Moving Average Convergence' },
-                    { id: 'volume', name: 'Volume', description: 'Trading Volume' },
-                    { id: 'bollinger', name: 'Bollinger', description: 'Bollinger Bands' },
-                    { id: 'adx', name: 'ADX', description: 'Average Directional Index' },
-                    { id: 'stochastic', name: 'Stochastic', description: 'Stochastic Oscillator' }
-                ],
-                isLoggedIn: false,
-                isLoginView: false,
-                isLoading: false,
-                email: '',
-                password: '',
-                confirmPassword: '',
-                authError: '',
-                currentUser: null,
-                showForgotPassword: false,
-                resetEmail: '',
-                resetSuccess: false,
-                resetError: '',
-
-                mobileSidebarOpen: false,
-                isSidebarMinimized: true,
-                currentChatId: null,
-                chatList: [],
-                chatLoading: false,
-
-                // Search State
-                searchVisible: false,
-                searchQuery: '',
-                searchResults: [], // Will store the highlighted <mark> elements
-                currentSearchResultIndex: -1,
-                isLocalMode: false,
-
-                portfolioOpen: false,
-                portfolioMinimized: false,
-                portfolioMaximized: false,
-                portfolioTab: 'portfolio',
-                portfolio: { cash: 0, holdings: [], summary: {} },
-                watchlist: [],
-                tradeHistory: [],
-                portfolioLoading: false,
-                portfolioLastUpdated: null,
-                lastUpdatedText: 'never',
-                reloadIntervalId: null,
-
-                cashEditModalOpen: false,
-                newCashAmount: 0,
-
-                renameModalOpen: false,
-                chatToRename: { id: null, title: '' },
-                newChatTitle: '',
-
-                stockPickerOpen: false,
-                stockPickerMode: 'trade',
-                selectedStock: '',
-                selectedStocks: [],
-                stockSearch: '',
-                filteredStocks: NIFTY_50_STOCKS_GLOBAL, // Initialize with global list
-
-                tradeModalOpen: false,
-                tradeAction: 'BUY',
-                tradeTicker: '',
-                tradeQuantity: 1,
-                tradeError: '',
-                tradeLoading: false,
-                selectedTimeframe: '1D',
-                currentStockPrice: 0,
-                totalTradeValue: 0,
-                loadingPrice: false,
-                sessionTokens: { input: 0, output: 0, total: 0 },
-                editName: '',
-
-                analysisModalOpen: false,
-                analysisLoading: false,
-                analysisData: { indicators: {} }, // IMPORTANT: Initialize indicators object
-
-                // New Zerodha Sync State
-                zerodhaSynced: false,
-                zerodhaSyncMessage: 'Not connected. Sync your Zerodha holdings.',
-                zerodhaSyncLoading: false,
-
-                async secureFetch(url, options = {}) {
-                    if (!this.currentUser) {
-                        console.error("Auth Error: No user logged in.");
-                        this.authError = "You are not logged in. Please refresh.";
-                        this.handleLogout(); // Force logout
-                        return Promise.reject(new Error("User not authenticated"));
-                    }
-
-                    try {
-                        const token = await this.currentUser.getIdToken(true);
-                        const headers = new Headers(options.headers || {});
-                        headers.set('Authorization', `Bearer ${token}`);
-
-                        const secureOptions = {
-                            ...options,
-                            headers: headers
-                        };
-
-                        const response = await fetch(url, secureOptions);
-
-                        if (response.status === 401 || response.status === 403) {
-                            console.error("Auth Error: Server rejected token.");
-                            this.authError = "Your session has expired. Please log in again.";
-                            this.handleLogout(); // Force logout
-                            return Promise.reject(new Error("Token rejected by server"));
-                        }
-
-                        return response;
-
-                    } catch (error) {
-                        console.error("Error in secureFetch:", error);
-                        this.authError = "Could not verify your session. Please log in again.";
-                        this.handleLogout();
-                        return Promise.reject(error);
-                    }
-                },
-
-                async updateProfile() {
-                    if (!this.editName.trim()) return;
-
-                    if (this.currentUser) {
-                        this.currentUser.displayName = this.editName;
-                    }
-                    if (this.isLocalMode) {
-                        const stored = JSON.parse(localStorage.getItem('local_user') || '{}');
-                        stored.displayName = this.editName;
-                        localStorage.setItem('local_user', JSON.stringify(stored));
-                        const db = JSON.parse(localStorage.getItem('local_users_db') || '{}');
-                        if (this.currentUser.email && db[this.currentUser.email]) {
-                            db[this.currentUser.email].displayName = this.editName;
-                            localStorage.setItem('local_users_db', JSON.stringify(db));
-                        }
-                        alert("Name updated successfully!");
-                    } else {
-                        alert("Name updated for this session.");
-                    }
-                },
-
-                async init() {
-                    // Check for global config first
-                    if (window.APP_CONFIG) {
-                        this.isLocalMode = (window.APP_CONFIG.dbMode === 'LOCAL');
-                    } else {
-                        const conf = await loadConfig(); // Fallback fetch
-                        if (conf) this.isLocalMode = (conf.dbMode === 'LOCAL');
-                    }
-
-                    // Wait for Firebase Functions to be attached to window
-                    const checkFirebase = setInterval(() => {
-                        if (window.firebaseAuthFunctions) {
-                            clearInterval(checkFirebase);
-                            this.initFirebase();
-                        }
-                    }, 50);
-
-                    if (window.location.search.includes('sync=success')) {
-                        window.history.replaceState({}, document.title, window.location.pathname);
-                    }
-                },
-
-
-
-                async initFirebase() {
-                    await new Promise(resolve => {
-                        const checkFirebase = setInterval(() => {
-                            if (window.firebaseAuth && window.firebaseAuthFunctions) {
-                                clearInterval(checkFirebase);
-                                resolve();
-                            }
-                        }, 50);
-                    });
-
-                    const { onAuthStateChanged, setPersistence, browserLocalPersistence } = window.firebaseAuthFunctions;
-                    await setPersistence(window.firebaseAuth, browserLocalPersistence);
-
-                    onAuthStateChanged(window.firebaseAuth, user => {
-                        if (user) {
-                            this.isLoggedIn = true;
-                            this.currentUser = user;
-                            this.loadInitialData();
-                        } else {
-                            this.isLoggedIn = false;
-                            this.currentUser = null;
-                            if (this.reloadIntervalId) clearInterval(this.reloadIntervalId);
-                        }
-                        document.body.classList.remove('auth-loading');
-                    });
-                },
-
-                async loadInitialData() {
-                    await this.fetchChatList();
-
-                    if (this.chatList.length > 0) {
-                        this.loadChat(this.chatList[0].chatId, true);
-                    } else {
-                        this.startNewChat(true);
-                    }
-                    await this.loadPortfolio();
-
-                },
-
-                async getProactiveAlert() {
-                    console.log("Checking for proactive alerts...");
-                    // Placeholder for future implementation
-                },
-
-                async handleSignup() {
-                    if (this.password !== this.confirmPassword) {
-                        this.authError = "Passwords do not match";
-                        return;
-                    }
-                    this.isLoading = true;
-                    this.authError = '';
-                    try {
-                        await window.firebaseAuthFunctions.createUserWithEmailAndPassword(window.firebaseAuth, this.email, this.password);
-                    } catch (error) {
-                        this.authError = error.message.replace('Firebase: ', '');
-                    } finally {
-                        this.isLoading = false;
-                    }
-                },
-
-                async signInWithGoogle() {
-                    this.isLoading = true;
-                    this.authError = '';
-                    try {
-                        const { GoogleAuthProvider, signInWithPopup } = window.firebaseAuthFunctions;
-                        const provider = new GoogleAuthProvider();
-                        await signInWithPopup(window.firebaseAuth, provider);
-                    } catch (error) {
-                        this.authError = error.message.replace('Firebase: ', '');
-                    } finally {
-                        this.isLoading = false;
-                    }
-                },
-
-                async handleForgotPassword() {
-                    this.isLoading = true;
-                    this.resetError = '';
-                    this.resetSuccess = false;
-                    try {
-                        const { sendPasswordResetEmail } = window.firebaseAuthFunctions;
-                        await sendPasswordResetEmail(window.firebaseAuth, this.resetEmail);
-                        this.resetSuccess = true;
-                        setTimeout(() => {
-                            this.showForgotPassword = false;
-                            this.resetEmail = '';
-                            this.resetSuccess = false;
-                        }, 3000);
-                    } catch (error) {
-                        this.resetError = error.message.replace('Firebase: ', '');
-                    } finally {
-                        this.isLoading = false;
-                    }
-                },
-
-                async handleLogin() {
-                    this.isLoading = true;
-                    this.authError = '';
-                    try {
-                        await window.firebaseAuthFunctions.signInWithEmailAndPassword(window.firebaseAuth, this.email, this.password);
-                    } catch (error) {
-                        this.authError = error.message.replace('Firebase: ', '');
-                    } finally {
-                        this.isLoading = false;
-                    }
-                },
-
-                async handleLogout() {
-                    await window.firebaseAuthFunctions.signOut(window.firebaseAuth);
-                },
-
-                async fetchChatList() {
-                    if (!this.currentUser) return;
-                    try {
-                        const response = await this.secureFetch(`${API_BASE_URL}/api/chats/${this.currentUser.uid}`);
-                        if (response.ok) this.chatList = await response.json();
-                    } catch (error) {
-                        console.error("Error fetching chat list:", error);
-                    }
-                },
-
-                async loadChat(chatId, showAlert = false) {
-                    this.currentChatId = chatId
-                    this.chatLoading = true
-                    this.clearSearch()
-                    this.searchVisible = false
-
-                    const chat = this.chatList.find(c => c.chatId === chatId)
-                    document.getElementById('chat-title').textContent = chat ? chat.title : 'Chat'
-
-                    const container = document.getElementById('message-container')
-                    container.innerHTML = '' // Clear immediately
-
-                    if (showAlert) await this.getProactiveAlert()
-
-                    try {
-                        const response = await this.secureFetch(`${API_BASE_URL}/api/chat/${this.currentUser.uid}/${chatId}`)
-                        if (response.ok) {
-                            const messages = await response.json()
-                            container.innerHTML = ''
-                            messages.forEach(msg => this.appendMessage(msg.text, msg.role, false))
-                        }
-                    } catch (error) {
-                        console.error('Error loading messages:', error)
-                    } finally {
-                        this.chatLoading = false
-                        this.scrollToBottom()
-                        this.mobileSidebarOpen = false
-                    }
-                },
-
-                async startNewChat(showAlert = false) {
-                    this.currentChatId = null;
-                    this.clearSearch();
-                    this.searchVisible = false;
-                    this.mobileSidebarOpen = false;
-                    document.getElementById('chat-title').textContent = "New Chat";
-                    document.getElementById('message-container').innerHTML = '';
-
-                    if (showAlert) await this.getProactiveAlert();
-
-                    this.appendMessage("Hello! I'm your AI Stock Analyst. How can I help you today?", 'agent');
-                    this.$nextTick(() => document.getElementById('message-input')?.focus());
-                },
-
-                async deleteChat(chatId) {
-                    try {
-                        const response = await this.secureFetch(`${API_BASE_URL}/api/chat/${this.currentUser.uid}/${chatId}`, { method: 'DELETE' });
-                        if (response.ok) {
-                            await this.fetchChatList();
-                            if (this.currentChatId === chatId) {
-                                if (this.chatList.length > 0) {
-                                    this.loadChat(this.chatList[0].chatId);
-                                } else {
-                                    this.startNewChat();
-                                }
-                            }
-                        }
-                    } catch (e) {
-                        this.appendMessage('Error: Could not delete chat.', 'system');
-                    }
-                },
-
-                openRenameModal(chatId, currentTitle) {
-                    this.chatToRename.id = chatId;
-                    this.chatToRename.title = currentTitle;
-                    this.newChatTitle = currentTitle;
-                    this.renameModalOpen = true;
-                    this.$nextTick(() => this.$refs.renameInput.focus());
-                },
-
-                async submitRename() {
-                    if (!this.newChatTitle || !this.chatToRename.id || this.newChatTitle.trim() === '') return;
-
-                    try {
-                        const response = await this.secureFetch(`${API_BASE_URL}/api/chat/${this.currentUser.uid}/${this.chatToRename.id}`, {
-                            method: 'PUT',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ title: this.newChatTitle.trim() })
-                        });
-                        if (response.ok) {
-                            await this.fetchChatList();
-                            if (this.currentChatId === this.chatToRename.id) {
-                                document.getElementById('chat-title').textContent = this.newChatTitle.trim();
-                            }
-                        }
-                    } catch (e) {
-                        this.appendMessage('Error: Could not rename chat.', 'system');
-                    } finally {
-                        this.renameModalOpen = false;
-                    }
-                },
-
-                // --- START: ANALYSIS MODAL LOGIC ---
-
-                async openAnalysisModal(ticker) {
-                    this.analysisModalOpen = true;
-                    this.selectedTimeframe = '1D'; // Reset to default
-                    this.analysisData = { ticker: ticker, companyName: 'Loading...', indicators: {} };
-                    await this.loadAnalysisData(ticker); // Call the correct function
-                },
-
-                async loadAnalysisData(ticker) {
-                    // Show loading state
-                    this.analysisLoading = true;
-
-                    console.log(`Loading analysis for ${ticker} with timeframe ${this.selectedTimeframe}`);
-
-                    try {
-                        const indicatorsParam = this.selectedIndicators.join(',');
-                        const url = `${API_BASE_URL}/api/stock/analysis/${this.currentUser.uid}/${ticker}?timeframe=${this.selectedTimeframe}&indicators=${indicatorsParam}`;
-                        console.log("Fetching from URL:", url);
-
-                        const response = await this.secureFetch(url);
-                        if (!response.ok) {
-                            const err = await response.json();
-                            throw new Error(err.error || 'Failed to fetch data');
-                        }
-
-                        const data = await response.json();
-                        console.log("Analysis data received:", data);
-
-                        // Update data smoothly without hiding the modal
-                        this.analysisData = data;
-
-                    } catch (error) {
-                        console.error("Analysis modal error:", error);
-                        this.analysisData = {
-                            companyName: 'Error',
-                            ticker: ticker,
-                            currentPrice: 'N/A',
-                            recommendation: 'N/A',
-                            technicalRating: 'N/A',
-                            targetPrice: 'N/A',
-                            peRatio: 'N/A',
-                            pbRatio: 'N/A',
-                            dividendYield: 'N/A',
-                            marketCap: 'N/A',
-                            indicators: {}
-                        };
-                    } finally {
-                        this.analysisLoading = false;
-                        this.updateDynamicTechnicalRating();
-                    }
-                },
-
-                parseMarkdown(text) {
-                    if (!text) return '';
-
-                    // 1. Handle Lists (Replace * or - with •)
-                    let formatted = text.replace(/^[\*\-] (.*)/gm, '• $1');
-
-                    // 2. Handle Bold (**text**) -> RESTORED TO GREEN HERE
-                    formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<span class="font-bold text-green-400">$1</span>');
-
-                    // 3. Handle Headers (### text)
-                    formatted = formatted.replace(/^### (.*)/gm, '<h3 class="text-sm font-bold text-green-400 mt-3 mb-1 uppercase tracking-wide">$1</h3>');
-
-                    // 4. Handle Links [Text](Url)
-                    formatted = formatted.replace(/\[([^\]]+)\]\((http[s]?:\/\/[^\)]+)\)/g, '<a href="$2" target="_blank" class="text-emerald-400 hover:text-emerald-500 hover:underline transition-colors">$1</a>');
-
-                    // 5. Handle Line Breaks
-                    return formatted.split('\n').map(line => {
-                        if (line.trim() === '') return '<br>';
-                        return `<div class="min-h-[20px]">${line}</div>`;
-                    }).join('');
-                },
-
-                updateDynamicTechnicalRating() {
-                    if (!this.analysisData.indicators) {
-                        this.analysisData.technicalRating = "N/A";
-                        return;
-                    }
-
-                    if (this.selectedIndicators.length === 0) {
-                        this.analysisData.technicalRating = "Neutral"; // As you wanted
-                        return;
-                    }
-
-                    let score = 0;
-                    let maxScore = 0;
-                    const raw = this.analysisData.indicators;
-
-                    this.selectedIndicators.forEach(id => {
-                        let value = raw[id];
-                        if (value === 'N/A' || value === undefined || value === null) return;
-
-                        try {
-                            if (id === 'rsi') {
-                                maxScore += 10;
-                                if (value < 30) score += 10;      // Strong Buy
-                                else if (value < 45) score += 7;  // Buy
-                                else if (value > 75) score += 0;  // Strong Sell
-                                else if (value > 60) score += 3;  // Sell
-                                else score += 5;                  // Neutral
-                            }
-                            else if (id === 'macd') {
-                                let macd_diff = raw['macd_diff'];
-                                if (macd_diff === 'N/A' || macd_diff === undefined) return;
-                                maxScore += 10;
-                                if (macd_diff > 0.1) score += 10; // Strong Buy
-                                else if (macd_diff > 0) score += 7; // Buy
-                                else if (macd_diff < -0.1) score += 0; // Strong Sell
-                                else if (macd_diff < 0) score += 3; // Sell
-                            }
-                            else if (id === 'ema' || id === 'sma') {
-                                let price = parseFloat(this.analysisData.currentPrice.replace('₹', ''));
-                                if (isNaN(price)) return;
-                                maxScore += 10;
-                                if (price > value) score += 9; // Buy
-                                else if (price < value) score += 1; // Sell
-                            }
-                            else if (id === 'stochastic') {
-                                maxScore += 10;
-                                if (value < 20) score += 10; // Buy
-                                else if (value > 80) score += 0; // Sell
-                                else if (value < 50) score += 7; // Leaning Buy
-                                else if (value > 50) score += 3; // Leaning Sell
-                            }
-                            else if (id === 'bollinger') {
-                                let bb_pos = raw['bb_pos'];
-                                if (bb_pos === 'N/A' || bb_pos === undefined) return;
-                                maxScore += 10;
-                                if (bb_pos < 0.1) score += 10; // Buy
-                                else if (bb_pos > 0.9) score += 0; // Sell
-                                else if (bb_pos < 0.5) score += 7; // Leaning Buy
-                                else if (bb_pos > 0.5) score += 3; // Leaning Sell
-                            }
-                        } catch (e) {
-                            console.error(`Error scoring ${id}:`, e);
-                        }
-                    });
-
-                    if (maxScore === 0) {
-                        this.analysisData.technicalRating = (this.selectedIndicators.length > 0) ? "N/A" : "Neutral";
-                        return;
-                    }
-
-                    const finalPercentage = (score / maxScore) * 100;
-
-                    if (finalPercentage >= 75) this.analysisData.technicalRating = "Strong Buy";
-                    else if (finalPercentage >= 60) this.analysisData.technicalRating = "Buy";
-                    else if (finalPercentage >= 40) this.analysisData.technicalRating = "Neutral";
-                    else if (finalPercentage >= 25) this.analysisData.technicalRating = "Sell";
-                    else this.analysisData.technicalRating = "Strong Sell";
-
-                    console.log(`Dynamic Rating: ${this.analysisData.technicalRating} (Score: ${finalPercentage.toFixed(1)}%) based on:`, this.selectedIndicators);
-                },
-
-                getIndicatorName(id) {
-                    const indicator = this.availableIndicators.find(ind => ind.id === id);
-                    return indicator ? indicator.name : id.toUpperCase();
-                },
-
-                // THIS IS THE FIX for empty boxes
-                getIndicatorValue(id) {
-                    if (!this.analysisData.indicators || this.analysisData.indicators[id] === undefined || this.analysisData.indicators[id] === null) {
-                        return 'N/A';
-                    }
-
-                    let value = this.analysisData.indicators[id];
-                    if (value === 'N/A') return 'N/A';
-
-                    try {
-                        if (id === 'volume') {
-                            if (value > 1000000) return (value / 1000000).toFixed(2) + 'M';
-                            if (value > 1000) return (value / 1000).toFixed(2) + 'K';
-                            return value.toString();
-                        }
-                        if (id === 'bollinger') {
-                            return value.toString();
-                        }
-                        if (typeof value === 'number') {
-                            return value.toFixed(2);
-                        }
-                        return value.toString();
-
-                    } catch (e) {
-                        console.error(`Error formatting ${id}:`, e);
-                        return 'N/A';
-                    }
-                },
-
-                getTechnicalAngle(rating) {
-                    if (!rating || rating === 'N/A') return 0; // Center position
-                    const r = rating.toLowerCase();
-
-                    if (r.includes('strong') && r.includes('sell')) return -80;
-                    if (r.includes('sell')) return -40;
-                    if (r.includes('neutral') || r.includes('hold')) return 0;
-                    if (r.includes('buy') && !r.includes('strong')) return 40;
-                    if (r.includes('strong') && r.includes('buy')) return 80;
-                    return 0;
-                },
-
-                getAnalystAngle(recommendation) {
-                    if (!recommendation || recommendation === 'N/A') return 0;
-                    const rec = recommendation.toLowerCase();
-
-                    if (rec.includes('strong') && rec.includes('sell')) return -80;
-                    if (rec.includes('sell') && !rec.includes('strong')) return -40;
-                    if (rec.includes('hold') || rec.includes('neutral')) return 0;
-                    if (rec.includes('buy') && !rec.includes('strong')) return 40;
-                    if (rec.includes('strong') && rec.includes('buy')) return 80;
-                    return 0;
-                },
-
-                // --- END: ANALYSIS MODAL LOGIC ---
-
-                async sendMessage() {
-                    const input = document.getElementById('message-input');
-                    const message = input.value.trim();
-                    if (!message) return;
-
-                    this.appendMessage(message, 'user');
-                    input.value = '';
-                    this.autoResize(input);
-
-                    const typingId = Date.now();
-                    this.appendTypingIndicator(typingId);
-
-                    const sendButton = document.getElementById('send-button');
-                    if (sendButton) sendButton.disabled = true;
-                    if (input) input.disabled = true;
-
-                    try {
-                        const response = await this.secureFetch(`${API_BASE_URL}/api/chat`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                userId: this.currentUser.uid,
-                                chatId: this.currentChatId,
-                                message: message
-                            })
-                        });
-
-                        const data = await response.json();
-                        document.getElementById(`typing-${typingId}`)?.remove();
-
-                        if (response.ok) {
-                            // 1. Show Message
-                            this.appendMessage(data.reply, 'agent', true, data);
-
-                            // 2. LIVE UPDATE TOKEN STATS
-                            if (data.tokenUsage) {
-                                // Ensure object exists
-                                if (!this.sessionTokens) this.sessionTokens = { input: 0, output: 0, total: 0 };
-
-                                // Add the new cost to the existing Total
-                                this.sessionTokens.input += (data.tokenUsage.inputTokens || 0);
-                                this.sessionTokens.output += (data.tokenUsage.outputTokens || 0);
-                                this.sessionTokens.total += (data.tokenUsage.totalTokens || 0);
-
-                                // Optional: Log to console to verify
-                                console.log("💰 Tokens updated. New Total:", this.sessionTokens.total);
-                            }
-
-                            if (!this.currentChatId && data.chatId) {
-                                this.currentChatId = data.chatId;
-                                await this.fetchChatList();
-                                const newChat = this.chatList.find(c => c.chatId === data.chatId);
-                                if (newChat) document.getElementById('chat-title').textContent = newChat.title;
-                            }
-                        } else {
-                            this.appendMessage(`Sorry, an error occurred: ${data.error || 'Unknown error'}`, 'system');
-                        }
-                    } catch (error) {
-                        document.getElementById(`typing-${typingId}`)?.remove();
-                        if (error.message !== "Token rejected by server" && error.message !== "User not authenticated") {
-                            this.appendMessage('Network error. Please try again.', 'system');
-                        }
-                    } finally {
-                        if (sendButton) sendButton.disabled = false;
-                        if (input) {
-                            input.disabled = false;
-                            input.focus();
-                        }
-                    }
-                },
-
-                appendMessage(text, sender, animate = true, metadata = null) {
-                    const container = document.getElementById('message-container');
-                    const div = document.createElement('div');
-                    const welcome = document.getElementById('welcome-screen');
-                    if (welcome) welcome.style.display = 'none';
-
-                    const isUser = sender === 'user';
-                    const isSystem = sender === 'system';
-
-                    // Layout
-                    div.className = `flex w-full ${isUser ? 'justify-end' : 'justify-start'} ${animate ? 'animate-slide-in' : ''}`;
-
-                    if (isUser) {
-                        div.innerHTML = `
-                            <div class="message-user max-w-[85%] sm:max-w-[70%] bg-emerald-600 text-white px-5 py-3.5 rounded-2xl rounded-tr-none shadow-lg shadow-emerald-900/20 border border-white/10">
-                                <p class="text-sm leading-relaxed whitespace-pre-wrap font-medium">${text}</p>
-                            </div>
-                        `;
-                    } else if (!isSystem) {
-                        let formattedText = this.parseMarkdown(text);
-
-                        // --- SIMPLE LINK FIX ---
-                        // Just a clean blue/green link. No buttons, no boxes.
-                        formattedText = formattedText.replace(
-                            /<a href="(https:\/\/www\.tradingview\.com\/chart.*?)"(.*?)>.*?<\/a>/g,
-                            `<a href="$1" $2 target="_blank" class="inline-flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 hover:underline font-medium mt-1 transition-colors">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                                View Chart
-                             </a>`
-                        );
-
-                        // Thinking Process (Kept functionality, minimal style)
-                        let thoughtProcessHtml = '';
-                        if (metadata && (metadata.toolsUsed?.length > 0 || metadata.tokenUsage)) {
-                            const totalTokens = metadata.tokenUsage?.totalTokens || 0;
-
-                            thoughtProcessHtml = `
-                            <div x-data="{ expanded: false }" class="mb-2">
-                                <button @click="expanded = !expanded" class="flex items-center gap-2 text-[10px] font-bold text-slate-500 hover:text-slate-300 transition-colors uppercase tracking-wider">
-                                    <div class="w-1.5 h-1.5 rounded-full bg-slate-600"></div>
-                                    <span>Process</span>
-                                    <svg class="w-3 h-3 transition-transform duration-200" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                                </button>
-                                
-                                <div x-show="expanded" x-collapse class="mt-1 pl-2 border-l-2 border-slate-800 space-y-1 text-xs text-slate-400">
-                                    ${metadata.toolsUsed?.length ? `<div class="font-mono text-[10px]">Tools: ${metadata.toolsUsed.join(', ')}</div>` : ''}
-                                    ${metadata.tokenUsage ? `<div class="font-mono text-[10px]">Tokens: ${metadata.tokenUsage.totalTokens}</div>` : ''}
-                                </div>
-                            </div>`;
-                        }
-
-                        div.innerHTML = `
-                            <div class="agent-msg-container flex gap-3 w-full max-w-4xl group">
-                                <div class="w-8 h-8 rounded-lg bg-slate-800 flex-shrink-0 flex items-center justify-center border border-slate-700 mt-1">
-                                    <svg class="w-5 h-5 text-emerald-500" fill="currentColor" viewBox="0 0 24 24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z" /></svg>
-                                </div>
-                                
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex items-center justify-between mb-1">
-                                        <p class="text-[10px] font-bold text-slate-500 uppercase">AI Analyst</p>
-                                    </div>
-                                    
-                                    ${thoughtProcessHtml}
-                                    
-                                    <div class="text-slate-200 text-sm leading-7 tracking-wide break-words whitespace-pre-wrap">${formattedText}</div>
-                                </div>
-                            </div>
-                        `;
-                    } else {
-                        // System Message
-                        div.innerHTML = `<div class="mx-auto my-4 px-4 py-1.5 bg-slate-800/50 border border-slate-700 rounded-full text-[11px] text-slate-400 font-medium text-center">${text}</div>`;
-                    }
-
-                    container.appendChild(div);
-                    this.scrollToBottom();
-                },
-
-                appendTypingIndicator(id) {
-                    const container = document.getElementById('message-container');
-                    const div = document.createElement('div');
-                    div.id = `typing-${id}`;
-                    div.className = 'message flex justify-start';
-                    div.innerHTML = `
-                      <div class="message-agent px-4 py-3 shadow-lg">
-                          <div class="flex gap-1">
-                              <div class="w-2 h-2 bg-slate-500 rounded-full typing-dot"></div>
-                              <div class="w-2 h-2 bg-slate-500 rounded-full typing-dot"></div>
-                              <div class="w-2 h-2 bg-slate-500 rounded-full typing-dot"></div>
-                          </div>
-                      </div>
-                    `;
-                    container.appendChild(div);
-                    this.scrollToBottom();
-                },
-
-                scrollToBottom() {
-                    const chatWindow = document.getElementById('chat-window');
-                    if (chatWindow) {
-                        this.$nextTick(() => {
-                            chatWindow.scrollTop = chatWindow.scrollHeight;
-                        });
-                    }
-                },
-
-                autoResize(textarea) {
-                    textarea.style.height = 'auto';
-                    textarea.style.height = Math.min(textarea.scrollHeight, 128) + 'px';
-                },
-
-                // --- NEW SEARCH FUNCTIONS ---
-                toggleSearch() {
-                    this.searchVisible = !this.searchVisible;
-                    if (this.searchVisible) {
-                        this.$nextTick(() => this.$refs.searchInput.focus());
-                    } else {
-                        this.clearSearch();
-                    }
-                },
-
-                clearHighlights() {
-                    document.querySelectorAll('.agent-msg-container .text-slate-200, .message-user p').forEach(p => {
-                        if (p.hasAttribute('data-original-html')) {
-                            p.innerHTML = p.getAttribute('data-original-html');
-                            p.removeAttribute('data-original-html');
-                        }
-                        // Fallback cleanup if needed (though the above should cover it)
-                        // p.innerHTML = p.innerHTML.replace(/<mark class="search-highlight[^"]*">(.*?)<\/mark>/g, '$1');
-                    });
-                },
-
-                performSearch() {
-                    this.clearHighlights();
-                    this.searchResults = [];
-                    this.currentSearchResultIndex = -1;
-
-                    if (!this.searchQuery || this.searchQuery.length < 1) {
-                        return;
-                    }
-
-                    const query = this.searchQuery.toLowerCase();
-                    // Target specific content divs/p tags
-                    const messageParagraphs = document.querySelectorAll('.agent-msg-container .text-slate-200, .message-user p');
-                    // Remove \\b to allow partial matching
-                    const regex = new RegExp(`${this.searchQuery.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}`, 'gi');
-
-                    let results = [];
-                    messageParagraphs.forEach(p => {
-                        const text = p.innerText; // We search in plain text
-                        // Check match BEFORE modifying
-                        if (regex.test(text)) {
-                            // 1. Save Original HTML if not already saved
-                            if (!p.hasAttribute('data-original-html')) {
-                                p.setAttribute('data-original-html', p.innerHTML);
-                            }
-
-                            // 2. Perform replacement. 
-                            // NOTE: This naive replacement destroys inner HTML structure (bold, links) for the duration of the search.
-                            // However, we restore it perfectly on clearHighlights() using data-original-html.
-                            // This trade-off allows search to work reliably.
-                            p.innerHTML = text.replace(regex, match => `<mark class="search-highlight">${match}</mark>`);
-
-                            results.push(...p.querySelectorAll('mark.search-highlight'));
-                        }
-                        regex.lastIndex = 0;
-                    });
-
-                    this.searchResults = results;
-
-                    if (this.searchResults.length > 0) {
-                        this.currentSearchResultIndex = 0;
-                        this.highlightCurrentResult();
-                    }
-                },
-
-                highlightCurrentResult() {
-                    this.searchResults.forEach(mark => mark.classList.remove('active'));
-
-                    if (this.currentSearchResultIndex > -1 && this.searchResults[this.currentSearchResultIndex]) {
-                        const currentMark = this.searchResults[this.currentSearchResultIndex];
-                        currentMark.classList.add('active');
-                        currentMark.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'center'
-                        });
-                    }
-                },
-
-                navigateSearch(direction) {
-                    if (this.searchResults.length === 0) return;
-
-                    if (direction === 'next') {
-                        this.currentSearchResultIndex++;
-                        if (this.currentSearchResultIndex >= this.searchResults.length) {
-                            this.currentSearchResultIndex = 0;
-                        }
-                    } else if (direction === 'prev') {
-                        this.currentSearchResultIndex--;
-                        if (this.currentSearchResultIndex < 0) {
-                            this.currentSearchResultIndex = this.searchResults.length - 1;
-                        }
-                    }
-                    this.highlightCurrentResult();
-                },
-
-                clearSearch() {
-                    this.clearHighlights();
-                    this.searchQuery = '';
-                    this.searchResults = [];
-                    this.currentSearchResultIndex = -1;
-                },
-                // --- END NEW SEARCH FUNCTIONS ---
-
-                openPortfolio() {
-                    this.portfolioOpen = true;
-                    this.portfolioMinimized = false;
-                    this.portfolioTab = 'portfolio';
-                    this.loadPortfolio();
-                },
-
-                async checkZerodhaSyncStatus() {
-                    if (!this.currentUser) return;
-                    try {
-                        const userDocUrl = `${API_BASE_URL}/api/portfolio/${this.currentUser.uid}`;
-                        const response = await this.secureFetch(userDocUrl);
-
-                        if (response.ok) {
-                            const portfolioData = await response.json();
-                            let isSynced = portfolioData.zerodha_synced_once === true;
-
-                            if (!isSynced && portfolioData.summary && portfolioData.summary.zerodha_synced_once === true) {
-                                isSynced = true;
-                            }
-
-                            if (isSynced) {
-                                this.zerodhaSynced = true;
-                                this.zerodhaSyncMessage = '✅ Synced: Real holdings loaded. Click to Resync.';
-                            } else {
-                                this.zerodhaSynced = false;
-                                this.zerodhaSyncMessage = 'Not connected. Sync your Zerodha holdings.';
-                            }
-                        }
-                    } catch (error) {
-                        console.error('Zerodha status check error:', error);
-                        this.zerodhaSynced = false;
-                        this.zerodhaSyncMessage = 'Error checking sync status.';
-                    }
-                },
-
-                startZerodhaConnect() {
-                    if (!this.currentUser) return;
-
-                    this.zerodhaSyncLoading = true;
-                    this.zerodhaSynced = false;
-                    this.zerodhaSyncMessage = 'Waiting for Zerodha login...';
-
-                    const connectUrl = `${API_BASE_URL}/api/zerodha/connect/${this.currentUser.uid}`;
-                    const width = 600;
-                    const height = 700;
-                    const left = (screen.width / 2) - (width / 2);
-                    const top = (screen.height / 2) - (height / 2);
-
-                    const zerodhaWindow = window.open(
-                        connectUrl,
-                        'ZerodhaConnect',
-                        `width=${width},height=${height},top=${top},left=${left},scrollbars=yes,resizable=yes`
-                    );
-                    const messageHandler = async (event) => {
-                        if (event.data && event.data.type === 'ZERODHA_SUCCESS') {
-                            console.log("✅ Received Success Signal from Popup!");
-
-                            this.zerodhaSyncMessage = 'Login success! Syncing portfolio...';
-
-                            if (zerodhaWindow && !zerodhaWindow.closed) zerodhaWindow.close();
-
-                            await this.loadPortfolio();
-                            await this.checkZerodhaSyncStatus();
-
-                            this.zerodhaSyncLoading = false;
-
-                            window.removeEventListener('message', messageHandler);
-                        }
-                    };
-
-                    window.addEventListener('message', messageHandler);
-
-                    const pollTimer = setInterval(() => {
-                        if (zerodhaWindow.closed) {
-                            clearInterval(pollTimer);
-                            window.removeEventListener('message', messageHandler);
-
-                            if (this.zerodhaSyncLoading) {
-                                console.log('Zerodha window closed manually.');
-                                this.zerodhaSyncLoading = false;
-                                this.zerodhaSyncMessage = 'Connection cancelled or finished.';
-                                this.loadPortfolio();
-                            }
-                        }
-                    }, 1000);
-                },
-
-                async loadPortfolio() {
-                    if (!this.currentUser) return;
-
-                    this.portfolioLoading = true;
-                    if (this.reloadIntervalId) clearInterval(this.reloadIntervalId);
-
-                    try {
-                        const response = await this.secureFetch(`${API_BASE_URL}/api/portfolio/${this.currentUser.uid}`);
-                        if (response.ok) {
-                            this.portfolio = await response.json();
-
-                            // ============================================================
-                            // 🛑 THIS WAS MISSING! ADD THIS BLOCK TO LOAD SAVED TOKENS
-                            // ============================================================
-                            if (this.portfolio.summary && this.portfolio.summary.token_usage) {
-                                console.log("Loading saved tokens:", this.portfolio.summary.token_usage);
-                                this.sessionTokens = this.portfolio.summary.token_usage;
-                            }
-                            // ============================================================
-
-                            this.portfolioLastUpdated = Date.now();
-                            this.updateLastUpdatedText();
-                            this.reloadIntervalId = setInterval(() => this.updateLastUpdatedText(), 1000);
-
-                            // Sync Status Check
-                            if (this.portfolio.summary && this.portfolio.summary.zerodha_synced_once === true) {
-                                this.zerodhaSynced = true;
-                                this.zerodhaSyncMessage = '✅ Synced. Click to Resync.';
-                            } else {
-                                this.zerodhaSynced = false;
-                                this.zerodhaSyncMessage = 'Not connected. Click to Sync.';
-                            }
-                        }
-                    } catch (error) {
-                        console.error('❌ Portfolio error:', error);
-                        this.lastUpdatedText = 'Error';
-                    } finally {
-                        this.portfolioLoading = false;
-                    }
-                },
-
-                updateLastUpdatedText() {
-                    if (!this.portfolioLastUpdated) {
-                        this.lastUpdatedText = 'never';
-                        return;
-                    }
-                    const seconds = Math.floor((Date.now() - this.portfolioLastUpdated) / 1000);
-                    if (seconds < 5) {
-                        this.lastUpdatedText = 'Updated just now';
-                    } else if (seconds < 60) {
-                        this.lastUpdatedText = `Updated ${seconds} sec ago`;
-                    } else {
-                        this.lastUpdatedText = `Updated ${Math.floor(seconds / 60)} min ago`;
-                    }
-                },
-
-                async loadWatchlistPrices() {
-                    if (!this.currentUser) return;
-                    this.portfolioLoading = true;
-                    try {
-                        const response = await this.secureFetch(`${API_BASE_URL}/api/watchlist/${this.currentUser.uid}`);
-                        if (response.ok) {
-                            this.watchlist = await response.json();
-                        } else {
-                            console.error('Failed to load watchlist prices:', response.status);
-                        }
-                    } catch (error) {
-                        console.error('❌ Watchlist error:', error);
-                    } finally {
-                        this.portfolioLoading = false;
-                    }
-                },
-
-                async loadTradeHistory() {
-                    if (!this.currentUser) return;
-                    this.portfolioLoading = true;
-                    try {
-                        const response = await this.secureFetch(`${API_BASE_URL}/api/history/${this.currentUser.uid}`);
-                        if (response.ok) {
-                            this.tradeHistory = await response.json();
-                        } else {
-                            console.error('Failed to load trade history');
-                            this.tradeHistory = [];
-                        }
-                    } catch (error) {
-                        console.error('❌ History error:', error);
-                        this.tradeHistory = [];
-                    } finally {
-                        this.portfolioLoading = false;
-                    }
-                },
-
-                formatTradeTimestamp(isoString) {
-                    if (!isoString) return 'N/A';
-                    const date = new Date(isoString);
-                    // Check if it's a UTC string from Firestore
-                    if (isoString.endsWith('Z') || isoString.includes('T')) {
-                        return date.toLocaleString('en-IN', {
-                            day: 'numeric', month: 'short', year: 'numeric',
-                            hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Asia/Kolkata'
-                        });
-                    } else {
-                        // Fallback for potentially local-time strings
-                        return date.toLocaleString('en-IN', {
-                            day: 'numeric', month: 'short', year: 'numeric',
-                            hour: 'numeric', minute: '2-digit', hour12: true
-                        });
-                    }
-                },
-
-                openCashEditModal() {
-                    this.newCashAmount = this.portfolio.cash;
-                    this.cashEditModalOpen = true;
-                },
-
-                async adjustCash() {
-                    if (this.newCashAmount < 0 || this.newCashAmount > 1000000) return;
-                    try {
-                        const response = await this.secureFetch(`${API_BASE_URL}/api/adjust-cash/${this.currentUser.uid}`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ cash: this.newCashAmount })
-                        });
-
-                        if (response.ok) {
-                            this.cashEditModalOpen = false;
-                            await this.loadPortfolio();
-                        }
-                    } catch (error) {
-                        console.error("Cash adjustment error:", error);
-                    }
-                },
-
-                openStockPicker(mode) {
-                    this.stockPickerMode = mode;
-                    this.stockPickerOpen = true;
-                    this.selectedStock = '';
-                    this.selectedStocks = [];
-                    this.stockSearch = '';
-                    this.filteredStocks = NIFTY_50_STOCKS_GLOBAL;
-                },
-
-                filterStocks() {
-                    const search = this.stockSearch.toLowerCase();
-                    if (!search) {
-                        this.filteredStocks = NIFTY_50_STOCKS_GLOBAL;
-                        return;
-                    }
-                    this.filteredStocks = NIFTY_50_STOCKS_GLOBAL.filter(stock =>
-                        stock.toLowerCase().includes(search) || (COMPANY_NAMES_GLOBAL[stock] && COMPANY_NAMES_GLOBAL[stock].toLowerCase().includes(search))
-                    );
-                },
-
-                toggleStockSelection(stock) {
-                    if (this.stockPickerMode === 'trade') {
-                        this.selectedStock = this.selectedStock === stock ? '' : stock;
-                    } else {
-                        const index = this.selectedStocks.indexOf(stock);
-                        if (index > -1) {
-                            this.selectedStocks.splice(index, 1);
-                        } else {
-                            this.selectedStocks.push(stock);
-                        }
-                    }
-                },
-
-                isStockSelected(stock) {
-                    return this.stockPickerMode === 'trade' ? this.selectedStock === stock : this.selectedStocks.includes(stock);
-                },
-
-                getCompanyName(ticker) {
-                    return COMPANY_NAMES_GLOBAL[ticker] || ticker;
-                },
-
-                async proceedWithSelection() {
-                    if (this.stockPickerMode === 'trade' && this.selectedStock) {
-                        this.openTradeModal('BUY', this.selectedStock, 1);
-                        this.stockPickerOpen = false;
-                    } else if (this.stockPickerMode === 'watchlist' && this.selectedStocks.length > 0) {
-                        this.isLoading = true;
-                        try {
-                            const response = await this.secureFetch(`${API_BASE_URL}/api/watchlist/${this.currentUser.uid}`, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ tickers: this.selectedStocks })
-                            });
-
-                            if (response.ok) {
-                                this.selectedStocks = [];
-                                this.stockPickerOpen = false;
-                                await this.loadWatchlistPrices();
-                                this.portfolioTab = 'watchlist';
-                            } else {
-                                const errorData = await response.json();
-                                this.appendMessage(`Error adding to watchlist: ${errorData.message || errorData.error}`, 'system');
-                            }
-                        } catch (error) {
-                            console.error("Watchlist add error:", error);
-                            if (error.message !== "Token rejected by server" && error.message !== "User not authenticated") {
-                                this.appendMessage('Network error while adding to watchlist.', 'system');
-                            }
-                        } finally {
-                            this.isLoading = false;
-                        }
-                    }
-                },
-
-                async removeFromWatchlist(ticker) {
-                    try {
-                        const response = await this.secureFetch(`${API_BASE_URL}/api/watchlist/${this.currentUser.uid}/${ticker}`, {
-                            method: 'DELETE'
-                        });
-                        if (response.ok) {
-                            await this.loadWatchlistPrices();
-                        } else {
-                            console.error("Failed to remove from watchlist");
-                        }
-                    } catch (error) {
-                        console.error("Watchlist remove error:", error);
-                    }
-                },
-
-                async openTradeModal(action, ticker, quantity) {
-                    this.tradeAction = action;
-                    this.tradeTicker = ticker;
-                    this.tradeQuantity = quantity || 1;
-                    this.tradeError = '';
-                    this.loadingPrice = true;
-                    this.tradeModalOpen = true;
-                    this.currentStockPrice = 0;
-                    this.totalTradeValue = 0;
-
-                    try {
-                        const response = await fetch(`${API_BASE_URL}/api/stock/price/${ticker}`);
-                        if (!response.ok) {
-                            const errData = await response.json();
-                            throw new Error(errData.error || `HTTP error! status: ${response.status}`);
-                        }
-                        const data = await response.json();
-
-                        if (data && data.current_price !== undefined) {
-                            this.currentStockPrice = data.current_price;
-                        } else if (data && data.error) {
-                            throw new Error(data.error);
-                        } else {
-                            throw new Error('Invalid price data received.');
-                        }
-
-                        this.calculateTradeValue();
-                    } catch (error) {
-                        console.error("Error in openTradeModal:", error);
-                        this.tradeError = error.message || 'Failed to fetch price';
-                        this.currentStockPrice = 0;
-                        this.calculateTradeValue();
-                    } finally {
-                        this.loadingPrice = false;
-                    }
-                },
-
-                calculateTradeValue() {
-                    const quantity = (typeof this.tradeQuantity === 'number' && this.tradeQuantity > 0) ? this.tradeQuantity : 0;
-                    const price = (typeof this.currentStockPrice === 'number' && this.currentStockPrice >= 0) ? this.currentStockPrice : 0;
-                    this.totalTradeValue = Math.round(price * quantity * 100) / 100;
-                },
-
-                async executeTrade() {
-                    this.tradeLoading = true;
-                    this.tradeError = '';
-                    if (!Number.isInteger(this.tradeQuantity) || this.tradeQuantity <= 0) {
-                        this.tradeError = "Quantity must be a positive whole number.";
-                        this.tradeLoading = false;
-                        return;
-                    }
-
-                    try {
-                        const response = await this.secureFetch(`${API_BASE_URL}/api/trade/${this.currentUser.uid}`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                ticker: this.tradeTicker,
-                                quantity: this.tradeQuantity,
-                                action: this.tradeAction
-                            })
-                        });
-
-                        const data = await response.json();
-
-                        if (response.ok && data.success) {
-                            this.tradeModalOpen = false;
-                            await this.loadPortfolio();
-                        } else {
-                            this.tradeError = data.message || data.error || 'Trade failed. Please check details.';
-                        }
-                    } catch (error) {
-                        console.error("Trade execution error:", error);
-                        if (error.message !== "Token rejected by server" && error.message !== "User not authenticated") {
-                            this.tradeError = 'Network error during trade execution.';
-                        }
-                    } finally {
-                        this.tradeLoading = false;
-                    }
-                }
-            } // End of return object
-        }
-    </script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 
 </html>

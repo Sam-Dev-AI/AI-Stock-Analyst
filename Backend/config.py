@@ -3,24 +3,26 @@ import os
 # ============================================
 # GENERAL SETTINGS
 # ============================================
-DEBUG_MODE = True # Set to False in production
-DB_MODE = "Local" # Options: 'local', 'firebase'
+DEBUG_MODE = True# Set to False in production
+DB_MODE = "LOCAL" # Options: 'local', 'firebase'
 Local_API_URL = "http://127.0.0.1:8080"
 Production_API_URL = "https://stock-agent-774764824527.us-central1.run.app" 
 
 # ============================================
 # Gemini API KEYS
 # ============================================
-GENIE_API_KEY ="Your API key"
+GENIE_API_KEY ="YOUR_GENIE_API_KEY"
 
 
 # ============================================
 # Database Configuration
 # ============================================
-LOCAL_DB_FILE = 'local_database.json'
+# Determine the absolute path to the Backend/database directory
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+LOCAL_DB_FILE = os.path.join(BASE_DIR, 'database', 'local_database.json')
 
 FIREBASE_CONFIG = {
-    "apiKey": "Your API key",
+    "apiKey": "YOUR_FIREBASE_API_KEY",
     "authDomain": "gen-lang-client-0593733264.firebaseapp.com",
     "projectId": "gen-lang-client-0593733264",
     "storageBucket": "gen-lang-client-0593733264.appspot.com",
@@ -38,8 +40,8 @@ API_BASE_URL = Local_API_URL if DEBUG_MODE == True else Production_API_URL
 # ============================================
 # Zerodha API
 # ============================================
-ZERODHA_API_KEY = "Your API key"
-ZERODHA_API_SECRET = "Your API key"
+ZERODHA_API_KEY = "YOUR_ZERODHA_KEY"
+ZERODHA_API_SECRET = "YOUR_ZERODHA_SECRET"
 ZERODHA_REDIRECT_URL = f"{Production_API_URL}/api/zerodha/callback"  if DEBUG_MODE == False else f"{Local_API_URL}/api/zerodha/callback"
 
 
@@ -48,9 +50,9 @@ ZERODHA_REDIRECT_URL = f"{Production_API_URL}/api/zerodha/callback"  if DEBUG_MO
 # ============================================
 #get from https://newsapi.org/
 NEWSAPI_KEYS = [
-"Your API key",
-"Your API key",
-"Your API key"
+"YOUR_NEWS_API_KEY_1",
+"YOUR_NEWS_API_KEY_2",
+"YOUR_NEWS_API_KEY_3"
 ]
 NEWS_API_MODE = 'sequential'
 
@@ -66,10 +68,58 @@ PNL_DECIMAL_PLACES = 2
 # ============================================
 # AI MODEL & CHAT
 # ============================================
-GEMINI_MODEL_NAME = 'gemini-2.5-flash'
+GEMINI_MODEL_NAME = 'gemini-2.5-flash-lite'
 MAX_CHAT_HISTORY = 20
 CHAT_TITLE_LENGTH = 35
 CHAT_TITLE_MAX_LENGTH = 100
+
+# ============================================
+# PRICING (Gemini 2.5 Flash-Lite)
+# ============================================
+GEMINI_INPUT_PRICE_PER_MILLION = 0.10
+GEMINI_OUTPUT_PRICE_PER_MILLION = 0.40
+INR_CONVERSION_RATE = 89.5 # Approx 1 USD = 89.5 INR
+
+# ============================================
+# PLANS CONFIGURATION
+# ============================================
+NEW_ACCOUNT_TOKEN_LIMIT = 100000 # Default limit for new accounts (1 Lakh)
+
+PLANS = {
+    "free": {
+        "id": "free",
+        "name": "Free Tier",
+        "price": 0,
+        "tokens": 100000,  # 1 Lakh
+        "description": "Experience the power of AI analysis.",
+        "features": ["1 Lakh Tokens", "Standard Access", "Community Support"]
+    },
+    "starter": {
+        "id": "starter",
+        "name": "Starter",
+        "price": 19,
+        "tokens": 1000000,  # 10 Lakh
+        "description": "Perfect for daily market updates.",
+        "features": ["10 Lakh Tokens", "Fast Response", "Email Support"]
+    },
+    "plus": {
+        "id": "plus",
+        "name": "Plus",
+        "price": 89,
+        "tokens": 5000000,  # 50 Lakh
+        "description": "For serious traders and analysts.",
+        "features": ["50 Lakh Tokens", "Priority Access", "Priority Support"]
+    },
+    "pro": {
+        "id": "pro",
+        "name": "Pro",
+        "price": 149,
+        "tokens": 10000000,  # 1 Crore
+        "description": "Unrestricted power for professionals.",
+        "features": ["1 Crore Tokens", "Ultra Fast", "24/7 Priority Support"]
+    }
+}
+
 
 # ============================================
 # PERFORMANCE OPTIMIZATION
@@ -83,7 +133,7 @@ CACHE_NEWS_DATA_SECONDS = 1800
 # AI SYSTEM INSTRUCTIONS
 # ============================================
 
-SYSTEM_INSTRUCTION = """Role: Expert NSE Analyst.
+SYSTEM_INSTRUCTION = """Role: Expert NSE Analyst Named Claroz.
 Goal: Maximize returns, minimize risk.
 Tone: Professional, data-driven, concise.
 Context: Address user by name.
@@ -107,11 +157,15 @@ Zerodha: Call `sync_zerodha_portfolio_for_agent` on "sync"/"import".
 1. **[Ticker]** (₹[Price])
    • **Technicals:** [RSI]("RSI) | [EMA and Status]
    • **Why:**
-     • [Technical Reason (Bulleted)]
-     • [Fundamental Reason (Bulleted)]
+     • [Technical Reason (Bulleted and detailed)(2 lines max)]
+       [Continue if needed]
+     • [Fundamental Reason (Bulleted and detailed)(2 lines max)]
+       [Continue if needed]
    • **News:**
-     • [Headline 1 from fetch_news]-positive/negative/neutral sentiment
-     • [Headline 2]-positive/negative/neutral sentiment.
+     • [Headline 1 from fetch_news]
+       [Continue 1 if needed]
+     • [Headline 2 from fetch_news]
+       [Continue 2 if needed]
 
 ### Portfolio Summary
 "**Val:** ₹[Val] (₹[Inv] Inv)

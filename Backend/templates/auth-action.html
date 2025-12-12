@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Claroz Agent - Authentication</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22><path fill=%22%2310b981%22 d=%22M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z%22/></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js" defer></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Firebase SDK (Modular) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, applyActionCode, confirmPasswordReset, verifyPasswordResetCode } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        window.initAuthAction = async function () {
+            const appConfig = await fetch('/api/config').then(res => res.json());
+            const app = initializeApp(appConfig.firebaseConfig);
+            const auth = getAuth(app);
+            return { auth, applyActionCode, confirmPasswordReset, verifyPasswordResetCode };
+        }
+    </script>
+</head>
+
+<body class="bg-slate-950 text-white antialiased flex items-center justify-center min-h-screen relative overflow-hidden"
+    x-data="authActionApp()" x-init="init()">
+
+    <!-- Ambient Background -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-20 left-20 w-72 h-72 bg-green-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div class="absolute bottom-20 right-20 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"
+            style="animation-delay: 1s;"></div>
+    </div>
+
+    <div class="w-full max-w-md p-6 z-10 mx-4">
+        <!-- Card -->
+        <div
+            class="bg-gradient-to-br from-slate-900 to-slate-950 rounded-3xl border border-slate-800 shadow-2xl p-8 relative overflow-hidden">
+
+            <!-- Logo/Icon -->
+            <div class="text-center mb-8">
+                <div
+                    class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-500 to-green-700 rounded-2xl mb-4 shadow-lg ring-1 ring-white/10">
+                    <!-- Icon changes based on mode -->
+                    <svg x-show="mode === 'resetPassword'" class="w-8 h-8 text-white" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z">
+                        </path>
+                    </svg>
+                    <svg x-show="mode === 'verifyEmail'" class="w-8 h-8 text-white" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                        </path>
+                    </svg>
+                </div>
+
+                <h1 class="text-3xl font-bold text-white mb-2" x-text="pageTitle"></h1>
+                <p class="text-slate-400" x-text="pageDescription"></p>
+            </div>
+
+            <!-- Loading State -->
+            <div x-show="isLoading || isVerifying" class="text-center py-8">
+                <svg class="animate-spin h-8 w-8 text-green-500 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg"
+                    fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                    </path>
+                </svg>
+                <p class="text-slate-400" x-text="loadingText"></p>
+            </div>
+
+            <!-- Error State -->
+            <div x-show="error" x-cloak class="text-center py-8">
+                <div class="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-2" x-text="errorTitle"></h3>
+                <p class="text-slate-400 mb-6" x-text="errorMessage"></p>
+                <a href="/app"
+                    class="inline-block bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 px-8 rounded-xl transition-colors">
+                    Back to Login
+                </a>
+            </div>
+
+            <!-- 1. RESET PASSWORD FORM -->
+            <div x-show="mode === 'resetPassword' && !isLoading && !isVerifying && !error && !success" x-cloak>
+                <form @submit.prevent="handleReset" class="space-y-5">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">New
+                            Password</label>
+                        <input type="password" x-model="password" required minlength="6"
+                            class="w-full bg-slate-800 text-white px-4 py-3.5 rounded-xl border border-slate-700 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all placeholder-slate-600"
+                            placeholder="••••••••">
+                    </div>
+
+                    <div>
+                        <label
+                            class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Confirm
+                            Password</label>
+                        <input type="password" x-model="confirmPassword" required minlength="6"
+                            class="w-full bg-slate-800 text-white px-4 py-3.5 rounded-xl border border-slate-700 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all placeholder-slate-600"
+                            placeholder="••••••••">
+                    </div>
+
+                    <div x-show="formError" x-transition
+                        class="text-red-400 text-sm bg-red-900/20 border border-red-800/50 p-3 rounded-xl flex items-center gap-2">
+                        <span x-text="formError"></span>
+                    </div>
+
+                    <button type="submit" :disabled="isSubmitting"
+                        class="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-3.5 rounded-xl transition-all duration-200 disabled:opacity-50 shadow-lg hover:shadow-xl transform hover:scale-[1.02] flex items-center justify-center">
+                        <span x-show="!isSubmitting">Change Password</span>
+                        <span x-show="isSubmitting" class="flex items-center gap-2">
+                            <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                    stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                            </svg>
+                            Updating...
+                        </span>
+                    </button>
+                </form>
+            </div>
+
+
+            <!-- Success State -->
+            <div x-show="success" x-cloak class="text-center py-8">
+                <div
+                    class="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
+                    <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-white mb-2" x-text="successTitle"></h3>
+                <p class="text-slate-400 mb-6" x-text="successMessage"></p>
+                <a href="/app"
+                    class="inline-block bg-white text-slate-900 hover:bg-slate-200 font-bold py-3 px-8 rounded-xl transition-colors shadow-lg">
+                    Continue
+                </a>
+            </div>
+
+        </div>
+
+        <div class="text-center mt-6">
+            <a href="/app" class="text-slate-500 hover:text-white text-sm transition-colors">Return to Login</a>
+        </div>
+    </div>
+
+    <script>
+        function authActionApp() {
+            return {
+                mode: 'loading', // resetPassword | verifyEmail | recoverEmail (unsupported)
+                actionCode: '',
+
+                // UI Strings
+                pageTitle: 'Please wait...',
+                pageDescription: 'Processing your request.',
+                loadingText: 'Loading...',
+
+                // State
+                isLoading: true,
+                isVerifying: false,
+                isSubmitting: false,
+                error: false,
+                success: false,
+
+                // Error/Success Content
+                errorTitle: 'Error',
+                errorMessage: 'Something went wrong.',
+                successTitle: 'Success',
+                successMessage: 'Action completed successfully.',
+
+                // Form Data
+                password: '',
+                confirmPassword: '',
+                formError: '',
+
+                // Firebase
+                fbAuth: null,
+                fbApplyCode: null,
+                fbConfirmReset: null,
+                fbVerifyCode: null,
+
+                async init() {
+                    console.log("Initializing Auth Action Handler...");
+
+                    // 1. Parse URL Params
+                    const urlParams = new URLSearchParams(window.location.search);
+                    this.mode = urlParams.get('mode');
+                    this.actionCode = urlParams.get('oobCode');
+
+                    console.log(`Mode: ${this.mode}, Code: ${this.actionCode ? 'Present' : 'Missing'}`);
+
+                    if (!this.actionCode) {
+                        this.handleError("Invalid Link", "No action code found. Please use the link from your email.");
+                        return;
+                    }
+
+                    // 2. Load Firebase
+                    try {
+                        let attempts = 0;
+                        while (!window.initAuthAction && attempts < 50) {
+                            await new Promise(r => setTimeout(r, 100));
+                            attempts++;
+                        }
+                        if (!window.initAuthAction) throw new Error("Firebase SDK failed to load.");
+
+                        const { auth, applyActionCode, confirmPasswordReset, verifyPasswordResetCode } = await window.initAuthAction();
+                        this.fbAuth = auth;
+                        this.fbApplyCode = applyActionCode;
+                        this.fbConfirmReset = confirmPasswordReset;
+                        this.fbVerifyCode = verifyPasswordResetCode;
+
+                    } catch (e) {
+                        this.handleError("System Error", "Failed to load authentication modules.");
+                        return;
+                    }
+
+
+                    // 3. Router
+
+                    if (this.mode === 'verifyEmail') {
+                        // Correct flow: Start verify immediately
+                        this.isVerifying = true;
+                        this.error = false;
+                        this.success = false;
+                        this.isLoading = false;
+
+                        this.pageTitle = 'Email Verification';
+                        this.pageDescription = 'Verifying your email address...';
+                        this.loadingText = 'Verifying...';
+                        await this.doVerifyEmail();
+                    }
+                    else if (this.mode === 'resetPassword') {
+                        this.isVerifying = true;
+                        this.error = false;
+                        this.isLoading = false;
+
+                        this.pageTitle = 'Reset Password';
+                        this.pageDescription = 'Create a new password for your account.';
+                        this.loadingText = 'Checking link validity...';
+                        await this.doCheckResetLink();
+                    } else {
+                        this.handleError("Unknown Action", "The link you followed is invalid or unsupported.");
+                    }
+                },
+
+                async doVerifyEmail() {
+                    try {
+                        await this.fbApplyCode(this.fbAuth, this.actionCode);
+                        this.successTitle = "Email Verified!";
+                        this.successMessage = "Your email has been successfully verified. You can now log in.";
+
+                        // Ensure mutual exclusivity
+                        this.success = true;
+                        this.error = false;
+                        this.isVerifying = false;
+
+                        // Clean URL
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    } catch (e) {
+                        // Specific check for already used link
+                        if (e.code === 'auth/invalid-action-code' || e.message.includes('invalid-action-code')) {
+                            // If the code is invalid, it often means it was just consumed. 
+                            // We show a "Success" state but with a different message to avoid confusion.
+
+                            this.successTitle = "Email Verified";
+                            this.successMessage = "This verification link has already been used. You are likely already verified. Please continue to log in.";
+                            this.success = true;
+                            this.error = false;
+                            this.isVerifying = false;
+                            window.history.replaceState({}, document.title, window.location.pathname);
+                            return;
+                        }
+
+                        this.handleError("Verification Failed", e.message.replace('Firebase: ', ''));
+                    }
+                },
+
+                async doCheckResetLink() {
+                    try {
+                        const email = await this.fbVerifyCode(this.fbAuth, this.actionCode);
+                        console.log("Reset link valid for:", email);
+                        this.isVerifying = false; // Stop loading, show form
+                    } catch (e) {
+                        this.handleError("Link Expired", "This password reset link is invalid or has expired.");
+                    }
+                },
+
+                async handleReset() {
+                    if (this.password !== this.confirmPassword) {
+                        this.formError = "Passwords do not match.";
+                        return;
+                    }
+                    this.isSubmitting = true;
+                    try {
+                        await this.fbConfirmReset(this.fbAuth, this.actionCode, this.password);
+                        this.successTitle = "Password Changed";
+                        this.successMessage = "Your password has been updated. You can now log in.";
+                        this.success = true;
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    } catch (e) {
+                        this.formError = e.message.replace('Firebase: ', '');
+                        this.isSubmitting = false;
+                    }
+                },
+
+                handleError(title, msg) {
+                    this.isLoading = false;
+                    this.isVerifying = false;
+                    this.success = false; // Ensure success is cleared
+                    this.error = true;
+                    this.errorTitle = title;
+                    this.errorMessage = msg;
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

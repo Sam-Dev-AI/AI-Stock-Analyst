@@ -89,6 +89,104 @@ class DBManager:
             db_local.table('users').update({'cash': float(cash_amount)}, User.id == user_id)
 
     # --- TOKENS (The Critical Fix) ---
+    def check_token_access(self, user_id):
+        """
+        Checks if the user has enough tokens to proceed.
+        Handles monthly lazy reset logic.
+        
+        Returns:
+            dict: { "allowed": bool, "days_remaining": int, "usage_reset": bool }
+        """
+        now = datetime.now()
+        current_month_str = now.strftime("%Y-%m") # e.g., "2023-10"
+        
+        user_data = self.get_user(user_id)
+        if not user_data:
+            # If user doesn't exist yet (shouldn't happen in chat flow but safe fallback)
+            return {"allowed": True, "days_remaining": 30, "usage_reset": False}
+
+        # [NEW] Bypass for Local Mode
+        if config.DB_MODE == 'LOCAL':
+             return {
+                "allowed": True, 
+                "days_remaining": 30, 
+                "usage_reset": False
+            }
+
+        # 1. Monthly Reset Logic (Lazy Reset)
+        last_reset = user_data.get('last_reset_date')
+        usage_reset_triggered = False
+        
+        # Determine if we need to reset
+        should_reset = False
+        if not last_reset:
+            should_reset = True
+        else:
+            # last_reset is stored as "YYYY-MM" string for simplicity in lazy checks
+            # or we can just check if it matches current_month_str
+            if last_reset != current_month_str:
+                should_reset = True
+        
+        if should_reset:
+            # RESET TOKENS
+            if config.DB_MODE == 'FIREBASE':
+                try:
+                    db_client.collection('users').document(user_id).set({
+                        'token_usage': {'input': 0, 'output': 0, 'total': 0},
+                        'last_reset_date': current_month_str
+                    }, merge=True)
+                    usage_reset_triggered = True
+                    # Update local variable to reflect reset
+                    user_data['token_usage'] = {'input': 0, 'output': 0, 'total': 0}
+                except Exception as e:
+                    print(f"Error resetting monthly tokens: {e}")
+            else:
+                # Local Mode
+                table = db_local.table('users')
+                User = Query()
+                table.update({
+                    'token_usage': {'input': 0, 'output': 0, 'total': 0},
+                    'last_reset_date': current_month_str
+                }, User.id == user_id)
+                usage_reset_triggered = True
+                user_data['token_usage'] = {'input': 0, 'output': 0, 'total': 0}
+
+        # 2. Check Limit
+        # Get limit from user plan or default
+        user_plan_id = user_data.get('plan', 'free')
+        token_limit = config.NEW_ACCOUNT_TOKEN_LIMIT # Default
+        
+        # Override if plan exists in config
+        if user_plan_id in config.PLANS:
+            token_limit = config.PLANS[user_plan_id]['tokens']
+            
+        # Also check for manual override in user doc
+        if 'custom_token_limit' in user_data:
+            token_limit = user_data['custom_token_limit']
+            
+        current_usage = user_data.get('token_usage', {}).get('total', 0)
+        
+        # Calculate days remaining in current month
+        import calendar
+        last_day = calendar.monthrange(now.year, now.month)[1]
+        days_remaining = last_day - now.day
+        if days_remaining < 1: days_remaining = 1 # Minimum 1 day to show "resets tomorrow"
+        
+        if current_usage >= token_limit:
+            return {
+                "allowed": False, 
+                "days_remaining": days_remaining, 
+                "usage_reset": usage_reset_triggered,
+                "current_usage": current_usage,
+                "limit": token_limit
+            }
+            
+        return {
+            "allowed": True, 
+            "days_remaining": days_remaining, 
+            "usage_reset": usage_reset_triggered
+        }
+
     def update_user_tokens(self, user_id, input_count, output_count):
         total = input_count + output_count
         
@@ -236,12 +334,19 @@ class DBManager:
             db_local.table('messages').insert({'chat_id': chat_id, 'user_id': user_id, 'role': first_msg_role, 'text': first_msg_text, 'timestamp': ts_iso})
             return chat_id
 
-    def add_message(self, user_id, chat_id, role, text):
+    def add_message(self, user_id, chat_id, role, text, metadata=None):
         timestamp = self.get_timestamp()
+        msg_data = {"role": role, "text": text, "timestamp": timestamp}
+        if metadata:
+            msg_data["metadata"] = metadata
+            
         if config.DB_MODE == 'FIREBASE':
-            db_client.collection(f'users/{user_id}/chats/{chat_id}/messages').add({"role": role, "text": text, "timestamp": timestamp})
+            db_client.collection(f'users/{user_id}/chats/{chat_id}/messages').add(msg_data)
         else:
-            db_local.table('messages').insert({'chat_id': chat_id, 'user_id': user_id, 'role': role, 'text': text, 'timestamp': datetime.now().isoformat()})
+            msg_data['chat_id'] = chat_id
+            msg_data['user_id'] = user_id
+            msg_data['timestamp'] = datetime.now().isoformat()
+            db_local.table('messages').insert(msg_data)
 
     def get_chats(self, user_id):
         if config.DB_MODE == 'FIREBASE':
@@ -256,12 +361,12 @@ class DBManager:
     def get_chat_messages(self, user_id, chat_id):
         if config.DB_MODE == 'FIREBASE':
             docs = db_client.collection(f'users/{user_id}/chats/{chat_id}/messages').order_by('timestamp', direction='ASCENDING').limit(100).stream()
-            return [{"role": d.to_dict().get('role'), "text": d.to_dict().get('text')} for d in docs]
+            return [{"role": d.to_dict().get('role'), "text": d.to_dict().get('text'), "metadata": d.to_dict().get('metadata')} for d in docs]
         else:
             Msg = Query()
             items = db_local.table('messages').search(Msg.chat_id == chat_id)
             items.sort(key=lambda x: x['timestamp'])
-            return [{"role": d['role'], "text": d['text']} for d in items]
+            return [{"role": d['role'], "text": d['text'], "metadata": d.get('metadata')} for d in items]
 
     def delete_chat(self, user_id, chat_id):
         if config.DB_MODE == 'FIREBASE':
