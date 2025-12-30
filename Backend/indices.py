@@ -14,7 +14,7 @@ NIFTY_50 = [
 
 # NEW: Company names mapping, now stored with its list
 COMPANY_NAMES = {
-    'RELIANCE.NS': 'Reliance Industries', 'TCS.NS': 'Tata Consultancy Services', 'HDFCBANK.NS': 'HDFC Bank', 'ICICIBANK.NS': 'ICICI Bank', 'INFY.NS': 'Infosys', 'HINDUNILVR.NS': 'Hindustan Unilever', 'BHARTIARTL.NS': 'Bharti Airtel', 'ITC.NS': 'ITC Limited', 'SBIN.NS': 'State Bank of India', 'LICI.NS': 'Life Insurance Corp', 'HCLTECH.NS': 'HCL Technologies', 'KOTAKBANK.NS': 'Kotak Mahindra Bank', 'LT.NS': 'Larsen & Toubro', 'BAJFINANCE.NS': 'Bajaj Finance', 'AXISBANK.NS': 'Axis Bank', 'ASIANPAINT.NS': 'Asian Paints', 'MARUTI.NS': 'Maruti Suzuki', 'SUNPHARMA.NS': 'Sun Pharma', 'TITAN.NS': 'Titan Company', 'WIPRO.NS': 'Wipro', 'ULTRACEMCO.NS': 'UltraTech Cement', 'ADANIENT.NS': 'Adani Enterprises', 'ONGC.NS': 'Oil & Natural Gas', 'NTPC.NS': 'NTPC Limited', 'JSWSTEEL.NS': 'JSW Steel', 'TATAMOTORS.NS': 'Tata Motors', 'POWERGRID.NS': 'Power Grid Corp', 'BAJAJFINSV.NS': 'Bajaj Finserv', 'TATASTEEL.NS': 'Tata Steel', 'COALINDIA.NS': 'Coal India', 'INDUSINDBK.NS': 'IndusInd Bank', 'HINDALCO.NS': 'Hindalco Industries', 'TECHM.NS': 'Tech Mahindra', 'GRASIM.NS': 'Grasim Industries', 'ADANIPORTS.NS': 'Adani Ports', 'BRITANNIA.NS': 'Britannia Industries', 'CIPLA.NS': 'Cipla', 'EICHERMOT.NS': 'Eicher Motors', 'DRREDDY.NS': 'Dr. Reddys Labs', 'NESTLEIND.NS': 'Nestle India', 'HEROMOTOCO.NS': 'Hero MotoCorp', 'BAJAJ-AUTO.NS': 'Bajaj Auto', 'BPCL.NS': 'Bharat Petroleum', 'SHREECEM.NS': 'Shree Cement', 'TATACONSUM.NS': 'Tata Consumer', 'UPL.NS': 'UPL Limited', 'APOLLOHOSP.NS': 'Apollo Hospitals', 'DIVISLAB.NS': 'Divis Laboratories', 'M&M.NS': 'Mahindra & Mahindra', 'LTIM.NS': 'LTIMindtree'
+    'RELIANCE.NS': 'Reliance Industries', 'TCS.NS': 'Tata Consultancy Services', 'HDFCBANK.NS': 'HDFC Bank', 'ICICIBANK.NS': 'ICICI Bank', 'INFY.NS': 'Infosys', 'HINDUNILVR.NS': 'Hindustan Unilever', 'BHARTIARTL.NS': 'Bharti Airtel', 'ITC.NS': 'ITC Limited', 'SBIN.NS': 'State Bank of India', 'LICI.NS': 'Life Insurance Corp', 'HCLTECH.NS': 'HCL Technologies', 'KOTAKBANK.NS': 'Kotak Mahindra Bank', 'LT.NS': 'Larsen & Toubro', 'BAJFINANCE.NS': 'Bajaj Finance', 'AXISBANK.NS': 'Axis Bank', 'ASIANPAINT.NS': 'Asian Paints', 'MARUTI.NS': 'Maruti Suzuki', 'SUNPHARMA.NS': 'Sun Pharma', 'TITAN.NS': 'Titan Company', 'WIPRO.NS': 'Wipro', 'ULTRACEMCO.NS': 'UltraTech Cement', 'ADANIENT.NS': 'Adani Enterprises', 'ONGC.NS': 'Oil & Natural Gas', 'NTPC.NS': 'NTPC Limited', 'JSWSTEEL.NS': 'JSW Steel', 'TATAMOTORS.NS': 'Tata Motors', 'POWERGRID.NS': 'Power Grid Corp', 'BAJAJFINSV.NS': 'Bajaj Finserv', 'TATASTEEL.NS': 'Tata Steel', 'COALINDIA.NS': 'Coal India', 'INDUSINDBK.NS': 'IndusInd Bank', 'HINDALCO.NS': 'Hindalco Industries', 'TECHM.NS': 'Tech Mahindra', 'GRASIM.NS': 'Grasim Industries', 'ADANIPORTS.NS': 'Adani Ports', 'BRITANNIA.NS': 'Britannia Industries', 'CIPLA.NS': 'Cipla', 'EICHERMOT.NS': 'Eicher Motors', 'DRREDDY.NS': 'Dr. Reddys Labs', 'NESTLEIND.NS': 'Nestle India', 'HEROMOTOCO.NS': 'Hero MotoCorp', 'BAJAJ-AUTO.NS': 'Bajaj Auto', 'BPCL.NS': 'Bharat Petroleum', 'SHREECEM.NS': 'Shree Cement', 'TATACONSUM.NS': 'Tata Consumer', 'UPL.NS': 'UPL Limited', 'APOLLOHOSP.NS': 'Apollo Hospitals', 'DIVISLAB.NS': 'Divis Laboratories', 'M&M.NS': 'Mahindra & Mahindra', 'LTIM.NS': 'LTIMindtree', 'CHOLAFIN.NS': 'Cholamandalam Investment', 'AURIONPRO.NS': 'Aurionpro Solutions'
 }
 
 
@@ -91,16 +91,33 @@ NIFTY_REALTY = [
 ]
 
 
-# --- Nifty Broad Market Proxies (Using Top 50 from Nifty 50 as approximation) ---
+# Nifty Next 50 (The next 50 largest companies)
+NIFTY_NEXT_50 = [
+    'ABB.NS', 'ADANIENSOL.NS', 'ADANIGREEN.NS', 'ADANIPOWER.NS', 'ATGL.NS', 'AMBUJACEM.NS',
+    'APOLLOTYRE.NS', 'AURIONPRO.NS', 'BAJAJHLDNG.NS', 'BANKBARODA.NS', 'BEL.NS', 'BERGEPAINT.NS',
+    'BHARATFORG.NS', 'BHEL.NS', 'BOSCHLTD.NS', 'CANBK.NS', 'CHOLAFIN.NS', 'COLPAL.NS',
+    'DABUR.NS', 'DLF.NS', 'GAIL.NS', 'GODREJCP.NS', 'GODREJPROP.NS', 'HAL.NS',
+    'HAVELLS.NS', 'HDFCAMC.NS', 'HDFCLIFE.NS', 'ICICIGI.NS', 'ICICIPRULI.NS', 'IOC.NS',
+    'IRCTC.NS', 'JINDALSTEL.NS', 'JIOFIN.NS', 'JUBLFOOD.NS', 'LODHA.NS', 'MARICO.NS',
+    'UNITEDSPIRITS.NS', 'MOTHERSON.NS', 'NAUKRI.NS', 'PIDILITIND.NS', 'PFC.NS', 'PGHH.NS',
+    'PNB.NS', 'RECLTD.NS', 'SBICARD.NS', 'SBILIFE.NS', 'SHRIRAMFIN.NS', 'SIEMENS.NS',
+    'SRF.NS', 'TORNTPHARM.NS', 'TRENT.NS', 'TVSMOTOR.NS', 'VEDL.NS', 'ZOMATO.NS'
+]
+
+# NIFTY 100 = NIFTY 50 + NIFTY NEXT 50
+NIFTY_100 = NIFTY_50 + NIFTY_NEXT_50
+
+# --- Nifty Broad Market Proxies (Using Nifty 100 as approximation) ---
 # NOTE: Using dynamic fetching (get_index_constituents tool) is preferred for accuracy.
 # These proxies allow the static tool to run but only screen top components.
-NIFTY_BROAD_PROXY = NIFTY_50[:50] # Top 50 stocks as a general proxy
-
+NIFTY_BROAD_PROXY = NIFTY_100
 
 # --- Main dictionary for mapping user-friendly names to lists ---
 # Keys are normalized (uppercase) for matching.
 STATIC_INDICES = {
     "NIFTY 50": NIFTY_50,
+    "NIFTY NEXT 50": NIFTY_NEXT_50,
+    "NIFTY 100": NIFTY_100,
 
     "NIFTY BANK": NIFTY_BANK,
     "BANK NIFTY": NIFTY_BANK,
@@ -133,8 +150,7 @@ STATIC_INDICES = {
     "NIFTY REALTY": NIFTY_REALTY,
     "REALTY NIFTY": NIFTY_REALTY,
 
-    # Broad Market Proxies (Using Nifty 50 base)
-    "NIFTY 100": NIFTY_BROAD_PROXY,
+    # Broad Market Proxies 
     "NIFTY 200": NIFTY_BROAD_PROXY,
     "NIFTY 500": NIFTY_BROAD_PROXY, 
 }

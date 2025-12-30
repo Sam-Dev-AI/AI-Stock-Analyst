@@ -6,7 +6,12 @@ yarn-debug.log*
 yarn-error.log*
 firebase-debug.log*
 firebase-debug.*.log*
-_pycache__
+# Cache
+__pycache__/
+Backend/__pycache__/
+Backend/cache/
+cache/
+*.pyc
 
 # Firebase cache
 .firebase/
@@ -68,3 +73,11 @@ node_modules/
 
 # dataconnect generated files
 .dataconnect
+
+# Backups
+*.bak
+*.backup
+
+# Database
+database/
+*.json

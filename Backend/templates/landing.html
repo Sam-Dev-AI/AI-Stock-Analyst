@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claroz | AI Stock Market Analysis & Financial Intelligence</title>
+    <meta name="description"
+        content="Claroz provides advanced AI-driven stock market analysis and predictive insights. Discover the future of trading with our real-time financial tools.">
+    <meta name="keywords"
+        content="AI Stock Analysis, Indian Stock Market, Financial Intelligence, Trading Tools, Stock Prediction, Nifty 50, Bank Nifty, Artificial Intelligence Trading, Claroz">
+    <meta name="author" content="Claroz">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://claroz.in/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://claroz.in/">
+    <meta property="og:title" content="Claroz | AI Stock Market Analysis & Financial Intelligence">
+    <meta property="og:description"
+        content="Claroz provides advanced AI-driven stock market analysis and predictive insights. Discover the future of trading with our real-time financial tools.">
+    <meta property="og:image" content="https://claroz.in/static/logo.svg">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://claroz.in/">
+    <meta property="twitter:title" content="Claroz | AI Stock Market Analysis & Financial Intelligence">
+    <meta property="twitter:description"
+        content="Claroz provides advanced AI-driven stock market analysis and predictive insights. Discover the future of trading with our real-time financial tools.">
+    <meta property="twitter:image" content="https://claroz.in/static/logo.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="/static/logo.svg">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #020617;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100dvh;
+            /* Use dynamic viewport height */
+            z-index: 0;
+            opacity: 0.6;
+        }
+
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-panel:hover {
+            border-color: rgba(255, 255, 255, 0.1);
+            background: rgba(30, 41, 59, 0.6);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-text-gradient {
+            background: linear-gradient(135deg, #34d399 0%, #3b82f6 50%, #8b5cf6 100%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient-flow 5s ease infinite;
+        }
+
+        @keyframes gradient-flow {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .feature-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(16, 185, 129, 0.5);
+            box-shadow: 0 20px 40px -10px rgba(16, 185, 129, 0.2);
+            background: rgba(30, 41, 59, 0.6);
+        }
+
+        .btn-glow {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-glow:hover {
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.5);
+            transform: translateY(-2px);
+        }
+
+        /* Smooth scroll behavior */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Scroll Reveal Animation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 1s cubic-bezier(0.5, 0, 0, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-60px);
+            transition: all 1s cubic-bezier(0.5, 0, 0, 1);
+        }
+
+        .reveal-left.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .reveal-right {
+            opacity: 0;
+            transform: translateX(60px);
+            transition: all 1s cubic-bezier(0.5, 0, 0, 1);
+        }
+
+        .reveal-right.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .delay-100 {
+            transition-delay: 0.1s;
+        }
+
+        .delay-200 {
+            transition-delay: 0.2s;
+        }
+
+        .delay-300 {
+            transition-delay: 0.3s;
+        }
+
+        .delay-400 {
+            transition-delay: 0.4s;
+        }
+
+        .delay-500 {
+            transition-delay: 0.5s;
+        }
+
+        .delay-600 {
+            transition-delay: 0.6s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-15px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        .animate-float {
+            animation: float 8s ease-in-out infinite;
+        }
+
+        /* Floating Orbs */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            z-index: 0;
+            opacity: 0.3;
+            animation: float-orb 25s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes float-orb {
+            0% {
+                transform: translate(0, 0) scale(1) rotate(0deg);
+            }
+
+            50% {
+                transform: translate(50px, 30px) scale(1.2) rotate(180deg);
+            }
+
+            100% {
+                transform: translate(-30px, 80px) scale(0.9) rotate(360deg);
+            }
+        }
+
+        .tilt-card {
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+    </style>
+    <!-- JSON-LD Schema Markup -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Claroz Agent",
+      "image": "https://claroz.in/static/logo.svg",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "INR"
+      },
+      "description": "Advanced AI-driven stock market analysis and predictive financial intelligence tool.",
+      "author": {
+          "@type": "Person",
+          "name": "Samir Harish Lade"
+      }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "url": "https://claroz.in",
+      "logo": "https://claroz.in/static/logo.svg"
+    }
+    </script>
+</head>
+
+<body class="antialiased selection:bg-emerald-500 selection:text-white">
+
+    <!-- 3D Background -->
+    <div id="canvas-container"></div>
+
+    <!-- Floating Background Orbs -->
+    <div class="fixed top-0 left-0 w-full h-[100dvh] overflow-hidden pointer-events-none z-0">
+        <div class="orb w-96 h-96 bg-emerald-600/20 top-[-10%] left-[-10%]"></div>
+        <div class="orb w-96 h-96 bg-blue-600/20 bottom-[-10%] right-[-10%] delay-200"></div>
+        <div class="orb w-64 h-64 bg-purple-600/20 top-[40%] left-[60%]"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 transition-all duration-300 bg-slate-950/80 backdrop-blur-md border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-10 h-10 bg-gradient-to-br from-green-500 to-green-700 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-900/20 transform hover:scale-105 transition-transform duration-300">
+                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z" />
+                        </svg>
+                    </div>
+                    <span class="text-xl font-bold tracking-tight text-white">Claroz <span
+                            class="text-emerald-400">Agent</span></span>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-1">
+                    <a href="#features"
+                        class="px-4 py-2 rounded-full text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 transition-all">Features</a>
+                    <a href="#plans"
+                        class="px-4 py-2 rounded-full text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 transition-all">Plans</a>
+                    <a href="#opensource"
+                        class="px-4 py-2 rounded-full text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 transition-all">Open
+                        Source</a>
+                    <a href="#about"
+                        class="px-4 py-2 rounded-full text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 transition-all">About</a>
+                    <a href="#contact"
+                        class="px-4 py-2 rounded-full text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 transition-all">Contact</a>
+                </div>
+
+                <div class="hidden md:block">
+                    <a href="/app"
+                        class="btn-glow px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 rounded-lg text-white font-semibold text-sm shadow-lg shadow-emerald-500/20 transition-all transform hover:-translate-y-0.5">
+                        Get Started
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn"
+                        class="text-slate-300 hover:text-white focus:outline-none p-2 rounded-lg hover:bg-white/10 transition-colors">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-menu"
+            class="hidden md:hidden fixed inset-0 z-40 bg-slate-950/95 backdrop-blur-xl transition-all duration-300 opacity-0 pointer-events-none data-[open=true]:opacity-100 data-[open=true]:pointer-events-auto flex flex-col items-center justify-center space-y-8">
+            <button id="close-menu-btn" class="absolute top-6 right-6 text-slate-400 hover:text-white p-2">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+
+            <a href="#features"
+                class="mobile-link text-2xl font-bold text-slate-300 hover:text-emerald-400 transition-colors">Features</a>
+            <a href="#plans"
+                class="mobile-link text-2xl font-bold text-slate-300 hover:text-emerald-400 transition-colors">Plans</a>
+            <a href="#opensource"
+                class="mobile-link text-2xl font-bold text-slate-300 hover:text-emerald-400 transition-colors">Open
+                Source</a>
+            <a href="#about"
+                class="mobile-link text-2xl font-bold text-slate-300 hover:text-emerald-400 transition-colors">About</a>
+            <a href="#contact"
+                class="mobile-link text-2xl font-bold text-slate-300 hover:text-emerald-400 transition-colors">Contact</a>
+
+            <a href="/app"
+                class="mt-4 px-8 py-3 bg-emerald-500 hover:bg-emerald-400 rounded-xl text-white font-bold text-lg shadow-lg shadow-emerald-500/20 transition-all transform hover:scale-105">
+                Get Started
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <main class="relative z-10 pt-32 pb-16 lg:pt-48 lg:pb-32 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
+
+            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 reveal animate-float">
+                The Future of <br>
+                <span
+                    class="hero-text-gradient bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-teal-400 to-blue-500 animate-pulse-soft">Intelligent
+                    Trading</span>
+            </h1>
+
+            <p class="mt-4 max-w-2xl mx-auto text-xl text-slate-400 mb-10 leading-relaxed font-light">
+                Democratizing professional-grade financial analytics. Fuse Generative AI with hard technical analysis to
+                get real-time, actionable insights for the Indian Stock Market.
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="/app"
+                    class="btn-glow w-full sm:w-auto px-8 py-4 bg-white text-slate-900 rounded-xl font-bold text-lg shadow-xl hover:bg-slate-50 transition-colors flex items-center justify-center gap-2 transform hover:-translate-y-1">
+                    Start Trading Now
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                    </svg>
+                </a>
+                <a href="#features"
+                    class="w-full sm:w-auto px-8 py-4 glass-panel border border-slate-700 hover:bg-slate-800/50 rounded-xl font-semibold text-white transition-all hover:border-emerald-500/50">
+                    Explore Features
+                </a>
+            </div>
+
+
+        </div>
+    </main>
+
+    <!-- SEO Content Section -->
+    <div class="relative z-10 py-12 border-b border-white/5 bg-slate-950/30 backdrop-blur-sm">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <p class="text-slate-300 text-lg leading-relaxed reveal">
+                Unlock the power of artificial intelligence for your investment strategy. Claroz offers cutting-edge AI
+                stock analysis to help you understand market trends instantly. Whether you are tracking the Indian stock
+                market or looking for global AI financial predictions, our platform simplifies complex data into
+                actionable insights.
+            </p>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <section id="features" class="relative z-10 py-24 bg-slate-950 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 relative">
+                <div
+                    class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none">
+                </div>
+
+                <h2
+                    class="text-3xl md:text-5xl font-bold mb-6 reveal-left bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-blue-500 relative z-10">
+                    Platform Features
+                </h2>
+                <p class="text-slate-400 max-w-2xl mx-auto text-lg reveal-right relative z-10">
+                    Comprehensive tools to analyze, strategize, and execute.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Feature 1: Advanced Analytics -->
+                <div
+                    class="feature-card glass-panel p-6 rounded-2xl border border-slate-700/50 hover:bg-slate-800/100 reveal delay-100">
+                    <div class="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">Advanced Analytics</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        Technical & Fundamental Ratings. Multi-timeframe analysis with custom indicators.
+                    </p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div
+                    class="feature-card glass-panel p-6 rounded-2xl border border-slate-700/50 hover:bg-slate-800/100 reveal delay-200">
+                    <div class="w-12 h-12 bg-yellow-500/10 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">Real-time Alerts</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Auto-scan for intraday setups. Get notified when
+                        your setup triggers.</p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div
+                    class="feature-card glass-panel p-6 rounded-2xl border border-slate-700/50 hover:bg-slate-800/100 reveal delay-300">
+                    <div class="w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">Direct Execution</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">"Buy 50 Tata Motors". Executed instantly via
+                        Zerodha or Paper Mode.</p>
+                </div>
+
+                <!-- Feature 4: Backtesting -->
+                <div
+                    class="feature-card glass-panel p-6 rounded-2xl border border-slate-700/50 hover:bg-slate-800/100 reveal delay-400">
+                    <div class="w-12 h-12 bg-pink-500/10 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">Strategy Backtester</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Don't risk real money on a guess. Replay your
+                        strategy on past data.</p>
+                </div>
+
+                <!-- Feature 5: Projections -->
+                <div
+                    class="feature-card glass-panel p-6 rounded-2xl border border-slate-700/50 hover:bg-slate-800/100 reveal delay-500">
+                    <div class="w-12 h-12 bg-indigo-500/10 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">Wealth Projections</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Monte Carlo simulations to forecast portfolio
+                        growth and retirement goals.</p>
+                </div>
+
+                <!-- Feature 6: Hybrid -->
+                <div
+                    class="feature-card glass-panel p-6 rounded-2xl border border-slate-700/50 hover:bg-slate-800/100 reveal delay-600">
+                    <div class="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">Hybrid & Secure</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Run locally for total privacy or cloud for
+                        convenience. You are in control.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Plans Section -->
+    <section id="plans" class="relative z-10 py-24 bg-slate-900/30 border-y border-slate-800/50 overflow-hidden">
+        <!-- Background Gradients for section -->
+        <div
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none">
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-20">
+                <h2
+                    class="text-3xl md:text-5xl font-bold mb-6 reveal-left bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-slate-400">
+                    Transparent Pricing
+                </h2>
+                <p class="text-slate-400 max-w-2xl mx-auto text-lg reveal-right leading-relaxed">
+                    Professional grade tools. Community focused pricing.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+                <!-- Free Plan -->
+                <div class="reveal delay-100">
+                    <div
+                        class="glass-panel p-6 md:p-8 rounded-2xl border border-slate-700/50 hover:border-slate-500/50 transition-all duration-500 hover:-translate-y-2 h-full flex flex-col group relative overflow-hidden">
+
+                        <!-- Hover Gradient -->
+                        <div
+                            class="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                        </div>
+
+                        <div class="mb-6 relative z-10">
+                            <h3 class="text-lg font-semibold text-slate-300 mb-2">Free Tier</h3>
+                            <div class="flex items-baseline gap-1">
+                                <span class="text-4xl font-bold text-white tracking-tight">₹0</span>
+                                <span class="text-slate-500 text-sm">/mo</span>
+                            </div>
+                        </div>
+
+                        <div class="w-full h-px bg-slate-700/50 mb-6"></div>
+
+                        <ul class="space-y-4 mb-8 text-sm text-slate-400 relative z-10 flex-grow">
+                            <li class="flex items-start gap-3">
+                                <svg class="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span>1 Lakh Tokens</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <svg class="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span>Standard Access</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Starter Plan -->
+                <div class="reveal delay-200">
+                    <div
+                        class="glass-panel p-6 md:p-8 rounded-2xl border border-slate-700/50 hover:border-blue-500/50 transition-all duration-500 hover:-translate-y-2 h-full flex flex-col group relative overflow-hidden">
+
+                        <!-- Glow -->
+                        <div
+                            class="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl group-hover:bg-blue-500/30 transition-all duration-500">
+                        </div>
+
+                        <div class="mb-6 relative z-10">
+                            <h3 class="text-lg font-semibold text-blue-400 mb-2">Starter</h3>
+                            <div class="flex items-baseline gap-1">
+                                <span class="text-4xl font-bold text-white tracking-tight">₹19</span>
+                                <span class="text-slate-500 text-sm">/mo</span>
+                            </div>
+                        </div>
+
+                        <div class="w-full h-px bg-slate-700/50 mb-6"></div>
+
+                        <ul class="space-y-4 mb-8 text-sm text-slate-400 relative z-10 flex-grow">
+                            <li class="flex items-start gap-3">
+                                <svg class="w-5 h-5 text-blue-400 shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span>10 Lakh Tokens</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <svg class="w-5 h-5 text-blue-400 shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span>Fast Response</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <svg class="w-5 h-5 text-blue-400 shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span>Email Support</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Plus Plan -->
+                <div class="reveal delay-300">
+                    <div
+                        class="glass-panel p-6 md:p-8 rounded-2xl border border-emerald-500/50 relative overflow-hidden group hover:border-emerald-400 transition-all duration-500 hover:-translate-y-2 transform lg:scale-105 z-20 shadow-2xl shadow-emerald-900/20 h-full flex flex-col">
+
+                        <div
+                            class="absolute inset-0 bg-emerald-500/5 group-hover:bg-emerald-500/10 transition-colors duration-500">
+                        </div>
+                        <div
+                            class="absolute top-0 right-0 bg-emerald-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider shadow-lg">
+                            Popular</div>
+
+                        <div class="mb-6 relative z-10">
+                            <h3 class="text-lg font-semibold text-emerald-400 mb-2">Plus</h3>
+                            <div class="flex items-baseline gap-1">
+                                <span class="text-4xl font-bold text-white tracking-tight">₹89</span>
+                                <span class="text-slate-500 text-sm">/mo</span>
+                            </div>
+                        </div>
+
+                        <div class="w-full h-px bg-emerald-500/20 mb-6"></div>
+
+                        <ul class="space-y-4 mb-8 text-sm text-slate-300 relative z-10 flex-grow font-medium">
+                            <li class="flex items-start gap-3">
+                                <svg class="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span>50 Lakh Tokens</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <svg class="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span>Priority Queue Access</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <svg class="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span>Faster Response Speed</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <svg class="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span>Detailed Reasoning</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <svg class="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span>Priority Support</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Pro Plan -->
+                <div class="reveal delay-500">
+                    <div
+                        class="glass-panel p-6 md:p-8 rounded-2xl border border-slate-700/50 hover:border-purple-500/50 transition-all duration-500 hover:-translate-y-2 h-full flex flex-col group relative overflow-hidden">
+
+                        <!-- Glow -->
+                        <div
+                            class="absolute -top-10 -right-10 w-32 h-32 bg-purple-500/20 rounded-full blur-3xl group-hover:bg-purple-500/30 transition-all duration-500">
+                        </div>
+
+                        <div class="mb-6 relative z-10">
+                            <h3 class="text-lg font-semibold text-purple-400 mb-2">Pro</h3>
+                            <div class="flex items-baseline gap-1">
+                                <span class="text-4xl font-bold text-white tracking-tight">₹149</span>
+                                <span class="text-slate-500 text-sm">/mo</span>
+                            </div>
+                        </div>
+
+                        <div class="w-full h-px bg-slate-700/50 mb-6"></div>
+
+                        <ul class="space-y-4 mb-8 text-sm text-slate-400 relative z-10 flex-grow">
+                            <li class="flex items-start gap-3">
+                                <svg class="w-5 h-5 text-purple-400 shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span>1 Crore Tokens</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <svg class="w-5 h-5 text-purple-400 shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span>Ultra Fast Processing</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <svg class="w-5 h-5 text-purple-400 shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span>Deep Market Analysis</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <svg class="w-5 h-5 text-purple-400 shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span>Strategy Backtesting</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <svg class="w-5 h-5 text-purple-400 shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span>API Access</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <svg class="w-5 h-5 text-purple-400 shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span>24/7 Priority Support</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="relative z-10 py-24 bg-slate-900/30 border-y border-slate-800/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl font-bold mb-4">About the Developer</h2>
+            <p class="text-slate-400 max-w-2xl mx-auto mb-10">
+                Bridging the gap between modern finance and artificial intelligence.
+            </p>
+
+            <div class="max-w-5xl mx-auto reveal">
+                <div
+                    class="glass-panel p-6 md:p-12 rounded-3xl border border-slate-700/50 shadow-2xl relative overflow-hidden group hover:border-emerald-500/30 transition-all duration-500 transform hover:-translate-y-2 max-w-5xl mx-auto w-full text-left">
+                    <div
+                        class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-50 group-hover:opacity-100 transition-opacity">
+                    </div>
+
+                    <!-- Background Glow -->
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                    </div>
+
+                    <!-- Content Grid -->
+                    <div class="relative z-10 flex flex-col md:flex-row gap-8 items-start">
+
+                        <!-- Left Column: Profile Pic (Centered on Mobile, Left on Desktop) -->
+                        <div class="flex-shrink-0 mx-auto md:mx-0 relative">
+                            <div
+                                class="w-32 h-32 md:w-40 md:h-40 bg-slate-800 rounded-full flex items-center justify-center text-4xl border-4 border-slate-700 shadow-inner overflow-visible ring-4 ring-slate-900/50 relative z-10 group-hover:scale-105 transition-transform duration-500">
+                                <span class="font-bold text-slate-300">SHL</span>
+
+                                <!-- Verified Checkmark Badge -->
+                                <div class="absolute bottom-1 right-1 bg-white rounded-full p-1 shadow-lg">
+                                    <div class="bg-emerald-500 rounded-full p-1">
+                                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                                d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Info & Education -->
+                        <div class="flex-grow w-full">
+
+                            <!-- Header Info -->
+                            <div class="mb-6 text-center md:text-left">
+                                <h3 class="text-3xl md:text-4xl font-bold text-white mb-2 tracking-tight">Samir Harish
+                                    Lade</h3>
+                                <p class="text-emerald-400 font-bold text-sm tracking-widest uppercase mb-4">Lead
+                                    Developer & Architect</p>
+
+                                <p class="text-slate-400 leading-relaxed max-w-2xl text-base md:text-lg">
+                                    Passionate about bridging the gap between complex financial algorithms and
+                                    accessible user interfaces. Currently pursuing dual degrees in Computer Applications
+                                    and Data Science.
+                                </p>
+                            </div>
+
+                            <!-- Education Grid -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+
+                                <!-- Education Item 1 -->
+                                <div
+                                    class="bg-slate-900/50 border border-slate-700/50 rounded-xl p-4 flex items-center gap-4 hover:bg-slate-800/50 transition-colors group/edu">
+                                    <div
+                                        class="w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-500/20 group-hover/edu:border-blue-500/50 transition-colors">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 14l9-5-9-5-9 5 9 5z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z">
+                                            </path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222">
+                                            </path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-white font-bold text-base">MIT WPU</h4>
+                                        <p class="text-slate-400 text-xs">BCA - First Year</p>
+                                    </div>
+                                </div>
+
+                                <!-- Education Item 2 -->
+                                <div
+                                    class="bg-slate-900/50 border border-slate-700/50 rounded-xl p-4 flex items-center gap-4 hover:bg-slate-800/50 transition-colors group/edu">
+                                    <div
+                                        class="w-12 h-12 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-400 border border-purple-500/20 group-hover/edu:border-purple-500/50 transition-colors">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z">
+                                            </path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-white font-bold text-base">IIT Madras</h4>
+                                        <p class="text-slate-400 text-xs">BS Degree - First Year</p>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="flex flex-col sm:flex-row gap-4">
+                                <a href="https://github.com/Sam-Dev-AI" target="_blank"
+                                    class="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl font-semibold text-white transition-all group-hover:border-slate-500">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                        <path fill-rule="evenodd"
+                                            d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                    GitHub Profile
+                                </a>
+
+                                <a href="#contact"
+                                    class="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/50 rounded-xl font-semibold text-emerald-400 transition-all hover:shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                                        </path>
+                                    </svg>
+                                    Contact Me
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+        </div>
+    </section>
+
+    <!-- Open Source Section -->
+    <section id="opensource" class="relative z-10 py-24 bg-slate-950">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl font-bold mb-4">Open Source</h2>
+            <p class="text-slate-400 max-w-2xl mx-auto mb-10">
+                Transparent. Extensible. Community Driven.
+            </p>
+
+            <div class="max-w-xl mx-auto">
+                <div
+                    class="bg-slate-950 rounded-2xl border border-slate-800 p-1 flex items-center gap-2 shadow-xl pl-4">
+                    <div class="flex-grow text-left overflow-hidden">
+                        <div class="text-xs text-slate-500 font-semibold uppercase tracking-wide mb-0.5">GitHub
+                            Repository</div>
+                        <div class="font-mono text-sm text-slate-200 truncate">
+                            github.com/Sam-Dev-AI/AI-Stock-Analyst
+                        </div>
+                    </div>
+
+                    <button
+                        onclick="navigator.clipboard.writeText('https://github.com/Sam-Dev-AI/AI-Stock-Analyst.git')"
+                        class="p-3 hover:bg-slate-800 rounded-xl transition-colors text-slate-400 hover:text-white group"
+                        title="Copy Clone URL">
+                        <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3">
+                            </path>
+                        </svg>
+                    </button>
+
+                    <a href="https://github.com/Sam-Dev-AI/AI-Stock-Analyst" target="_blank"
+                        class="px-5 py-3 bg-white hover:bg-gray-100 text-slate-900 rounded-xl font-bold text-sm transition-colors flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path fill-rule="evenodd"
+                                d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        Star
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="relative z-10 py-24">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl font-bold mb-4">Get in Touch</h2>
+            <p class="text-slate-400 mb-8">Have questions or feature requests? Reach out directly.</p>
+            <div class="flex flex-col items-center gap-2">
+                <a href="mailto:samir.lade6@gmail.com"
+                    class="text-emerald-400 hover:text-emerald-300 font-semibold text-lg hover:underline decoration-emerald-500/30 underline-offset-4 transition-all">samir.lade6@gmail.com</a>
+                <p class="text-slate-400 text-lg">+91 82650 88577</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="relative z-10 bg-slate-950 border-t border-slate-800 pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+                <!-- Brand -->
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-8 h-8 bg-gradient-to-br from-green-500 to-green-700 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z" />
+                            </svg>
+                        </div>
+                        <span class="text-xl font-bold text-white">Claroz <span
+                                class="text-emerald-400">Agent</span></span>
+                    </div>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        Democratizing professional-grade financial analytics for the Indian Stock Market.
+                    </p>
+                </div>
+
+                <!-- Product -->
+                <div>
+                    <h3 class="text-white font-bold mb-4">Product</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#features"
+                                class="text-slate-400 hover:text-emerald-400 transition-colors text-sm">Features</a>
+                        </li>
+                        <li><a href="/app" class="text-slate-400 hover:text-emerald-400 transition-colors text-sm">Live
+                                Dashboard</a></li>
+                        <li><a href="#opensource"
+                                class="text-slate-400 hover:text-emerald-400 transition-colors text-sm">Open Source</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Resources -->
+                <div>
+                    <h3 class="text-white font-bold mb-4">Resources</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#about"
+                                class="text-slate-400 hover:text-emerald-400 transition-colors text-sm">About
+                                Developer</a></li>
+                        <li><a href="https://github.com/Sam-Dev-AI/AI-Stock-Analyst"
+                                class="text-slate-400 hover:text-emerald-400 transition-colors text-sm">Documentation</a>
+                        </li>
+                        <li><a href="#" class="text-slate-400 hover:text-emerald-400 transition-colors text-sm">Privacy
+                                Policy</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-emerald-400 transition-colors text-sm">Terms of
+                                Service</a></li>
+                    </ul>
+                </div>
+
+                <!-- Connect -->
+                <div>
+                    <h3 class="text-white font-bold mb-4">Connect</h3>
+                    <ul class="space-y-3">
+                        <li>
+                            <a href="mailto:samir.lade6@gmail.com"
+                                class="flex items-center gap-2 text-slate-400 hover:text-emerald-400 transition-colors text-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                                    </path>
+                                </svg>
+                                samir.lade6@gmail.com
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/Sam-Dev-AI"
+                                class="flex items-center gap-2 text-slate-400 hover:text-emerald-400 transition-colors text-sm">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                    <path fill-rule="evenodd"
+                                        d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                                Github
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-slate-500 text-sm">&copy; 2024 AI Stock Analyst. Open Source under MIT License.</p>
+                <p class="text-slate-600 text-xs">Made with ❤️ in India</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Three.js Logic -->
+    <script>
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+
+        const container = document.getElementById('canvas-container');
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        container.appendChild(renderer.domElement);
+
+        // Particles
+        const geometry = new THREE.BufferGeometry();
+        const particlesCount = 700;
+        const posArray = new Float32Array(particlesCount * 3);
+
+        for (let i = 0; i < particlesCount * 3; i++) {
+            // Spread particles across a wide area
+            posArray[i] = (Math.random() - 0.5) * 25;
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+        // Material
+        const material = new THREE.PointsMaterial({
+            size: 0.03,
+            color: 0x34d399, // Emerald color
+            transparent: true,
+            opacity: 0.8,
+        });
+
+        // Mesh
+        const particlesMesh = new THREE.Points(geometry, material);
+        scene.add(particlesMesh);
+
+        // Lines connecting close particles
+        const lineMaterial = new THREE.LineBasicMaterial({
+            color: 0x3b82f6,
+            transparent: true,
+            opacity: 0.15
+        });
+
+        camera.position.z = 3;
+
+        // Interaction
+        let mouseX = 0;
+        let mouseY = 0;
+
+        document.addEventListener('mousemove', (event) => {
+            mouseX = event.clientX / window.innerWidth - 0.5;
+            mouseY = event.clientY / window.innerHeight - 0.5;
+        });
+
+        // Animation Loop
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const elapsedTime = clock.getElapsedTime();
+
+            // Rotate entire system slowly
+            particlesMesh.rotation.y = elapsedTime * 0.05;
+            particlesMesh.rotation.x = -mouseY * 0.2;
+            particlesMesh.rotation.y += mouseX * 0.2;
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // Responsive
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Scroll Reveal Logic
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: "0px"
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                } else {
+                    // Continuous animation: remove class when out of view
+                    entry.target.classList.remove('active');
+                    // Reset opacity/transform for smooth re-entry
+                    entry.target.style.opacity = '';
+                    entry.target.style.transform = '';
+                }
+            });
+        }, observerOptions);
+
+        // More stagger logic for lists
+        const staggerObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const children = entry.target.children;
+                    Array.from(children).forEach((child, index) => {
+                        setTimeout(() => {
+                            child.classList.add('active');
+                            child.style.opacity = '1';
+                            child.style.transform = 'translateY(0)';
+                        }, index * 100);
+                    });
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.1 });
+
+
+
+        document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => observer.observe(el));
+        document.querySelectorAll('.feature-card').forEach((el, index) => {
+            el.classList.add('reveal');
+            el.style.transitionDelay = `${index * 100}ms`; // Stagger effect
+            observer.observe(el);
+
+            // Add Tilt Effect
+            el.addEventListener('mousemove', handleTilt);
+            el.addEventListener('mouseleave', resetTilt);
+        });
+
+        function handleTilt(e) {
+            const el = e.currentTarget;
+            const rect = el.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+
+            const rotateX = (centerY - y) / 20;
+            const rotateY = (x - centerX) / 20;
+
+            el.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+        }
+
+        function resetTilt(e) {
+            e.currentTarget.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+        }
+
+        // Mobile Menu Logic
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const closeMenuBtn = document.getElementById('close-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+
+        function toggleMenu() {
+            const isOpen = mobileMenu.dataset.open === 'true';
+
+            if (isOpen) {
+                mobileMenu.dataset.open = 'false';
+                mobileMenu.classList.add('hidden'); // Add hidden back after anim could be better, but fast toggle for now
+                document.body.style.overflow = '';
+            } else {
+                mobileMenu.classList.remove('hidden');
+                // Small delay to allow display:block to apply before opacity transition
+                requestAnimationFrame(() => {
+                    mobileMenu.dataset.open = 'true';
+                });
+                document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            }
+        }
+
+        if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', toggleMenu);
+        if (closeMenuBtn) closeMenuBtn.addEventListener('click', toggleMenu);
+
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                toggleMenu(); // Close menu on link click
+            });
+        });
+
+    </script>
+</body>
+
+</html>
