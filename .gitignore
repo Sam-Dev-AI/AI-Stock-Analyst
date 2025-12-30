@@ -1,0 +1,5 @@
+Backend/cache/
+__pycache__/
+*.bak
+*.pyc
+.ipynb_checkpoints
