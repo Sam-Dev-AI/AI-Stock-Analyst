@@ -80,4 +80,5 @@ node_modules/
 
 # Database
 database/
+serviceAccountKey.json
 *.json

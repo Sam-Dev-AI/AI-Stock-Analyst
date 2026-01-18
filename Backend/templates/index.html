@@ -6,16 +6,63 @@
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Claroz - AI Stock Analyst</title>
-    <meta name="description" content="Claroz provides advanced AI-driven stock market analysis, real-time insights, and wealth projections for the Indian Stock Market.">
+    <meta name="description"
+        content="Claroz provides advanced AI-driven stock market analysis, real-time insights, and wealth projections for the Indian Stock Market.">
+
+    <!-- SEO & Sitemap -->
     <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
-    <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22><path fill=%22%2310b981%22 d=%22M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z%22/></svg>">
+
+    <!-- Favicon & Logo -->
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='images/logo.png') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/logo.png') }}">
+
+    <!-- Organization Schema for Google Search -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Claroz",
+      "url": "https://claroz.in",
+      "logo": "https://claroz.in/static/images/logo.png",
+      "description": "AI-driven stock market analysis and financial intelligence platform."
+    }
+    </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
         rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js" defer></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+
+    <style>
+        /* Mobile Menu & Layout Fixes */
+        [x-cloak] {
+            display: none !important;
+        }
+
+        /* Ensure dropdowns are above everything */
+        .z-100 {
+            z-index: 100 !important;
+        }
+
+        /* Fix for touch targets */
+        button,
+        a,
+        input {
+            touch-action: manipulation;
+        }
+
+        /* Scrollbar hiding for clean UI */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
 </head>
 
 <body class="bg-slate-950 text-white antialiased auth-loading" x-data="chatApp()" x-init="init()">
@@ -535,7 +582,7 @@
                             x-transition:leave="transition ease-in duration-150"
                             x-transition:leave-start="opacity-100 scale-100 translate-y-0"
                             x-transition:leave-end="opacity-0 scale-95 translate-y-2"
-                            class="absolute right-0 top-full mt-4 w-80 z-50 rounded-2xl border border-slate-700/80 bg-slate-900/95 backdrop-blur-2xl shadow-2xl ring-1 ring-white/5 overflow-hidden"
+                            class="absolute right-0 top-full mt-2 w-72 sm:w-80 z-50 rounded-2xl border border-slate-700/80 bg-slate-900/95 backdrop-blur-2xl shadow-2xl ring-1 ring-white/5 overflow-hidden"
                             style="display: none;">
 
                             <div
@@ -1825,7 +1872,7 @@
 
 
 
-
+    <!-- Core App Logic -->
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 

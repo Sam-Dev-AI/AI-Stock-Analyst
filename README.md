@@ -2,7 +2,7 @@
 
 # 🚀 AI Stock Analyst Platform (Agent v6.1)
 
-[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-Visit_Platform-blue?style=for-the-badge&logo=google-chrome&logoColor=white)](https://stock-agent-774764824527.us-central1.run.app)
+[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-Visit_Platform-blue?style=for-the-badge&logo=google-chrome&logoColor=white)](https://claroz.in/)
   
 *An Advanced, AI-Powered Trading Assistant for Indian Markets (NSE)*
 
@@ -21,6 +21,20 @@
 **AI Stock Analyst** is a cutting-edge financial analytics platform designed to democratize professional-grade trading insights. By fusing **Generative AI (Gemini 2.5)** with hard **Technical Analysis (TA-Lib)**, it offers real-time, actionable advice for the Indian Stock Market.
 
 Whether you are a swing trader looking for opportunities or an investor balancing a portfolio, the AI Analyst acts as your 24/7 financial companion.
+
+---
+
+## 📸 Photo Gallery
+
+<div style="display: flex; overflow-x: auto; gap: 10px; padding-bottom: 10px;">
+    <img src="Images/Home.png" alt="Home" height="500" style="border-radius: 10px;">
+    <img src="Images/Anylisis.png" alt="Analytics" height="500" style="border-radius: 10px;">
+    <img src="Images/Buy Stocks.png" alt="Buy Stocks" height="500" style="border-radius: 10px;">
+    <img src="Images/Chat.png" alt="Chat" height="500" style="border-radius: 10px;">
+    <img src="Images/HDFC Analysis .png" alt="HDFC Analysis" height="500" style="border-radius: 10px;">
+    <img src="Images/Login.png" alt="Login" height="500" style="border-radius: 10px;">
+    <img src="Images/Portfolio.png" alt="Portfolio" height="500" style="border-radius: 10px;">
+</div>
 
 ---
 

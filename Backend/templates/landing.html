@@ -19,7 +19,7 @@
     <meta property="og:title" content="Claroz | AI Stock Market Analysis & Financial Intelligence">
     <meta property="og:description"
         content="Claroz provides advanced AI-driven stock market analysis and predictive insights. Discover the future of trading with our real-time financial tools.">
-    <meta property="og:image" content="https://claroz.in/static/logo.svg">
+    <meta property="og:image" content="https://claroz.in/static/logo.png">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
@@ -27,209 +27,20 @@
     <meta property="twitter:title" content="Claroz | AI Stock Market Analysis & Financial Intelligence">
     <meta property="twitter:description"
         content="Claroz provides advanced AI-driven stock market analysis and predictive insights. Discover the future of trading with our real-time financial tools.">
-    <meta property="twitter:image" content="https://claroz.in/static/logo.svg">
+    <meta property="twitter:image" content="https://claroz.in/static/logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
-    <link rel="icon" type="image/svg+xml" href="/static/logo.svg">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='images/logo.png') }}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #020617;
-            color: white;
-            overflow-x: hidden;
-        }
-
-        #canvas-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100dvh;
-            /* Use dynamic viewport height */
-            z-index: 0;
-            opacity: 0.6;
-        }
-
-        .glass-panel {
-            background: rgba(30, 41, 59, 0.4);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .glass-panel:hover {
-            border-color: rgba(255, 255, 255, 0.1);
-            background: rgba(30, 41, 59, 0.6);
-            transform: translateY(-4px);
-            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.3);
-        }
-
-        .hero-text-gradient {
-            background: linear-gradient(135deg, #34d399 0%, #3b82f6 50%, #8b5cf6 100%);
-            background-size: 200% 200%;
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: gradient-flow 5s ease infinite;
-        }
-
-        @keyframes gradient-flow {
-            0% {
-                background-position: 0% 50%;
-            }
-
-            50% {
-                background-position: 100% 50%;
-            }
-
-            100% {
-                background-position: 0% 50%;
-            }
-        }
-
-        .feature-card {
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .feature-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            border-color: rgba(16, 185, 129, 0.5);
-            box-shadow: 0 20px 40px -10px rgba(16, 185, 129, 0.2);
-            background: rgba(30, 41, 59, 0.6);
-        }
-
-        .btn-glow {
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-glow:hover {
-            box-shadow: 0 0 25px rgba(16, 185, 129, 0.5);
-            transform: translateY(-2px);
-        }
-
-        /* Smooth scroll behavior */
-        html {
-            scroll-behavior: smooth;
-        }
-
-        /* Scroll Reveal Animation */
-        .reveal {
-            opacity: 0;
-            transform: translateY(40px);
-            transition: all 1s cubic-bezier(0.5, 0, 0, 1);
-        }
-
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .reveal-left {
-            opacity: 0;
-            transform: translateX(-60px);
-            transition: all 1s cubic-bezier(0.5, 0, 0, 1);
-        }
-
-        .reveal-left.active {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .reveal-right {
-            opacity: 0;
-            transform: translateX(60px);
-            transition: all 1s cubic-bezier(0.5, 0, 0, 1);
-        }
-
-        .reveal-right.active {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .delay-100 {
-            transition-delay: 0.1s;
-        }
-
-        .delay-200 {
-            transition-delay: 0.2s;
-        }
-
-        .delay-300 {
-            transition-delay: 0.3s;
-        }
-
-        .delay-400 {
-            transition-delay: 0.4s;
-        }
-
-        .delay-500 {
-            transition-delay: 0.5s;
-        }
-
-        .delay-600 {
-            transition-delay: 0.6s;
-        }
-
-        @keyframes float {
-            0% {
-                transform: translateY(0px);
-            }
-
-            50% {
-                transform: translateY(-15px);
-            }
-
-            100% {
-                transform: translateY(0px);
-            }
-        }
-
-        .animate-float {
-            animation: float 8s ease-in-out infinite;
-        }
-
-        /* Floating Orbs */
-        .orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(100px);
-            z-index: 0;
-            opacity: 0.3;
-            animation: float-orb 25s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        @keyframes float-orb {
-            0% {
-                transform: translate(0, 0) scale(1) rotate(0deg);
-            }
-
-            50% {
-                transform: translate(50px, 30px) scale(1.2) rotate(180deg);
-            }
-
-            100% {
-                transform: translate(-30px, 80px) scale(0.9) rotate(360deg);
-            }
-        }
-
-        .tilt-card {
-            transform-style: preserve-3d;
-            perspective: 1000px;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
     <!-- JSON-LD Schema Markup -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
       "name": "Claroz Agent",
-      "image": "https://claroz.in/static/logo.svg",
+      "image": "https://claroz.in/static/images/logo.png",
       "applicationCategory": "FinanceApplication",
       "operatingSystem": "Web",
       "offers": {
@@ -249,7 +60,7 @@
       "@context": "https://schema.org",
       "@type": "Organization",
       "url": "https://claroz.in",
-      "logo": "https://claroz.in/static/logo.svg"
+      "logo": "https://claroz.in/static/images/logo.png"
     }
     </script>
 </head>
@@ -273,9 +84,8 @@
                 <div class="flex items-center gap-3">
                     <div
                         class="w-10 h-10 bg-gradient-to-br from-green-500 to-green-700 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-900/20 transform hover:scale-105 transition-transform duration-300">
-                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z" />
-                        </svg>
+                        <img src="{{ url_for('static', filename='images/logo.png') }}" class="w-6 h-6 text-white"
+                            alt="Claroz Logo">
                     </div>
                     <span class="text-xl font-bold tracking-tight text-white">Claroz <span
                             class="text-emerald-400">Agent</span></span>
@@ -316,33 +126,6 @@
             </div>
         </div>
 
-        <!-- Mobile Menu Overlay -->
-        <div id="mobile-menu"
-            class="hidden md:hidden fixed inset-0 z-40 bg-slate-950/95 backdrop-blur-xl transition-all duration-300 opacity-0 pointer-events-none data-[open=true]:opacity-100 data-[open=true]:pointer-events-auto flex flex-col items-center justify-center space-y-8">
-            <button id="close-menu-btn" class="absolute top-6 right-6 text-slate-400 hover:text-white p-2">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
-                    </path>
-                </svg>
-            </button>
-
-            <a href="#features"
-                class="mobile-link text-2xl font-bold text-slate-300 hover:text-emerald-400 transition-colors">Features</a>
-            <a href="#plans"
-                class="mobile-link text-2xl font-bold text-slate-300 hover:text-emerald-400 transition-colors">Plans</a>
-            <a href="#opensource"
-                class="mobile-link text-2xl font-bold text-slate-300 hover:text-emerald-400 transition-colors">Open
-                Source</a>
-            <a href="#about"
-                class="mobile-link text-2xl font-bold text-slate-300 hover:text-emerald-400 transition-colors">About</a>
-            <a href="#contact"
-                class="mobile-link text-2xl font-bold text-slate-300 hover:text-emerald-400 transition-colors">Contact</a>
-
-            <a href="/app"
-                class="mt-4 px-8 py-3 bg-emerald-500 hover:bg-emerald-400 rounded-xl text-white font-bold text-lg shadow-lg shadow-emerald-500/20 transition-all transform hover:scale-105">
-                Get Started
-            </a>
-        </div>
     </nav>
 
     <!-- Hero Section -->
@@ -1039,185 +822,36 @@
         </div>
     </footer>
 
-    <!-- Three.js Logic -->
-    <script>
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    <!-- Mobile Menu Overlay (Moved to root for stacking context) -->
+    <div id="mobile-menu"
+        class="hidden md:hidden fixed inset-0 z-50 bg-slate-900/95 backdrop-blur-xl transition-all duration-300 opacity-0 pointer-events-none data-[open=true]:opacity-100 data-[open=true]:pointer-events-auto flex flex-col items-center justify-center space-y-8">
+        <button id="close-menu-btn" class="absolute top-6 right-6 text-slate-400 hover:text-white p-2">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                </path>
+            </svg>
+        </button>
 
-        const container = document.getElementById('canvas-container');
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        container.appendChild(renderer.domElement);
+        <a href="#features"
+            class="mobile-link text-2xl font-bold text-slate-300 hover:text-emerald-400 transition-colors">Features</a>
+        <a href="#plans"
+            class="mobile-link text-2xl font-bold text-slate-300 hover:text-emerald-400 transition-colors">Plans</a>
+        <a href="#opensource"
+            class="mobile-link text-2xl font-bold text-slate-300 hover:text-emerald-400 transition-colors">Open
+            Source</a>
+        <a href="#about"
+            class="mobile-link text-2xl font-bold text-slate-300 hover:text-emerald-400 transition-colors">About</a>
+        <a href="#contact"
+            class="mobile-link text-2xl font-bold text-slate-300 hover:text-emerald-400 transition-colors">Contact</a>
 
-        // Particles
-        const geometry = new THREE.BufferGeometry();
-        const particlesCount = 700;
-        const posArray = new Float32Array(particlesCount * 3);
+        <a href="/app"
+            class="mt-4 px-8 py-3 bg-emerald-500 hover:bg-emerald-400 rounded-xl text-white font-bold text-lg shadow-lg shadow-emerald-500/20 transition-all transform hover:scale-105">
+            Get Started
+        </a>
+    </div>
 
-        for (let i = 0; i < particlesCount * 3; i++) {
-            // Spread particles across a wide area
-            posArray[i] = (Math.random() - 0.5) * 25;
-        }
-
-        geometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-
-        // Material
-        const material = new THREE.PointsMaterial({
-            size: 0.03,
-            color: 0x34d399, // Emerald color
-            transparent: true,
-            opacity: 0.8,
-        });
-
-        // Mesh
-        const particlesMesh = new THREE.Points(geometry, material);
-        scene.add(particlesMesh);
-
-        // Lines connecting close particles
-        const lineMaterial = new THREE.LineBasicMaterial({
-            color: 0x3b82f6,
-            transparent: true,
-            opacity: 0.15
-        });
-
-        camera.position.z = 3;
-
-        // Interaction
-        let mouseX = 0;
-        let mouseY = 0;
-
-        document.addEventListener('mousemove', (event) => {
-            mouseX = event.clientX / window.innerWidth - 0.5;
-            mouseY = event.clientY / window.innerHeight - 0.5;
-        });
-
-        // Animation Loop
-        const clock = new THREE.Clock();
-
-        function animate() {
-            requestAnimationFrame(animate);
-
-            const elapsedTime = clock.getElapsedTime();
-
-            // Rotate entire system slowly
-            particlesMesh.rotation.y = elapsedTime * 0.05;
-            particlesMesh.rotation.x = -mouseY * 0.2;
-            particlesMesh.rotation.y += mouseX * 0.2;
-
-            renderer.render(scene, camera);
-        }
-
-        animate();
-
-        // Responsive
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-
-        // Scroll Reveal Logic
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: "0px"
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('active');
-                } else {
-                    // Continuous animation: remove class when out of view
-                    entry.target.classList.remove('active');
-                    // Reset opacity/transform for smooth re-entry
-                    entry.target.style.opacity = '';
-                    entry.target.style.transform = '';
-                }
-            });
-        }, observerOptions);
-
-        // More stagger logic for lists
-        const staggerObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const children = entry.target.children;
-                    Array.from(children).forEach((child, index) => {
-                        setTimeout(() => {
-                            child.classList.add('active');
-                            child.style.opacity = '1';
-                            child.style.transform = 'translateY(0)';
-                        }, index * 100);
-                    });
-                    entry.target.classList.add('active');
-                }
-            });
-        }, { threshold: 0.1 });
-
-
-
-        document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => observer.observe(el));
-        document.querySelectorAll('.feature-card').forEach((el, index) => {
-            el.classList.add('reveal');
-            el.style.transitionDelay = `${index * 100}ms`; // Stagger effect
-            observer.observe(el);
-
-            // Add Tilt Effect
-            el.addEventListener('mousemove', handleTilt);
-            el.addEventListener('mouseleave', resetTilt);
-        });
-
-        function handleTilt(e) {
-            const el = e.currentTarget;
-            const rect = el.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-
-            const rotateX = (centerY - y) / 20;
-            const rotateY = (x - centerX) / 20;
-
-            el.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
-        }
-
-        function resetTilt(e) {
-            e.currentTarget.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
-        }
-
-        // Mobile Menu Logic
-        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-        const closeMenuBtn = document.getElementById('close-menu-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
-        const mobileLinks = document.querySelectorAll('.mobile-link');
-
-        function toggleMenu() {
-            const isOpen = mobileMenu.dataset.open === 'true';
-
-            if (isOpen) {
-                mobileMenu.dataset.open = 'false';
-                mobileMenu.classList.add('hidden'); // Add hidden back after anim could be better, but fast toggle for now
-                document.body.style.overflow = '';
-            } else {
-                mobileMenu.classList.remove('hidden');
-                // Small delay to allow display:block to apply before opacity transition
-                requestAnimationFrame(() => {
-                    mobileMenu.dataset.open = 'true';
-                });
-                document.body.style.overflow = 'hidden'; // Prevent background scrolling
-            }
-        }
-
-        if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', toggleMenu);
-        if (closeMenuBtn) closeMenuBtn.addEventListener('click', toggleMenu);
-
-        mobileLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                toggleMenu(); // Close menu on link click
-            });
-        });
-
-    </script>
+    <!-- Three.js & Animation Logic -->
+    <script src="{{ url_for('static', filename='js/landing.js') }}"></script>
 </body>
 
 </html>
