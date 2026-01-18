@@ -2,7 +2,7 @@
 
 # 🚀 AI Stock Analyst Platform (Agent v6.1)
 
-[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-Visit_Platform-blue?style=for-the-badge&logo=google-chrome&logoColor=white)](https://stock-agent-774764824527.us-central1.run.app)
+[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-Visit_Platform-blue?style=for-the-badge&logo=google-chrome&logoColor=white)](https://claroz.in/)
   
 *An Advanced, AI-Powered Trading Assistant for Indian Markets (NSE)*
 
