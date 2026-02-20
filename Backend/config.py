@@ -3,15 +3,15 @@ import os
 # ============================================
 # GENERAL SETTINGS
 # ============================================
-DEBUG_MODE = False# Set to False in production
-DB_MODE = "FIREBASE" # Options: 'local', 'firebase' - FORCED LOCAL MODE
+DEBUG_MODE = True# Set to False in production
+DB_MODE = "LOCAL" # Options: 'local', 'firebase' - FORCED LOCAL MODE
 Local_API_URL = "http://127.0.0.1:8080"
-Production_API_URL = "YOUR_PRODUCTION_URL" 
+Production_API_URL = "https://stock-agent-774764824527.us-central1.run.app" 
 
 # ============================================
 # Gemini API KEYS
 # ============================================
-GENIE_API_KEY ="YOUR_GEMINI_API_KEY"
+GENIE_API_KEY ="YOUR_GEMINI_API_KEY_HERE"
 
 
 # ============================================
@@ -23,12 +23,12 @@ LOCAL_DB_FILE = os.path.join(BASE_DIR, 'database', 'local_database.json')
 
 FIREBASE_CONFIG = {
     "apiKey": "YOUR_FIREBASE_API_KEY",
-    "authDomain": "YOUR_PROJECT_ID.firebaseapp.com",
-    "projectId": "YOUR_PROJECT_ID",
-    "storageBucket": "YOUR_PROJECT_ID.appspot.com",
-    "messagingSenderId": "YOUR_SENDER_ID",
-    "appId": "YOUR_APP_ID",
-    "measurementId": "YOUR_MEASUREMENT_ID"
+    "authDomain": "your-project.firebaseapp.com",
+    "projectId": "your-project-id",
+    "storageBucket": "your-project.appspot.com",
+    "messagingSenderId": "your-sender-id",
+    "appId": "your-app-id",
+    "measurementId": "your-measurement-id"
 }
 
 # ============================================
@@ -40,8 +40,8 @@ API_BASE_URL = Local_API_URL if DEBUG_MODE == True else Production_API_URL
 # ============================================
 # Zerodha API
 # ============================================
-ZERODHA_API_KEY = "YOUR_ZERODHA_KEY"
-ZERODHA_API_SECRET = "YOUR_ZERODHA_SECRET"
+ZERODHA_API_KEY = "YOUR_KITE_CONNECT_API_KEY"
+ZERODHA_API_SECRET = "YOUR_KITE_CONNECT_SECRET"
 ZERODHA_REDIRECT_URL = f"{Production_API_URL}/api/zerodha/callback"  if DEBUG_MODE == False else f"{Local_API_URL}/api/zerodha/callback"
 
 
@@ -50,9 +50,7 @@ ZERODHA_REDIRECT_URL = f"{Production_API_URL}/api/zerodha/callback"  if DEBUG_MO
 # ============================================
 #get from https://newsapi.org/
 NEWSAPI_KEYS = [
-"YOUR_NEWSAPI_KEY_1",
-"YOUR_NEWSAPI_KEY_2",
-"YOUR_NEWSAPI_KEY_3"
+"YOUR_NEWSAPI_KEY_HERE"
 ]
 NEWS_API_MODE = 'sequential'
 

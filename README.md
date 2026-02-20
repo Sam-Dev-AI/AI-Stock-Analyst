@@ -1,10 +1,8 @@
 <div align="center">
 
-# 🚀 AI Stock Analyst Platform (Agent v6.1)
+# 🚀 Nexus - AI Stock Analyst Platform
 
-[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-Visit_Platform-blue?style=for-the-badge&logo=google-chrome&logoColor=white)](https://claroz.in/)
-  
-*An Advanced, AI-Powered Trading Assistant for Indian Markets (NSE)*
+*An Advanced, AI-Powered Trading Assistant for Indian Markets (NSE) featuring the Claroz Agent*
 
 [![Google Cloud](https://img.shields.io/badge/Google_Cloud-Run-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white)](https://cloud.google.com/run)
 [![Zerodha API](https://img.shields.io/badge/Zerodha-Kite_API-00BFA5?style=for-the-badge&logo=zerodha&logoColor=white)](https://kite.trade/)
@@ -18,22 +16,43 @@
 
 ## 🧠 Overview
 
-**AI Stock Analyst** is a cutting-edge financial analytics platform designed to democratize professional-grade trading insights. By fusing **Generative AI (Gemini 2.5)** with hard **Technical Analysis (TA-Lib)**, it offers real-time, actionable advice for the Indian Stock Market.
+**Nexus** is a cutting-edge financial analytics platform designed to democratize professional-grade trading insights. Powered by the **Claroz Agent**—a smart conversational AI fusing **Generative AI (Gemini 2.5)** with hard **Technical Analysis (TA-Lib)**—Nexus offers real-time, actionable advice for the Indian Stock Market.
 
-Whether you are a swing trader looking for opportunities or an investor balancing a portfolio, the AI Analyst acts as your 24/7 financial companion.
+Whether you are a swing trader looking for opportunities or an investor balancing a portfolio, the Claroz Agent acts as your 24/7 financial companion within the Nexus platform.
 
 ---
 
 ## 📸 Photo Gallery
 
-<div style="display: flex; overflow-x: auto; gap: 10px; padding-bottom: 10px;">
-    <img src="Images/Home.png" alt="Home" height="500" style="border-radius: 10px;">
-    <img src="Images/Anylisis.png" alt="Analytics" height="500" style="border-radius: 10px;">
-    <img src="Images/Buy Stocks.png" alt="Buy Stocks" height="500" style="border-radius: 10px;">
-    <img src="Images/Chat.png" alt="Chat" height="500" style="border-radius: 10px;">
-    <img src="Images/HDFC Analysis .png" alt="HDFC Analysis" height="500" style="border-radius: 10px;">
-    <img src="Images/Login.png" alt="Login" height="500" style="border-radius: 10px;">
-    <img src="Images/Portfolio.png" alt="Portfolio" height="500" style="border-radius: 10px;">
+<div style="display: flex; overflow-x: auto; gap: 20px; padding-bottom: 20px;">
+    <div style="text-align: center; min-width: max-content;">
+        <img src="Images/Home.png" alt="Home Dashboard" height="500" style="border-radius: 10px;">
+        <p style="margin-top: 10px; font-weight: bold; color: #a8b2d1;">Home Dashboard</p>
+    </div>
+    <div style="text-align: center; min-width: max-content;">
+        <img src="Images/Anylisis.png" alt="Market Analysis" height="500" style="border-radius: 10px;">
+        <p style="margin-top: 10px; font-weight: bold; color: #a8b2d1;">Market Analysis</p>
+    </div>
+    <div style="text-align: center; min-width: max-content;">
+        <img src="Images/Buy Stocks.png" alt="Buy/Sell Trades" height="500" style="border-radius: 10px;">
+        <p style="margin-top: 10px; font-weight: bold; color: #a8b2d1;">Execute Buy/Sell Trades</p>
+    </div>
+    <div style="text-align: center; min-width: max-content;">
+        <img src="Images/Chat.png" alt="AI Chat" height="500" style="border-radius: 10px;">
+        <p style="margin-top: 10px; font-weight: bold; color: #a8b2d1;">AI Chat Assistant</p>
+    </div>
+    <div style="text-align: center; min-width: max-content;">
+        <img src="Images/HDFC Analysis .png" alt="Stock Details" height="500" style="border-radius: 10px;">
+        <p style="margin-top: 10px; font-weight: bold; color: #a8b2d1;">Details of Any Stock (e.g., HDFC)</p>
+    </div>
+    <div style="text-align: center; min-width: max-content;">
+        <img src="Images/Login.png" alt="Secure Login" height="500" style="border-radius: 10px;">
+        <p style="margin-top: 10px; font-weight: bold; color: #a8b2d1;">Secure Login</p>
+    </div>
+    <div style="text-align: center; min-width: max-content;">
+        <img src="Images/Portfolio.png" alt="Portfolio Management" height="500" style="border-radius: 10px;">
+        <p style="margin-top: 10px; font-weight: bold; color: #a8b2d1;">Portfolio Management</p>
+    </div>
 </div>
 
 ---

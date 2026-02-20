@@ -17,6 +17,24 @@
             "plan": "free",
             "plan_start_date": "2025-12-30",
             "id": "local_samirlade600_4923"
+        },
+        "2": {
+            "cash": 1000000.0,
+            "initial_cash": 1000000.0,
+            "account_initialized": true,
+            "zerodha_synced_once": false,
+            "created_at": "2026-02-20T12:57:13.062241",
+            "day_start_portfolio_value": 1000000.0,
+            "last_day_pnl_reset": "2026-02-20",
+            "token_usage": {
+                "input": 0,
+                "output": 0,
+                "total": 0
+            },
+            "net_cash_flow_today": 0.0,
+            "plan": "free",
+            "plan_start_date": "2026-02-20",
+            "id": "local_samirlade6_5378"
         }
     },
     "chats": {
